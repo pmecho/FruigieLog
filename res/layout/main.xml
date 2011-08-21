@@ -1,0 +1,90 @@
+
+    <TableLayout android:id="@+id/TableLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+        <TableRow android:id="@+id/dateRow" android:layout_height="wrap_content" android:layout_width="wrap_content">
+            <Button 
+            	android:text="-1 Day" 
+            	android:id="@+id/decDay" 
+            	android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:onClick="changeDate">
+           	</Button>
+            <TextView 
+            	android:text="" 
+            	android:id="@+id/date" 
+            	android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content">
+           	</TextView>
+            <Button 
+            	android:text="+1 Day" 
+            	android:id="@+id/incDay" 
+            	android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:onClick="changeDate">
+           	</Button>
+        
+        </TableRow>
+        <TableRow android:id="@+id/fruitRow" android:layout_height="wrap_content" android:layout_width="wrap_content">
+            <ImageButton 
+            	android:src="@drawable/fruit" 
+            	android:layout_height="wrap_content" 
+            	android:layout_width="wrap_content" 
+            	android:id="@+id/fruitPortion"
+            	android:onClick="changePortion">
+           	</ImageButton>
+            <ImageButton 
+            	android:src="@android:drawable/ic_menu_delete" 
+            	android:layout_height="wrap_content" 
+            	android:layout_width="wrap_content" 
+            	android:id="@+id/decFruit"
+            	android:onClick="decrementPortion">
+           	</ImageButton>
+            <TextView 
+            	android:text="" 
+            	android:textAppearance="?android:attr/textAppearanceLarge" 
+            	android:layout_height="wrap_content" 
+            	android:layout_width="wrap_content" 
+            	android:id="@+id/currentFruit">
+           	</TextView>
+            <ImageButton 
+            	android:src="@android:drawable/ic_menu_add" 
+            	android:layout_height="wrap_content" 
+            	android:layout_width="wrap_content" 
+            	android:id="@+id/incFruit"
+            	android:onClick="incrementPortion">
+           	</ImageButton>
+        </TableRow>
+        <TableRow 
+        	android:id="@+id/veggieRow" 
+        	android:layout_height="wrap_content" 
+        	android:layout_width="wrap_content">
+            <ImageButton 
+            	android:src="@drawable/veggie"
+            	android:layout_height="wrap_content" 
+            	android:layout_width="100px" 
+            	android:id="@+id/veggiePortion"
+            	android:onClick="changePortion">
+           	</ImageButton>
+            <ImageButton 
+            	android:src="@android:drawable/ic_menu_delete" 
+            	android:layout_height="wrap_content" 
+            	android:layout_width="wrap_content" 
+            	android:id="@+id/decVeggie"
+            	android:onClick="decrementPortion">
+           	</ImageButton>
+            <TextView 
+            	android:text="" 
+            	android:textAppearance="?android:attr/textAppearanceLarge" 
+            	android:layout_height="wrap_content" 
+            	android:layout_width="wrap_content" 
+            	android:id="@+id/currentVeggie">
+           	</TextView>
+            <ImageButton android:src="@android:drawable/ic_menu_add" 
+            	android:layout_height="wrap_content" 
+            	android:layout_width="wrap_content" 
+           		android:id="@+id/incVeggie"
+            	android:onClick="incrementPortion">
+            </ImageButton>
+        </TableRow>
+
+
+    </TableLayout>
