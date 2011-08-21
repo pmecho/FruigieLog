@@ -24,6 +24,8 @@ public class FrugieLogActivity extends Activity {
 	private Food currentVeggie;
 	private boolean emptyCurrent = true;
 	
+	private final String SAVED_DATE_KEY = "date";
+	
 	private Date curDate;
 	
 	
@@ -32,21 +34,25 @@ public class FrugieLogActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
+        
+        // Check for saved date
+        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
+        if(savedDate != 0L)
+        	curDate = new Date(savedDate);
+        else
+        	curDate = new Date();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         // The activity is about to become visible.
-        
-        curDate = new Date();
-        setDateText();
-        
+
+        setDateText();        
         
         currentFruit = new Food(FoodType.FRUIT);
         currentVeggie = new Food(FoodType.VEGGIE);
-        setDataFromDB(new Date());
+        setDataFromDB(curDate);
     }
     @Override
     protected void onResume() {
@@ -70,6 +76,13 @@ public class FrugieLogActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         // The activity is about to be destroyed.
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+    	super.onSaveInstanceState(outState);
+    	// Save the current date
+    	outState.putLong(SAVED_DATE_KEY, curDate.getTime());
     }
     
     private void setDataFromDB(Date date){
