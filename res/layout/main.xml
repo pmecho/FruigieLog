@@ -1,28 +1,43 @@
 
-    <LinearLayout android:id="@+id/LinearLayout1" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
-        <LinearLayout android:id="@+id/linearLayout2" android:layout_width="wrap_content" android:layout_height="wrap_content">
-            <Button 
-            	android:text="-1 Day" 
-            	android:id="@+id/decDay" 
-            	android:layout_width="wrap_content" 
+    <LinearLayout android:id="@+id/LinearLayout1" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <RelativeLayout android:id="@+id/dayNavLayout" android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="left">
+			<ImageButton android:id="@+id/decDay"
+				android:src="@drawable/left_arrow_button" 
+            	android:background="@null"
+            	android:onClick="changeDate"
             	android:layout_height="wrap_content"
-            	android:onClick="changeDate">
-           	</Button>
-            <TextView 
-            	android:text="" 
-            	android:id="@+id/date" 
-            	android:layout_width="wrap_content" 
-            	android:layout_height="wrap_content">
-           	</TextView>
-            <Button 
-            	android:text="+1 Day" 
-            	android:id="@+id/incDay" 
-            	android:layout_width="wrap_content" 
+      			android:layout_width="wrap_content"
+				android:layout_weight="1"
+         		android:layout_centerVertical="true" 
+     			android:layout_alignParentLeft="true" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_marginTop="10dp" android:layout_marginBottom="10dp">
+           	</ImageButton>
+           	<RelativeLayout android:id="@+id/dateFormatLayout" android:layout_height="wrap_content" android:layout_width="wrap_content" android:gravity="center" android:layout_centerInParent="true" android:layout_alignParentTop="true">
+           		<TextView 
+	            	android:text="Monday"
+	            	android:id="@+id/day"
+	            	android:layout_height="wrap_content"
+	            	android:layout_width="wrap_content"
+	            	android:layout_centerHorizontal="true">
+	           	</TextView>
+	            <TextView 
+	            	android:text="August 22, 2011"
+	            	android:id="@+id/date"
+	            	android:layout_below="@id/day"
+	            	android:layout_height="wrap_content"
+	            	android:layout_width="wrap_content"
+	            	android:layout_centerHorizontal="true" android:layout_centerInParent="true">
+	           	</TextView>
+           	</RelativeLayout>
+           	<ImageButton android:id="@+id/incDay"
+				android:src="@drawable/right_arrow_button" 
+            	android:background="@null"
+            	android:onClick="changeDate"
             	android:layout_height="wrap_content"
-            	android:onClick="changeDate">
-           	</Button>
-        
-        </LinearLayout>
+      			android:layout_width="wrap_content"
+            	android:layout_weight="1"
+         		android:layout_centerVertical="true" android:layout_alignParentRight="true" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_marginTop="10dp" android:layout_marginBottom="10dp">
+           	</ImageButton>
+   		</RelativeLayout>
         <LinearLayout android:id="@+id/linearLayout2" android:layout_width="wrap_content" android:layout_height="wrap_content">
 	        <RadioGroup android:id="@+id/servingRadioGroup" android:layout_height="wrap_content" android:layout_width="wrap_content" android:orientation="horizontal">
 	            <TextView android:text="Serving Size: " android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView1" android:layout_marginLeft="10dp"></TextView>
@@ -69,8 +84,9 @@
             	android:layout_height="wrap_content" 
             	android:id="@+id/currentFruit"
             	android:layout_weight="1"
-            	android:layout_width="wrap_content"
+            	android:layout_width="45dp"
             	android:layout_centerVertical="true"
+				android:gravity="center"
             	android:layout_marginLeft="15dp"
             	android:layout_marginRight="15dp">
            	</TextView>
@@ -110,8 +126,9 @@
             	android:layout_height="wrap_content" 
             	android:id="@+id/currentVeggie"
             	android:layout_weight="1"
-            	android:layout_width="wrap_content"
+            	android:layout_width="45dp"
             	android:layout_centerVertical="true"
+				android:gravity="center"
             	android:layout_marginLeft="15dp"
             	android:layout_marginRight="15dp">
            	</TextView>

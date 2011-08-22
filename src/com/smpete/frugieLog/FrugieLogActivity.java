@@ -211,9 +211,16 @@ public class FrugieLogActivity extends Activity {
     }
     
     private void setDateText(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+//        
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
+    	SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+
     	TextView dateText = (TextView)findViewById(R.id.date);
     	dateText.setText(dateFormat.format(curDate));
+
+    	TextView dayText = (TextView)findViewById(R.id.day);
+    	dayText.setText(dayFormat.format(curDate));
     }
     
     private void updateText()
