@@ -35,10 +35,14 @@ public class FrugieLogActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        // Check for saved date
-        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
-        if(savedDate != 0L)
-        	curDate = new Date(savedDate);
+        if(savedInstanceState != null){
+	        // Check for saved date
+	        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
+	        if(savedDate != 0L)
+	        	curDate = new Date(savedDate);
+	        else
+	        	curDate = new Date();
+        }
         else
         	curDate = new Date();
     }

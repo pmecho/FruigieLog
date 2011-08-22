@@ -32,9 +32,10 @@
             	android:onClick="changePortion">
            	</ImageButton>
             <ImageButton 
-            	android:src="@android:drawable/ic_menu_delete" 
+            	android:src="@drawable/minus_button" 
             	android:layout_height="wrap_content" 
             	android:layout_width="wrap_content" 
+            	android:background="@null"
             	android:id="@+id/decFruit"
             	android:onClick="decrementPortion">
            	</ImageButton>
@@ -46,10 +47,11 @@
             	android:id="@+id/currentFruit">
            	</TextView>
             <ImageButton 
-            	android:src="@android:drawable/ic_menu_add" 
+            	android:src="@drawable/plus_button" 
             	android:layout_height="wrap_content" 
             	android:layout_width="wrap_content" 
             	android:id="@+id/incFruit"
+            	android:background="@null"
             	android:onClick="incrementPortion">
            	</ImageButton>
         </TableRow>
@@ -65,9 +67,10 @@
             	android:onClick="changePortion">
            	</ImageButton>
             <ImageButton 
-            	android:src="@android:drawable/ic_menu_delete" 
+            	android:src="@drawable/minus_button" 
             	android:layout_height="wrap_content" 
             	android:layout_width="wrap_content" 
+            	android:background="@null"
             	android:id="@+id/decVeggie"
             	android:onClick="decrementPortion">
            	</ImageButton>
@@ -78,9 +81,10 @@
             	android:layout_width="wrap_content" 
             	android:id="@+id/currentVeggie">
            	</TextView>
-            <ImageButton android:src="@android:drawable/ic_menu_add" 
+            <ImageButton android:src="@drawable/plus_button" 
             	android:layout_height="wrap_content" 
             	android:layout_width="wrap_content" 
+            	android:background="@null"
            		android:id="@+id/incVeggie"
             	android:onClick="incrementPortion">
             </ImageButton>
