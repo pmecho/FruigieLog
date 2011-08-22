@@ -7,6 +7,7 @@ import java.util.Date;
 
 import com.smpete.frugieLog.R;
 import com.smpete.frugieLog.Food.FoodType;
+import com.smpete.frugieLog.Food.PortionSize;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class FrugieLogActivity extends Activity {
@@ -27,6 +29,8 @@ public class FrugieLogActivity extends Activity {
 	private final String SAVED_DATE_KEY = "date";
 	
 	private Date curDate;
+	/** Whether a full serving is selected */
+	private boolean fullServing;
 	
 	
     /** Called when the activity is first created. */
@@ -38,13 +42,18 @@ public class FrugieLogActivity extends Activity {
         if(savedInstanceState != null){
 	        // Check for saved date
 	        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
-	        if(savedDate != 0L)
+	        if(savedDate != 0L){
 	        	curDate = new Date(savedDate);
-	        else
+	        }
+	        else{
 	        	curDate = new Date();
+	        	fullServing = true;
+	        }
         }
-        else
+        else{
         	curDate = new Date();
+        	fullServing = true;
+        }
     }
 
     @Override
@@ -136,23 +145,50 @@ public class FrugieLogActivity extends Activity {
     }
     
     public void changePortion(View view){
-    	ImageButton button = (ImageButton)view;
-    	if(button.getId() == R.id.fruitPortion){
-    		currentFruit.switchPortion();
-    		Log.d("ButtonClick", "Change fruit portion");
-    	}
-    	else
-    		currentVeggie.switchPortion();
-    		Log.d("ButtonClick", "Change veggie portion");
+//    	ImageButton button = (ImageButton)view;
+//    	if(button.getId() == R.id.fruitPortion){
+//    		currentFruit.switchPortion();
+//    		Log.d("ButtonClick", "Change fruit portion");
+//    	}
+//    	else
+//    		currentVeggie.switchPortion();
+//    		Log.d("ButtonClick", "Change veggie portion");
     }
+    
+    public void changeToFullServing(View view){
+    	fullServing = true;
+    	// Change images
+    	ImageView fruitImage = (ImageView)findViewById(R.id.banana);
+    	fruitImage.setImageResource(R.drawable.banana);
+    	ImageView veggieImage = (ImageView)findViewById(R.id.carrot);
+    	veggieImage.setImageResource(R.drawable.carrot);
+    	
+    }
+    
+    public void changeToHalfServing(View view){
+    	fullServing = false;
+    	// Change images
+    	ImageView fruitImage = (ImageView)findViewById(R.id.banana);
+    	fruitImage.setImageResource(R.drawable.banana_half);
+    	ImageView veggieImage = (ImageView)findViewById(R.id.carrot);
+    	veggieImage.setImageResource(R.drawable.carrot_half);
+    }
+    
     
     public void incrementPortion(View view){
     	ImageButton button = (ImageButton)view;
     	if(button.getId() == R.id.incFruit){
-    		currentFruit.incServing();
+    		if(fullServing)
+    			currentFruit.incServing(PortionSize.FULL);
+    		else
+    			currentFruit.incServing(PortionSize.HALF);
     	}
-    	else
-    		currentVeggie.incServing();
+    	else{
+    		if(fullServing)
+    			currentVeggie.incServing(PortionSize.FULL);
+    		else
+    			currentVeggie.incServing(PortionSize.HALF);
+    	}
     	
     	updateText();
     }
@@ -160,11 +196,17 @@ public class FrugieLogActivity extends Activity {
     public void decrementPortion(View view){
     	ImageButton button = (ImageButton)view;
     	if(button.getId() == R.id.decFruit){
-    		currentFruit.decServing();
+    		if(fullServing)
+    			currentFruit.decServing(PortionSize.FULL);
+    		else
+    			currentFruit.decServing(PortionSize.HALF);
     	}
-    	else
-    		currentVeggie.decServing();
-    	
+    	else{
+    		if(fullServing)
+    			currentVeggie.decServing(PortionSize.FULL);
+    		else
+    			currentVeggie.decServing(PortionSize.HALF);
+    	}
     	updateText();
     }
     

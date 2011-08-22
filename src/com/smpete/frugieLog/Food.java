@@ -13,14 +13,12 @@ public class Food{
 	};
 
 	private FoodType name;
-	private PortionSize portion;
 	// Easy way to not have to mess with floats/doubles
 	private short servingTenths;
 
 
 	public Food(FoodType name){
 		this.name = name;
-		portion =  PortionSize.FULL;
 		servingTenths = 0;
 	}
 	
@@ -30,7 +28,7 @@ public class Food{
 	}
 	
 	
-	public void incServing(){
+	public void incServing(PortionSize portion){
 		switch(portion){
 		case FULL:
 			servingTenths += 10;
@@ -46,7 +44,7 @@ public class Food{
 			servingTenths = 0;
 	}
 	
-	public void decServing(){
+	public void decServing(PortionSize portion){
 		switch(portion){
 		case FULL:
 			servingTenths -= 10;
@@ -61,26 +59,6 @@ public class Food{
 			servingTenths = 0;
 	}
 	
-
-	public void switchPortion(){
-		switch(portion){
-		case FULL:
-			portion = PortionSize.HALF;
-			break;
-		case HALF:
-			portion = PortionSize.FULL;
-			break;
-		default:
-		}
-	}
-	
-	public void setPortion(PortionSize portion) {
-		this.portion = portion;
-	}
-
-	public PortionSize getPortion() {
-		return portion;
-	}
 
 	public short getServingTenths() {
 		return servingTenths;

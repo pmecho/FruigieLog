@@ -11,32 +11,39 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int fruit=0x7f020000;
-        public static final int ic_btn_round_minus=0x7f020001;
-        public static final int ic_btn_round_minus_pressed=0x7f020002;
-        public static final int ic_btn_round_plus=0x7f020003;
-        public static final int ic_btn_round_plus_pressed=0x7f020004;
-        public static final int icon=0x7f020005;
-        public static final int minus_button=0x7f020006;
-        public static final int plus_button=0x7f020007;
-        public static final int veggie=0x7f020008;
+        public static final int banana=0x7f020000;
+        public static final int banana_half=0x7f020001;
+        public static final int carrot=0x7f020002;
+        public static final int carrot_half=0x7f020003;
+        public static final int fruit=0x7f020004;
+        public static final int ic_btn_round_minus=0x7f020005;
+        public static final int ic_btn_round_minus_pressed=0x7f020006;
+        public static final int ic_btn_round_plus=0x7f020007;
+        public static final int ic_btn_round_plus_pressed=0x7f020008;
+        public static final int icon=0x7f020009;
+        public static final int minus_button=0x7f02000a;
+        public static final int plus_button=0x7f02000b;
+        public static final int veggie=0x7f02000c;
     }
     public static final class id {
-        public static final int TableLayout1=0x7f050000;
-        public static final int currentFruit=0x7f050008;
-        public static final int currentVeggie=0x7f05000d;
+        public static final int LinearLayout1=0x7f050000;
+        public static final int RelativeLayout1=0x7f050009;
+        public static final int banana=0x7f05000a;
+        public static final int carrot=0x7f05000e;
+        public static final int currentFruit=0x7f05000c;
+        public static final int currentVeggie=0x7f050010;
         public static final int date=0x7f050003;
-        public static final int dateRow=0x7f050001;
         public static final int decDay=0x7f050002;
-        public static final int decFruit=0x7f050007;
-        public static final int decVeggie=0x7f05000c;
-        public static final int fruitPortion=0x7f050006;
-        public static final int fruitRow=0x7f050005;
+        public static final int decFruit=0x7f05000b;
+        public static final int decVeggie=0x7f05000f;
+        public static final int fullRadio=0x7f050007;
+        public static final int halfRadio=0x7f050008;
         public static final int incDay=0x7f050004;
-        public static final int incFruit=0x7f050009;
-        public static final int incVeggie=0x7f05000e;
-        public static final int veggiePortion=0x7f05000b;
-        public static final int veggieRow=0x7f05000a;
+        public static final int incFruit=0x7f05000d;
+        public static final int incVeggie=0x7f050011;
+        public static final int linearLayout2=0x7f050001;
+        public static final int servingRadioGroup=0x7f050005;
+        public static final int textView1=0x7f050006;
     }
     public static final class layout {
         public static final int main=0x7f030000;

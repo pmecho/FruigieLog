@@ -1,6 +1,6 @@
 
-    <TableLayout android:id="@+id/TableLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
-        <TableRow android:id="@+id/dateRow" android:layout_height="wrap_content" android:layout_width="wrap_content">
+    <LinearLayout android:id="@+id/LinearLayout1" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <LinearLayout android:id="@+id/linearLayout2" android:layout_width="wrap_content" android:layout_height="wrap_content">
             <Button 
             	android:text="-1 Day" 
             	android:id="@+id/decDay" 
@@ -22,73 +22,109 @@
             	android:onClick="changeDate">
            	</Button>
         
-        </TableRow>
-        <TableRow android:id="@+id/fruitRow" android:layout_height="wrap_content" android:layout_width="wrap_content">
-            <ImageButton 
-            	android:src="@drawable/fruit" 
+        </LinearLayout>
+        <LinearLayout android:id="@+id/linearLayout2" android:layout_width="wrap_content" android:layout_height="wrap_content">
+	        <RadioGroup android:id="@+id/servingRadioGroup" android:layout_height="wrap_content" android:layout_width="wrap_content" android:orientation="horizontal">
+	            <TextView android:text="Serving Size: " android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView1" android:layout_marginLeft="10dp"></TextView>
+	            <RadioButton android:id="@+id/fullRadio" 
+		            android:layout_height="wrap_content" 
+		            android:text="Full" 
+		            android:layout_width="wrap_content" 
+		            android:checked="true" 
+		            android:layout_marginLeft="5dp" 
+		            android:layout_marginRight="5dp"
+		            android:onClick="changeToFullServing">
+	            </RadioButton>
+	            <RadioButton android:id="@+id/halfRadio" 
+		            android:layout_height="wrap_content" 
+		            android:text="Half" 
+		            android:layout_width="wrap_content" 
+		            android:layout_marginLeft="5dp" 
+		            android:layout_marginRight="5dp"
+		            android:onClick="changeToHalfServing">
+	            </RadioButton>
+	        </RadioGroup>
+        </LinearLayout>
+        <RelativeLayout android:id="@+id/RelativeLayout1" android:layout_height="100dp" android:baselineAligned="true" android:layout_width="wrap_content" android:gravity="left">
+            <ImageView android:src="@drawable/banana" 
+            			 android:id="@+id/banana"
+            			 android:layout_marginLeft="10dp"
+            			 android:layout_marginRight="10dp"
+            			 android:layout_height="100dp"
+            			 android:layout_width="75dp"
+            			 android:layout_centerVertical="true" 
+            			 android:layout_alignParentLeft="true"></ImageView>
+            <ImageButton android:src="@drawable/minus_button" 
             	android:layout_height="wrap_content" 
-            	android:layout_width="wrap_content" 
-            	android:id="@+id/fruitPortion"
-            	android:onClick="changePortion">
-           	</ImageButton>
-            <ImageButton 
-            	android:src="@drawable/minus_button" 
-            	android:layout_height="wrap_content" 
-            	android:layout_width="wrap_content" 
             	android:background="@null"
+            	android:layout_toRightOf="@id/banana" 
             	android:id="@+id/decFruit"
-            	android:onClick="decrementPortion">
+            	android:onClick="decrementPortion"
+            	android:layout_weight="1"
+            	android:layout_centerVertical="true"
+            	android:layout_width="wrap_content">
            	</ImageButton>
-            <TextView 
-            	android:text="" 
+            <TextView android:layout_toRightOf="@id/decFruit"  android:text="0.0" 
             	android:textAppearance="?android:attr/textAppearanceLarge" 
             	android:layout_height="wrap_content" 
-            	android:layout_width="wrap_content" 
-            	android:id="@+id/currentFruit">
-           	</TextView>
-            <ImageButton 
-            	android:src="@drawable/plus_button" 
-            	android:layout_height="wrap_content" 
-            	android:layout_width="wrap_content" 
-            	android:id="@+id/incFruit"
-            	android:background="@null"
-            	android:onClick="incrementPortion">
-           	</ImageButton>
-        </TableRow>
-        <TableRow 
-        	android:id="@+id/veggieRow" 
-        	android:layout_height="wrap_content" 
-        	android:layout_width="wrap_content">
-            <ImageButton 
-            	android:src="@drawable/veggie"
-            	android:layout_height="wrap_content" 
-            	android:layout_width="100px" 
-            	android:id="@+id/veggiePortion"
-            	android:onClick="changePortion">
-           	</ImageButton>
-            <ImageButton 
-            	android:src="@drawable/minus_button" 
-            	android:layout_height="wrap_content" 
-            	android:layout_width="wrap_content" 
-            	android:background="@null"
-            	android:id="@+id/decVeggie"
-            	android:onClick="decrementPortion">
-           	</ImageButton>
-            <TextView 
-            	android:text="" 
-            	android:textAppearance="?android:attr/textAppearanceLarge" 
-            	android:layout_height="wrap_content" 
-            	android:layout_width="wrap_content" 
-            	android:id="@+id/currentVeggie">
+            	android:id="@+id/currentFruit"
+            	android:layout_weight="1"
+            	android:layout_width="wrap_content"
+            	android:layout_centerVertical="true"
+            	android:layout_marginLeft="15dp"
+            	android:layout_marginRight="15dp">
            	</TextView>
             <ImageButton android:src="@drawable/plus_button" 
             	android:layout_height="wrap_content" 
-            	android:layout_width="wrap_content" 
+            	android:id="@+id/incFruit"
+				android:layout_toRightOf="@id/currentFruit"
             	android:background="@null"
-           		android:id="@+id/incVeggie"
-            	android:onClick="incrementPortion">
-            </ImageButton>
-        </TableRow>
+            	android:onClick="incrementPortion"
+            	android:layout_weight="1"
+            	android:layout_width="wrap_content"
+            	android:layout_centerVertical="true">
+           	</ImageButton>
+        </RelativeLayout>
+        
+		<RelativeLayout android:id="@+id/RelativeLayout1" android:layout_height="100dp" android:baselineAligned="true" android:layout_width="wrap_content" android:gravity="left">
+            <ImageView android:src="@drawable/carrot" 
+            			 android:id="@+id/carrot"
+            			 android:layout_marginLeft="10dp"
+            			 android:layout_marginRight="10dp"
+            			 android:layout_height="100dp"
+            			 android:layout_width="75dp"
+            			 android:layout_centerVertical="true" 
+            			 android:layout_alignParentLeft="true"></ImageView>
+            <ImageButton android:src="@drawable/minus_button" 
+            	android:layout_height="wrap_content" 
+            	android:background="@null"
+            	android:layout_toRightOf="@id/carrot" 
+            	android:id="@+id/decVeggie"
+            	android:onClick="decrementPortion"
+            	android:layout_weight="1"
+            	android:layout_centerVertical="true"
+            	android:layout_width="wrap_content">
+           	</ImageButton>
+            <TextView android:layout_toRightOf="@id/decVeggie"  android:text="0.0" 
+            	android:textAppearance="?android:attr/textAppearanceLarge" 
+            	android:layout_height="wrap_content" 
+            	android:id="@+id/currentVeggie"
+            	android:layout_weight="1"
+            	android:layout_width="wrap_content"
+            	android:layout_centerVertical="true"
+            	android:layout_marginLeft="15dp"
+            	android:layout_marginRight="15dp">
+           	</TextView>
+            <ImageButton android:src="@drawable/plus_button" 
+            	android:layout_height="wrap_content" 
+            	android:id="@+id/incVeggie"
+				android:layout_toRightOf="@id/currentVeggie"
+            	android:background="@null"
+            	android:onClick="incrementPortion"
+            	android:layout_weight="1"
+            	android:layout_width="wrap_content"
+            	android:layout_centerVertical="true">
+           	</ImageButton>
+        </RelativeLayout>
 
-
-    </TableLayout>
+    </LinearLayout>
