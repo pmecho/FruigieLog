@@ -12,26 +12,39 @@ import com.smpete.frugieLog.Food.PortionSize;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class FrugieLogActivity extends Activity {
+public class FrugieLogActivity extends Activity implements OnClickListener {
 
 	private DBAdapter db = new DBAdapter(this);
 	private Food currentFruit;
 	private Food currentVeggie;
 	private boolean emptyCurrent = true;
-	
+
 	private final String SAVED_DATE_KEY = "date";
+	private final String SAVED_SERVING_KEY = "serving";
 	
 	private Date curDate;
 	/** Whether a full serving is selected */
 	private boolean fullServing;
 	
+	
+	// For guestures
+    private static final int SWIPE_MIN_DISTANCE = 120;
+    private static final int SWIPE_MAX_OFF_PATH = 250;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+    private GestureDetector gestureDetector;
+    
 	
     /** Called when the activity is first created. */
     @Override
@@ -47,6 +60,7 @@ public class FrugieLogActivity extends Activity {
 	        }
 	        else{
 	        	curDate = new Date();
+	        	//TODO Add savedInstance Get!!!
 	        	fullServing = true;
 	        }
         }
@@ -54,6 +68,22 @@ public class FrugieLogActivity extends Activity {
         	curDate = new Date();
         	fullServing = true;
         }
+        
+        
+
+        // Gesture detection
+        View mainView = (View) findViewById(R.id.LinearLayout1);
+     
+        gestureDetector = new GestureDetector(new MyGestureDetector());
+        mainView.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (gestureDetector.onTouchEvent(event)) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        
     }
 
     @Override
@@ -96,6 +126,8 @@ public class FrugieLogActivity extends Activity {
     	super.onSaveInstanceState(outState);
     	// Save the current date
     	outState.putLong(SAVED_DATE_KEY, curDate.getTime());
+    	//TODO Test!!
+    	outState.putBoolean(SAVED_SERVING_KEY, fullServing);
     }
     
     private void setDataFromDB(Date date){
@@ -117,6 +149,19 @@ public class FrugieLogActivity extends Activity {
     }
 
     
+    public void changeDate(int days){
+    	db.open();
+    	long result = db.insertStats(curDate, currentFruit.getServingTenths(), currentVeggie.getServingTenths());
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(curDate);
+		cal.add(Calendar.DATE, days);
+		curDate = cal.getTime();
+    	setDataFromDB(curDate);
+    	setDateText();
+    	
+    	db.close();
+    }
     
     public void changeDate(View view){
 
@@ -233,4 +278,46 @@ public class FrugieLogActivity extends Activity {
     	TextView veggieText = (TextView)findViewById(R.id.currentVeggie);
     	veggieText.setText("" + oneDigit.format((double)currentVeggie.getServingTenths() / 10));
     }
+    
+    
+    
+    
+    class MyGestureDetector extends SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+                    return false;
+                // right to left swipe
+                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    Toast.makeText(FrugieLogActivity.this, "Left Swipe", Toast.LENGTH_SHORT).show();
+                    changeDate(1);
+                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    Toast.makeText(FrugieLogActivity.this, "Right Swipe", Toast.LENGTH_SHORT).show();
+                    changeDate(-1);
+                }
+            } catch (Exception e) {
+                // nothing
+            }
+            return false;
+        }
+        
+        // It is necessary to return true from onDown for the onFling event to register
+        @Override
+        public boolean onDown(MotionEvent e) {
+            	return true;
+        }
+
+    }
+
+
+
+
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		
+	}
+    
+
+    
 }
