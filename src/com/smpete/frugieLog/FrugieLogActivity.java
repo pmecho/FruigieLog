@@ -21,6 +21,7 @@ import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,11 +33,11 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
 	private boolean emptyCurrent = true;
 
 	private final String SAVED_DATE_KEY = "date";
-	private final String SAVED_SERVING_KEY = "serving";
+	private final String SAVED_HALF_SERVING_KEY = "serving";
 	
 	private Date curDate;
-	/** Whether a full serving is selected */
-	private boolean fullServing;
+	/** Whether a half serving is selected */
+	private boolean halfServing;
 	
 	
 	// For guestures
@@ -52,27 +53,25 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        // Restore saved data
         if(savedInstanceState != null){
 	        // Check for saved date
 	        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
-	        if(savedDate != 0L){
-	        	curDate = new Date(savedDate);
-	        }
-	        else{
+	        if(savedDate == 0L)
 	        	curDate = new Date();
-	        	//TODO Add savedInstance Get!!!
-	        	fullServing = true;
-	        }
+	        else
+	        	curDate = new Date(savedDate);
+	        
+	        // Set saved serving size, if empty then full serving will be set
+	        setHalfServing(savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY));
         }
         else{
         	curDate = new Date();
-        	fullServing = true;
+        	setHalfServing(false);
         }
-        
-        
 
         // Gesture detection
-        View mainView = (View) findViewById(R.id.LinearLayout1);
+        View mainView = (View) findViewById(R.id.screen_layout);
      
         gestureDetector = new GestureDetector(new MyGestureDetector());
         mainView.setOnTouchListener(new View.OnTouchListener() {
@@ -127,7 +126,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	// Save the current date
     	outState.putLong(SAVED_DATE_KEY, curDate.getTime());
     	//TODO Test!!
-    	outState.putBoolean(SAVED_SERVING_KEY, fullServing);
+    	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
     }
     
     private void setDataFromDB(Date date){
@@ -148,15 +147,26 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         updateText();
     }
 
+    private void setHalfServing(boolean newServing){
+    	halfServing = newServing;
+    	RadioGroup radios = (RadioGroup) findViewById(R.id.serving_radio_group);
+    	if(newServing)
+    		radios.check(R.id.half_radio);
+    	else
+    		radios.check(R.id.full_radio);
+    }
     
-    public void changeDate(int days){
+    private void changeDate(int days){
+    	// Save old data
     	db.open();
     	long result = db.insertStats(curDate, currentFruit.getServingTenths(), currentVeggie.getServingTenths());
 
+    	// Set new data
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(curDate);
 		cal.add(Calendar.DATE, days);
 		curDate = cal.getTime();
+		
     	setDataFromDB(curDate);
     	setDateText();
     	
@@ -164,75 +174,45 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     }
     
     public void changeDate(View view){
+    	if(view.getId() == R.id.inc_day_button)
+    		changeDate(1);
+    	else
+    		changeDate(-1);
 
-    	// Save old data
-    	db.open();
-    	long result = db.insertStats(curDate, currentFruit.getServingTenths(), currentVeggie.getServingTenths());
-
-    	// Set new data
-    	if(view.getId() == R.id.incDay){
-    		Calendar cal = Calendar.getInstance();
-    		cal.setTime(curDate);
-    		cal.add(Calendar.DATE, 1);
-    		curDate = cal.getTime();
-    	} else{
-    		Calendar cal = Calendar.getInstance();
-    		cal.setTime(curDate);
-    		cal.add(Calendar.DATE, -1);
-    		curDate = cal.getTime();
-    	}
-    
-    	setDataFromDB(curDate);
-    	setDateText();
-    	
-    	db.close();
-
-    }
-    
-    public void changePortion(View view){
-//    	ImageButton button = (ImageButton)view;
-//    	if(button.getId() == R.id.fruitPortion){
-//    		currentFruit.switchPortion();
-//    		Log.d("ButtonClick", "Change fruit portion");
-//    	}
-//    	else
-//    		currentVeggie.switchPortion();
-//    		Log.d("ButtonClick", "Change veggie portion");
     }
     
     public void changeToFullServing(View view){
-    	fullServing = true;
+    	halfServing = false;
     	// Change images
-    	ImageView fruitImage = (ImageView)findViewById(R.id.banana);
+    	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
     	fruitImage.setImageResource(R.drawable.banana);
-    	ImageView veggieImage = (ImageView)findViewById(R.id.carrot);
+    	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
     	veggieImage.setImageResource(R.drawable.carrot);
-    	
     }
     
     public void changeToHalfServing(View view){
-    	fullServing = false;
+    	halfServing = true;
     	// Change images
-    	ImageView fruitImage = (ImageView)findViewById(R.id.banana);
+    	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
     	fruitImage.setImageResource(R.drawable.banana_half);
-    	ImageView veggieImage = (ImageView)findViewById(R.id.carrot);
+    	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
     	veggieImage.setImageResource(R.drawable.carrot_half);
     }
     
     
     public void incrementPortion(View view){
     	ImageButton button = (ImageButton)view;
-    	if(button.getId() == R.id.incFruit){
-    		if(fullServing)
-    			currentFruit.incServing(PortionSize.FULL);
-    		else
+    	if(button.getId() == R.id.inc_fruit_button){
+    		if(halfServing)
     			currentFruit.incServing(PortionSize.HALF);
+    		else
+    			currentFruit.incServing(PortionSize.FULL);
     	}
     	else{
-    		if(fullServing)
-    			currentVeggie.incServing(PortionSize.FULL);
-    		else
+    		if(halfServing)
     			currentVeggie.incServing(PortionSize.HALF);
+    		else
+    			currentVeggie.incServing(PortionSize.FULL);
     	}
     	
     	updateText();
@@ -240,17 +220,17 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     
     public void decrementPortion(View view){
     	ImageButton button = (ImageButton)view;
-    	if(button.getId() == R.id.decFruit){
-    		if(fullServing)
-    			currentFruit.decServing(PortionSize.FULL);
-    		else
+    	if(button.getId() == R.id.dec_fruit_button){
+    		if(halfServing)
     			currentFruit.decServing(PortionSize.HALF);
+    		else
+    			currentFruit.decServing(PortionSize.FULL);
     	}
     	else{
-    		if(fullServing)
-    			currentVeggie.decServing(PortionSize.FULL);
-    		else
+    		if(halfServing)
     			currentVeggie.decServing(PortionSize.HALF);
+    		else
+    			currentVeggie.decServing(PortionSize.FULL);
     	}
     	updateText();
     }
@@ -261,10 +241,10 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
     	SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
 
-    	TextView dateText = (TextView)findViewById(R.id.date);
+    	TextView dateText = (TextView)findViewById(R.id.date_text);
     	dateText.setText(dateFormat.format(curDate));
 
-    	TextView dayText = (TextView)findViewById(R.id.day);
+    	TextView dayText = (TextView)findViewById(R.id.day_text);
     	dayText.setText(dayFormat.format(curDate));
     }
     
@@ -272,10 +252,10 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     {
     	DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
 
-    	TextView fruitText = (TextView)findViewById(R.id.currentFruit);
+    	TextView fruitText = (TextView)findViewById(R.id.current_fruit_text);
     	fruitText.setText("" + oneDigit.format((double)currentFruit.getServingTenths() / 10));
 
-    	TextView veggieText = (TextView)findViewById(R.id.currentVeggie);
+    	TextView veggieText = (TextView)findViewById(R.id.current_veggie_text);
     	veggieText.setText("" + oneDigit.format((double)currentVeggie.getServingTenths() / 10));
     }
     
@@ -290,10 +270,10 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
                     return false;
                 // right to left swipe
                 if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    Toast.makeText(FrugieLogActivity.this, "Left Swipe", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(FrugieLogActivity.this, "Left Swipe", Toast.LENGTH_SHORT).show();
                     changeDate(1);
                 }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    Toast.makeText(FrugieLogActivity.this, "Right Swipe", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(FrugieLogActivity.this, "Right Swipe", Toast.LENGTH_SHORT).show();
                     changeDate(-1);
                 }
             } catch (Exception e) {

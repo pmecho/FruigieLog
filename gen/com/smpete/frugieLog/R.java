@@ -31,27 +31,28 @@ public final class R {
         public static final int veggie=0x7f020011;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f050000;
-        public static final int RelativeLayout1=0x7f05000c;
-        public static final int banana=0x7f05000d;
-        public static final int carrot=0x7f050011;
-        public static final int currentFruit=0x7f05000f;
-        public static final int currentVeggie=0x7f050013;
-        public static final int date=0x7f050005;
-        public static final int dateFormatLayout=0x7f050003;
-        public static final int day=0x7f050004;
-        public static final int dayNavLayout=0x7f050001;
-        public static final int decDay=0x7f050002;
-        public static final int decFruit=0x7f05000e;
-        public static final int decVeggie=0x7f050012;
-        public static final int fullRadio=0x7f05000a;
-        public static final int halfRadio=0x7f05000b;
-        public static final int incDay=0x7f050006;
-        public static final int incFruit=0x7f050010;
-        public static final int incVeggie=0x7f050014;
-        public static final int linearLayout2=0x7f050007;
-        public static final int servingRadioGroup=0x7f050008;
-        public static final int textView1=0x7f050009;
+        public static final int current_fruit_text=0x7f05000f;
+        public static final int current_veggie_text=0x7f050014;
+        public static final int date_layout=0x7f050003;
+        public static final int date_text=0x7f050005;
+        public static final int day_nav_layout=0x7f050001;
+        public static final int day_text=0x7f050004;
+        public static final int dec_day_button=0x7f050002;
+        public static final int dec_fruit_button=0x7f05000e;
+        public static final int dec_veggie_button=0x7f050013;
+        public static final int fruit_image=0x7f05000d;
+        public static final int fruit_layout=0x7f05000c;
+        public static final int full_radio=0x7f05000a;
+        public static final int half_radio=0x7f05000b;
+        public static final int inc_day_button=0x7f050006;
+        public static final int inc_fruit_button=0x7f050010;
+        public static final int inc_veggie_button=0x7f050015;
+        public static final int screen_layout=0x7f050000;
+        public static final int serving_layout=0x7f050007;
+        public static final int serving_radio_group=0x7f050008;
+        public static final int serving_text=0x7f050009;
+        public static final int veggie_image=0x7f050012;
+        public static final int veggie_layout=0x7f050011;
     }
     public static final class layout {
         public static final int main=0x7f030000;
