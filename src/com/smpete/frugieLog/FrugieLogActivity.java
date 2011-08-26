@@ -154,6 +154,21 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     		radios.check(R.id.half_radio);
     	else
     		radios.check(R.id.full_radio);
+    	
+    	updateImages();
+    }
+    
+    private void updateImages(){
+    	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
+    	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
+    	if(halfServing){
+        	fruitImage.setImageResource(R.drawable.banana_half);
+        	veggieImage.setImageResource(R.drawable.carrot_half);
+    	}
+    	else{
+        	fruitImage.setImageResource(R.drawable.banana);
+        	veggieImage.setImageResource(R.drawable.carrot);
+    	}
     }
     
     private void changeDate(int days){
@@ -178,25 +193,18 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     		changeDate(1);
     	else
     		changeDate(-1);
-
     }
     
     public void changeToFullServing(View view){
     	halfServing = false;
     	// Change images
-    	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
-    	fruitImage.setImageResource(R.drawable.banana);
-    	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
-    	veggieImage.setImageResource(R.drawable.carrot);
+    	updateImages();
     }
     
     public void changeToHalfServing(View view){
     	halfServing = true;
     	// Change images
-    	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
-    	fruitImage.setImageResource(R.drawable.banana_half);
-    	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
-    	veggieImage.setImageResource(R.drawable.carrot_half);
+    	updateImages();
     }
     
     
