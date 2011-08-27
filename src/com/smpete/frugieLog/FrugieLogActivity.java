@@ -5,11 +5,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.smpete.frugieLog.Frugie.FrugieColumns;
 import com.smpete.frugieLog.R;
-import com.smpete.frugieLog.Food.FoodType;
-import com.smpete.frugieLog.Food.PortionSize;
+import com.smpete.frugieLog.Frugie.FrugieType;
+import com.smpete.frugieLog.Frugie.PortionSize;
 
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -17,8 +22,6 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.DatePicker;
-import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -27,18 +30,17 @@ import android.widget.Toast;
 
 public class FrugieLogActivity extends Activity implements OnClickListener {
 
-	private DBAdapter db = new DBAdapter(this);
-	private Food currentFruit;
-	private Food currentVeggie;
-	private boolean emptyCurrent = true;
+	private Frugie currentFruit;
+	private Frugie currentVeggie;
+	private long currentId;
 
-	private final String SAVED_DATE_KEY = "date";
+
+	private final String SAVED_DATE_KEY = "id";
 	private final String SAVED_HALF_SERVING_KEY = "serving";
 	
 	private Date curDate;
 	/** Whether a half serving is selected */
 	private boolean halfServing;
-	
 	
 	// For guestures
     private static final int SWIPE_MIN_DISTANCE = 120;
@@ -88,13 +90,11 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     @Override
     protected void onStart() {
         super.onStart();
-        // The activity is about to become visible.
-
-        setDateText();        
+        // The activity is about to become visible.     
         
-        currentFruit = new Food(FoodType.FRUIT);
-        currentVeggie = new Food(FoodType.VEGGIE);
-        setDataFromDB(curDate);
+        currentFruit = new Frugie(FrugieType.FRUIT);
+        currentVeggie = new Frugie(FrugieType.VEGGIE);
+        updateData(curDate);
     }
     @Override
     protected void onResume() {
@@ -104,9 +104,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     @Override
     public void onPause(){
     	super.onPause();
-    	db.open();
-    	long result = db.insertStats(curDate, currentFruit.getServingTenths(), currentVeggie.getServingTenths());
-    	db.close();
+    	saveData();
     }
     
     @Override
@@ -128,24 +126,53 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	//TODO Test!!
     	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
     }
+
     
-    private void setDataFromDB(Date date){
-        db.open();
-        
-        short[] stats = db.getStats(date);
-        if(stats != null){
-        	emptyCurrent = false;
-        	currentFruit.setServingTenths(stats[0]);
-        	currentVeggie.setServingTenths(stats[1]);
-        } else{
-	        emptyCurrent = true;
-	    	currentFruit.setServingTenths((short) 0);
-	    	currentVeggie.setServingTenths((short) 0);
-        }
+    private void updateData(Date date){
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
+    	String formattedDate = dateFormat.format(date);
     	
-        db.close();
-        updateText();
+    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
+    									null, 
+    									FrugieColumns.DATE +"='" + formattedDate + "'", 
+    									null, 
+    									null);
+    	if(cursor.moveToFirst()){
+    		int idColumn = cursor.getColumnIndex(FrugieColumns._ID);
+    		int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT);
+    		int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
+    		currentId = cursor.getLong(idColumn);
+    		currentFruit.setServingTenths(cursor.getShort(fruitColumn));
+    		currentVeggie.setServingTenths(cursor.getShort(veggieColumn));
+    	}
+    	else{ // Need to insert new entry!
+    		ContentValues values = new ContentValues();
+    		
+    		// Set defaults
+    		values.put(FrugieColumns.DATE, formattedDate);
+    		values.put(FrugieColumns.FRUIT, 0);
+    		values.put(FrugieColumns.VEGGIE, 0);
+    		
+    		
+    		Uri uri = getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
+    		currentId = ContentUris.parseId(uri);
+    		currentFruit.setServingTenths((short) 0);
+    		currentVeggie.setServingTenths((short) 0);
+    	}
+        
+    	updateDateText();
+    	updateStatsText();
     }
+    
+    private void saveData(){
+    	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, currentId);
+		ContentValues values = new ContentValues();
+		values.put(FrugieColumns.FRUIT, currentFruit.getServingTenths());
+		values.put(FrugieColumns.VEGGIE, currentVeggie.getServingTenths());
+    	
+    	getContentResolver().update(uri, values, null, null);
+    }
+    
 
     private void setHalfServing(boolean newServing){
     	halfServing = newServing;
@@ -173,8 +200,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     
     private void changeDate(int days){
     	// Save old data
-    	db.open();
-    	long result = db.insertStats(curDate, currentFruit.getServingTenths(), currentVeggie.getServingTenths());
+    	saveData();
 
     	// Set new data
 		Calendar cal = Calendar.getInstance();
@@ -182,10 +208,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
 		cal.add(Calendar.DATE, days);
 		curDate = cal.getTime();
 		
-    	setDataFromDB(curDate);
-    	setDateText();
-    	
-    	db.close();
+		updateData(curDate);
     }
     
     public void changeDate(View view){
@@ -223,7 +246,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     			currentVeggie.incServing(PortionSize.FULL);
     	}
     	
-    	updateText();
+    	updateStatsText();
     }
     
     public void decrementPortion(View view){
@@ -240,12 +263,10 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     		else
     			currentVeggie.decServing(PortionSize.FULL);
     	}
-    	updateText();
+    	updateStatsText();
     }
     
-    private void setDateText(){
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-//        
+    private void updateDateText(){
     	SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
     	SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
 
@@ -256,7 +277,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	dayText.setText(dayFormat.format(curDate));
     }
     
-    private void updateText()
+    private void updateStatsText()
     {
     	DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
 
@@ -268,8 +289,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     }
     
     
-    
-    
+
     class MyGestureDetector extends SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -297,9 +317,6 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         }
 
     }
-
-
-
 
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
