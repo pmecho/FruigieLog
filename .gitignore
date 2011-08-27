@@ -2,3 +2,8 @@ bin/
 *.class
 *.apk
 *~
+default.properties
+proguard.cfg
+.classpath
+.project
+.settings/
