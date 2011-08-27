@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,7 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 
-public class DBAdapter {
+public class FrugieProvider extends ContentProvider {
     int id = 0;
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_DATE = "date";
@@ -25,23 +26,16 @@ public class DBAdapter {
     private static final String TABLE_NAME = "fruitAndVeggie";
     private static final int DATABASE_VERSION = 1;
 
-    private static final String DATABASE_CREATE =
-        "create table " + TABLE_NAME + " (" +
-        "	_id integer primary key autoincrement," +
-        "	date text unique," +
-        "	fruitTenths integer default 0," +
-        "	veggieTenths integer default 0" +
-        ");";
 
     private final Context context;
 
-    private DatabaseHelper DBHelper;
+    private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
 
-    public DBAdapter(Context ctx){
-        this.context = ctx;
-        DBHelper = new DatabaseHelper(context);
-    }
+//    public FrugieProvider(Context ctx){
+//        this.context = ctx;
+//        DBHelper = new DatabaseHelper(context);
+//    }
 
     private static class DatabaseHelper extends SQLiteOpenHelper{
         
@@ -51,7 +45,12 @@ public class DBAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db){
-            db.execSQL(DATABASE_CREATE);
+            db.execSQL(	"create table " + TABLE_NAME + " (" +
+                    COLUMN_ID + " integer primary key autoincrement," +
+                    COLUMN_DATE + " text unique," +
+                    COLUMN_FRUIT + " integer default 0," +
+                    COLUMN_VEGGIE + " integer default 0" +
+                    ");");
         }
 
         @Override
@@ -65,8 +64,13 @@ public class DBAdapter {
         }
     }
     
+    @Override
+    public boolean onCreate(){
+    	
+    }
+    
     //---opens the database---
-    public DBAdapter open() throws SQLException{
+    public FrugieProvider open() throws SQLException{
         db = DBHelper.getWritableDatabase();
         return this;
     }
