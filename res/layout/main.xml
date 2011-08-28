@@ -186,5 +186,9 @@
             	android:layout_centerVertical="true">
            	</ImageButton>
         </RelativeLayout>
+        
+        <LinearLayout android:id="@+id/chart_layout" android:orientation="horizontal"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" />
+	
 
     </LinearLayout>

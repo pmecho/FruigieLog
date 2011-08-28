@@ -31,6 +31,7 @@ public final class R {
         public static final int veggie=0x7f020011;
     }
     public static final class id {
+        public static final int chart_layout=0x7f050016;
         public static final int current_fruit_text=0x7f05000f;
         public static final int current_veggie_text=0x7f050014;
         public static final int date_layout=0x7f050003;
