@@ -38,11 +38,6 @@ public class FrugieProvider extends ContentProvider {
 
     private DatabaseHelper dbHelper;
 
-//    public FrugieProvider(Context ctx){
-//        this.context = ctx;
-//        DBHelper = new DatabaseHelper(context);
-//    }
-
     private static class DatabaseHelper extends SQLiteOpenHelper{
         
     	DatabaseHelper(Context context){
@@ -190,6 +185,7 @@ public class FrugieProvider extends ContentProvider {
     	return true;
     }
     
+    // Initialize uri matcher and projection map
     static {
     	uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     	uriMatcher.addURI(Frugie.AUTHORITY, TABLE_NAME, FRUGIES_URI_CODE);

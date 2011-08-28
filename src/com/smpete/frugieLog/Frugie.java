@@ -1,10 +1,15 @@
 package com.smpete.frugieLog;
 
-import java.text.SimpleDateFormat;
-
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+/**
+ * Simple class to hold a frugie object.  Can either be fruit or vegetable.
+ * Not the best design, should be re-thought out
+ * 
+ * @author peter
+ *
+ */
 public class Frugie{
 
     public static final String AUTHORITY = "com.smpete.frugieLog.frugieprovider";
@@ -24,17 +29,30 @@ public class Frugie{
 	private short servingTenths;
 
 
+	/**
+	 * Constructor
+	 * 
+	 * @param name Type of fruige to set
+	 */
 	public Frugie(FrugieType name){
 		this.name = name;
 		servingTenths = 0;
 	}
 	
-	
+	/**
+	 * Accessor for name
+	 * 
+	 * @return Name of the Frugie
+	 */
 	public FrugieType getName(){
 		return name;
 	}
 	
-	
+	/**
+	 * Increment serving based on portion size
+	 * 
+	 * @param portion PortionSize to increment by
+	 */
 	public void incServing(PortionSize portion){
 		switch(portion){
 		case FULL:
@@ -51,6 +69,11 @@ public class Frugie{
 			servingTenths = 0;
 	}
 	
+	/**
+	 * Increment serving based on portion size
+	 * 
+	 * @param portion PortionSize to decrement by
+	 */
 	public void decServing(PortionSize portion){
 		switch(portion){
 		case FULL:
@@ -66,15 +89,30 @@ public class Frugie{
 			servingTenths = 0;
 	}
 	
-
+	/**
+	 * Accessor for tenths
+	 * 
+	 * @return Servings in tenths
+	 */
 	public short getServingTenths() {
 		return servingTenths;
 	}
 
+	/**
+	 * Mutator for tenths
+	 * 
+	 * @param servingTenths New serving amount to set
+	 */
 	public void setServingTenths(short servingTenths) {
 		this.servingTenths = servingTenths;
 	}
 	
+	/**
+	 * Represents columns of the database table
+	 * 
+	 * @author peter
+	 *
+	 */
 	public static final class FrugieColumns implements BaseColumns{
 		
 		// Don't instantiate this class...EVAR!

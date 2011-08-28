@@ -34,7 +34,6 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
 	private Frugie currentVeggie;
 	private long currentId;
 
-
 	private final String SAVED_DATE_KEY = "id";
 	private final String SAVED_HALF_SERVING_KEY = "serving";
 	
@@ -48,8 +47,6 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
     private GestureDetector gestureDetector;
     
-	
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,8 +124,14 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
     }
 
-    
+    /**
+     * Update date and fruit/veggie servings from database given a date
+     * 
+     * @param date Date to update the data to
+     */
     private void updateData(Date date){
+    	//TODO Read from current date, dont allow date to be passed!!
+    	
     	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
     	String formattedDate = dateFormat.format(date);
     	
@@ -164,6 +167,9 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	updateStatsText();
     }
     
+    /**
+     * Write current date's data to the database
+     */
     private void saveData(){
     	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, currentId);
 		ContentValues values = new ContentValues();
@@ -173,7 +179,11 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	getContentResolver().update(uri, values, null, null);
     }
     
-
+	/**
+	 * Sets the serving size to either half or full
+	 * 
+	 * @param newServing True to set serving size to a half serving
+	 */
     private void setHalfServing(boolean newServing){
     	halfServing = newServing;
     	RadioGroup radios = (RadioGroup) findViewById(R.id.serving_radio_group);
@@ -185,6 +195,9 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	updateImages();
     }
     
+    /**
+     * Update fruit and vegetable images based on the serving size
+     */
     private void updateImages(){
     	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
     	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
@@ -198,6 +211,12 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	}
     }
     
+    /**
+     * Changes the current date based on the number of days to
+     * increment or decrement
+     * 
+     * @param days Number of days to add to the current date
+     */
     private void changeDate(int days){
     	// Save old data
     	saveData();
@@ -211,6 +230,11 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
 		updateData(curDate);
     }
     
+    /**
+     * Called from a view - changes the date
+     * 
+     * @param view View of caller
+     */
     public void changeDate(View view){
     	if(view.getId() == R.id.inc_day_button)
     		changeDate(1);
@@ -218,19 +242,34 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     		changeDate(-1);
     }
     
+    /**
+     * Called from a view - changes serving size to full serving
+     * 
+     * @param view View of caller
+     */
     public void changeToFullServing(View view){
     	halfServing = false;
     	// Change images
     	updateImages();
     }
     
+    /**
+     * Called from a view - changes serving size to half serving
+     * 
+     * @param view View of caller
+     */
     public void changeToHalfServing(View view){
     	halfServing = true;
     	// Change images
     	updateImages();
     }
     
-    
+    /**
+     * Called from a view - Increments portion of a fruit or veggie, 
+     * based on the view
+     * 
+     * @param view View of caller
+     */
     public void incrementPortion(View view){
     	ImageButton button = (ImageButton)view;
     	if(button.getId() == R.id.inc_fruit_button){
@@ -249,6 +288,12 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	updateStatsText();
     }
     
+    /**
+     * Called from a view - Decrements portion of a fruit or veggie, 
+     * based on the view
+     * 
+     * @param view View of caller
+     */
     public void decrementPortion(View view){
     	ImageButton button = (ImageButton)view;
     	if(button.getId() == R.id.dec_fruit_button){
@@ -266,6 +311,9 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	updateStatsText();
     }
     
+    /**
+     * Updates the date text cased on the current date
+     */
     private void updateDateText(){
     	SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
     	SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
@@ -277,6 +325,10 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	dayText.setText(dayFormat.format(curDate));
     }
     
+    /**
+     * Updates the fruit and veggie portion text based on the current 
+     * fruit and veggie objects
+     */
     private void updateStatsText()
     {
     	DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
@@ -288,8 +340,18 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	veggieText.setText("" + oneDigit.format((double)currentVeggie.getServingTenths() / 10));
     }
     
+	public void onClick(View v) {
+		// TODO Auto-generated method stub	
+	}
     
-
+    
+    
+    /**
+     * Rudimentary guesture handling, need to polish
+     * 
+     * @author peter
+     *
+     */
     class MyGestureDetector extends SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -317,12 +379,4 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         }
 
     }
-
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		
-	}
-    
-
-    
 }
