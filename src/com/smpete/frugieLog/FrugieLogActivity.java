@@ -2,20 +2,9 @@ package com.smpete.frugieLog;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-import org.achartengine.ChartFactory;
-import org.achartengine.GraphicalView;
-import org.achartengine.chart.PointStyle;
-import org.achartengine.model.TimeSeries;
-import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
-import org.achartengine.renderer.XYMultipleSeriesRenderer;
-import org.achartengine.renderer.XYSeriesRenderer;
-import org.achartengine.util.MathHelper;
 
 import com.smpete.frugieLog.charting.*;
 
@@ -23,18 +12,13 @@ import com.smpete.frugieLog.Frugie.FrugieColumns;
 import com.smpete.frugieLog.R;
 import com.smpete.frugieLog.Frugie.FrugieType;
 import com.smpete.frugieLog.Frugie.PortionSize;
-import com.smpete.frugieLog.charting.IDemoChart;
 
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.Paint.Align;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -45,18 +29,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class FrugieLogActivity extends Activity implements OnClickListener {
 
 	private Frugie currentFruit;
 	private Frugie currentVeggie;
 	private long currentId;
-	
-	private IDemoChart chart = new SensorValuesChart();
-
 
 	private final String SAVED_DATE_KEY = "id";
 	private final String SAVED_HALF_SERVING_KEY = "serving";
@@ -108,203 +87,9 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
             }
         });
         
-        
-        
-        // Chart Testing
-        
-        
-    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
-    	String nowDate = dateFormat.format(new Date());
-    	
-    	// Set new data
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.DATE, -30);
-		String pastDate = dateFormat.format(cal.getTime());
-    	
-    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
-    									null, 
-    									FrugieColumns.DATE + " BETWEEN '" + pastDate + "' AND '" + nowDate + "'", 
-    									null, 
-    									FrugieColumns.DATE + " DESC");
-        
-        if (cursor.moveToFirst()) {
-            int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT); 
-            int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
-            
-            double[] fruits = new double[cursor.getCount()];
-            double[] veggies = new double[cursor.getCount()];
-            double[] count = new double[cursor.getCount()];
-            do {
-            	int i = cursor.getPosition();
-                // Get the field values
-                fruits[i] = cursor.getDouble(fruitColumn) / 10;
-                veggies[i] = cursor.getDouble(veggieColumn) / 10;
-                count[i] = i;
-
-            } while (cursor.moveToNext());
-
-
-        
-        
-        
-        
-        String[] titles = new String[] { "Veggie", "Fruit" };
-        List<double[]> x = new ArrayList<double[]>();
-        List<double[]> values = new ArrayList<double[]>();
-
-        x.add(count);
-        x.add(count);
-        values.add(fruits);
-        values.add(veggies);
-
-
-        int[] colors = new int[] { Color.GREEN, Color.RED };
-        PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE, PointStyle.DIAMOND };
-        XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
-        int length = renderer.getSeriesRendererCount();
-        for (int i = 0; i < length; i++) {
-          ((XYSeriesRenderer) renderer.getSeriesRendererAt(i)).setFillPoints(true);
-        }
-        
-        // Set up chart
-        renderer.setChartTitle("History");
-        renderer.setXTitle("Days ago");
-        renderer.setYTitle("Servings");
-        renderer.setXAxisMin(30);
-        renderer.setXAxisMax(0);
-        renderer.setYAxisMin(0);
-        renderer.setYAxisMax(7);
-        renderer.setAxesColor(Color.LTGRAY);
-        renderer.setLabelsColor(Color.LTGRAY);
-        renderer.setXLabels(15);
-        renderer.setYLabels(7);
-        renderer.setShowGrid(true);
-        renderer.setXLabelsAlign(Align.CENTER);
-        renderer.setYLabelsAlign(Align.RIGHT);
-        
-        
-        GraphicalView view = ChartFactory.getLineChartView(this, buildDataset(titles, x, values), renderer);
-        
-        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
-        layout.addView(view, new LayoutParams(LayoutParams.FILL_PARENT,
-                LayoutParams.FILL_PARENT));
-        
-        
-        }
-        
-        
-        
-        
-        
+        // TODO Kept simple for now, only created on create...
+        createHistoryChart();
     }
-    
-    
-    
-    /**
-     * Builds an XY multiple series renderer.
-     * 
-     * @param colors the series rendering colors
-     * @param styles the series point styles
-     * @return the XY multiple series renderers
-     */
-    private XYMultipleSeriesRenderer buildRenderer(int[] colors, PointStyle[] styles) {
-      XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-      setRenderer(renderer, colors, styles);
-      return renderer;
-    }
-
-    private void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors, PointStyle[] styles) {
-      renderer.setAxisTitleTextSize(16);
-      renderer.setChartTitleTextSize(20);
-      renderer.setLabelsTextSize(15);
-      renderer.setLegendTextSize(15);
-      renderer.setPointSize(5f);
-      renderer.setMargins(new int[] { 20, 30, 15, 20 });
-      int length = colors.length;
-      for (int i = 0; i < length; i++) {
-        XYSeriesRenderer r = new XYSeriesRenderer();
-        r.setColor(colors[i]);
-        r.setPointStyle(styles[i]);
-        renderer.addSeriesRenderer(r);
-      }
-    }
-    
-    
-    /**
-     * Builds an XY multiple dataset using the provided values.
-     * 
-     * @param titles the series titles
-     * @param xValues the values for the X axis
-     * @param yValues the values for the Y axis
-     * @return the XY multiple dataset
-     */
-    private XYMultipleSeriesDataset buildDataset(String[] titles, List<double[]> xValues,
-        List<double[]> yValues) {
-      XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-      addXYSeries(dataset, titles, xValues, yValues, 0);
-      return dataset;
-    }
-    
-    
-    public void addXYSeries(XYMultipleSeriesDataset dataset, String[] titles, List<double[]> xValues,
-    	      List<double[]> yValues, int scale) {
-    	    int length = titles.length;
-    	    for (int i = 0; i < length; i++) {
-    	      XYSeries series = new XYSeries(titles[i], scale);
-    	      double[] xV = xValues.get(i);
-    	      double[] yV = yValues.get(i);
-    	      int seriesLength = xV.length;
-    	      for (int k = 0; k < seriesLength; k++) {
-    	        series.add(xV[k], yV[k]);
-    	      }
-    	      dataset.addSeries(series);
-    	    }
-    	  }
-    
-    
-//    /**
-//     * Builds an XY multiple time dataset using the provided values.
-//     * 
-//     * @param titles the series titles
-//     * @param xValues the values for the X axis
-//     * @param yValues the values for the Y axis
-//     * @return the XY multiple time dataset
-//     */
-//    private XYMultipleSeriesDataset buildDateDataset(String[] titles, List<Date[]> xValues,
-//        List<double[]> yValues) {
-//      XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-//      int length = titles.length;
-//      for (int i = 0; i < length; i++) {
-//        TimeSeries series = new TimeSeries(titles[i]);
-//        Date[] xV = xValues.get(i);
-//        double[] yV = yValues.get(i);
-//        int seriesLength = xV.length;
-//        for (int k = 0; k < seriesLength; k++) {
-//          series.add(xV[k], yV[k]);
-//        }
-//        dataset.addSeries(series);
-//      }
-//      return dataset;
-//    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     @Override
     protected void onStart() {
@@ -315,11 +100,13 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         currentVeggie = new Frugie(FrugieType.VEGGIE);
         updateData(curDate);
     }
+    
     @Override
     protected void onResume() {
         super.onResume();
         // The activity has become visible (it is now "resumed").
     }
+    
     @Override
     public void onPause(){
     	super.onPause();
@@ -331,6 +118,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         super.onStop();
         // The activity is no longer visible (it is now "stopped")
     }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -392,6 +180,48 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	getContentResolver().update(uri, values, null, null);
     }
     
+    // TODO Clean this up, major hacks!!!!!!
+    private void createHistoryChart(){
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
+    	String nowDate = dateFormat.format(new Date());
+    	
+    	// Set new data
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, -30);
+		String pastDate = dateFormat.format(cal.getTime());
+    	
+    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
+    									null, 
+    									FrugieColumns.DATE + " BETWEEN '" + pastDate + "' AND '" + nowDate + "'", 
+    									null, 
+    									FrugieColumns.DATE + " DESC");
+        
+        if (cursor.moveToFirst()) {
+            int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT); 
+            int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
+            
+            double[] fruits = new double[cursor.getCount()];
+            double[] veggies = new double[cursor.getCount()];
+            double[] count = new double[cursor.getCount()];
+            do {
+            	int i = cursor.getPosition();
+                // Get the field values
+                fruits[i] = cursor.getDouble(fruitColumn) / 10;
+                veggies[i] = cursor.getDouble(veggieColumn) / 10;
+                count[i] = i;
+
+            } while (cursor.moveToNext());
+        
+        HistoryChart chart = new HistoryChart(this, fruits, veggies, count);
+        
+        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
+        layout.addView(chart.getView(), new LayoutParams(LayoutParams.FILL_PARENT,
+                LayoutParams.FILL_PARENT));
+        }
+
+
+    }
 
     private void setHalfServing(boolean newServing){
     	halfServing = newServing;
