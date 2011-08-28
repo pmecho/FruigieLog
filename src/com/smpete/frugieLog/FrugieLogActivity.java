@@ -12,6 +12,7 @@ import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 import org.achartengine.util.MathHelper;
@@ -109,56 +110,88 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         
         
         
-        
-        
         // Chart Testing
         
-        long HOUR = 3600 * 1000;
+        
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
+    	String nowDate = dateFormat.format(new Date());
+    	
+    	// Set new data
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, -30);
+		String pastDate = dateFormat.format(cal.getTime());
+    	
+    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
+    									null, 
+    									FrugieColumns.DATE + " BETWEEN '" + pastDate + "' AND '" + nowDate + "'", 
+    									null, 
+    									FrugieColumns.DATE + " DESC");
+        
+        if (cursor.moveToFirst()) {
+            int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT); 
+            int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
+            
+            double[] fruits = new double[cursor.getCount()];
+            double[] veggies = new double[cursor.getCount()];
+            double[] count = new double[cursor.getCount()];
+            do {
+            	int i = cursor.getPosition();
+                // Get the field values
+                fruits[i] = cursor.getDouble(fruitColumn) / 10;
+                veggies[i] = cursor.getDouble(veggieColumn) / 10;
+                count[i] = i;
 
-        long DAY = HOUR * 24;
+            } while (cursor.moveToNext());
 
-        int HOURS = 24;
+
+        
+        
+        
         
         String[] titles = new String[] { "Veggie", "Fruit" };
-        long now = Math.round(new Date().getTime() / DAY) * DAY;
-        List<Date[]> x = new ArrayList<Date[]>();
-        for (int i = 0; i < titles.length; i++) {
-          Date[] dates = new Date[HOURS];
-          for (int j = 0; j < HOURS; j++) {
-            dates[j] = new Date(now - (HOURS - j) * HOUR);
-          }
-          x.add(dates);
-        }
+        List<double[]> x = new ArrayList<double[]>();
         List<double[]> values = new ArrayList<double[]>();
 
-        values.add(new double[] { 21.2, 21.5, 21.7, 21.5, 21.4, 21.4, 21.3, 21.1, 20.6, 20.3, 20.2,
-            19.9, 19.7, 19.6, 19.9, 20.3, 20.6, 20.9, 21.2, 21.6, 21.9, 22.1, 21.7, 21.5 });
-        values.add(new double[] { 1.9, 1.2, 0.9, 0.5, 0.1, -0.5, -0.6, MathHelper.NULL_VALUE,
-            MathHelper.NULL_VALUE, -1.8, -0.3, 1.4, 3.4, 4.9, 7.0, 6.4, 3.4, 2.0, 1.5, 0.9, -0.5,
-            MathHelper.NULL_VALUE, -1.9, -2.5, -4.3 });
+        x.add(count);
+        x.add(count);
+        values.add(fruits);
+        values.add(veggies);
 
-        int[] colors = new int[] { Color.GREEN, Color.BLUE };
+
+        int[] colors = new int[] { Color.GREEN, Color.RED };
         PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE, PointStyle.DIAMOND };
         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
         int length = renderer.getSeriesRendererCount();
         for (int i = 0; i < length; i++) {
           ((XYSeriesRenderer) renderer.getSeriesRendererAt(i)).setFillPoints(true);
         }
-        setChartSettings(renderer, "Sensor temperature", "Hour", "Celsius degrees", x.get(0)[0]
-            .getTime(), x.get(0)[HOURS - 1].getTime(), -5, 30, Color.LTGRAY, Color.LTGRAY);
-        renderer.setXLabels(10);
-        renderer.setYLabels(10);
+        
+        // Set up chart
+        renderer.setChartTitle("History");
+        renderer.setXTitle("Days ago");
+        renderer.setYTitle("Servings");
+        renderer.setXAxisMin(30);
+        renderer.setXAxisMax(0);
+        renderer.setYAxisMin(0);
+        renderer.setYAxisMax(7);
+        renderer.setAxesColor(Color.LTGRAY);
+        renderer.setLabelsColor(Color.LTGRAY);
+        renderer.setXLabels(15);
+        renderer.setYLabels(7);
         renderer.setShowGrid(true);
         renderer.setXLabelsAlign(Align.CENTER);
         renderer.setYLabelsAlign(Align.RIGHT);
-        GraphicalView view = ChartFactory.getTimeChartView(this, buildDateDataset(titles, x, values), renderer, "h:mm a");
+        
+        
+        GraphicalView view = ChartFactory.getLineChartView(this, buildDataset(titles, x, values), renderer);
         
         LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
         layout.addView(view, new LayoutParams(LayoutParams.FILL_PARENT,
                 LayoutParams.FILL_PARENT));
         
         
-        
+        }
         
         
         
@@ -197,59 +230,63 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
       }
     }
     
-    /**
-     * Sets a few of the series renderer settings.
-     * 
-     * @param renderer the renderer to set the properties to
-     * @param title the chart title
-     * @param xTitle the title for the X axis
-     * @param yTitle the title for the Y axis
-     * @param xMin the minimum value on the X axis
-     * @param xMax the maximum value on the X axis
-     * @param yMin the minimum value on the Y axis
-     * @param yMax the maximum value on the Y axis
-     * @param axesColor the axes color
-     * @param labelsColor the labels color
-     */
-    private void setChartSettings(XYMultipleSeriesRenderer renderer, String title, String xTitle,
-        String yTitle, double xMin, double xMax, double yMin, double yMax, int axesColor,
-        int labelsColor) {
-      renderer.setChartTitle(title);
-      renderer.setXTitle(xTitle);
-      renderer.setYTitle(yTitle);
-      renderer.setXAxisMin(xMin);
-      renderer.setXAxisMax(xMax);
-      renderer.setYAxisMin(yMin);
-      renderer.setYAxisMax(yMax);
-      renderer.setAxesColor(axesColor);
-      renderer.setLabelsColor(labelsColor);
-    }
-    
     
     /**
-     * Builds an XY multiple time dataset using the provided values.
+     * Builds an XY multiple dataset using the provided values.
      * 
      * @param titles the series titles
      * @param xValues the values for the X axis
      * @param yValues the values for the Y axis
-     * @return the XY multiple time dataset
+     * @return the XY multiple dataset
      */
-    private XYMultipleSeriesDataset buildDateDataset(String[] titles, List<Date[]> xValues,
+    private XYMultipleSeriesDataset buildDataset(String[] titles, List<double[]> xValues,
         List<double[]> yValues) {
       XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-      int length = titles.length;
-      for (int i = 0; i < length; i++) {
-        TimeSeries series = new TimeSeries(titles[i]);
-        Date[] xV = xValues.get(i);
-        double[] yV = yValues.get(i);
-        int seriesLength = xV.length;
-        for (int k = 0; k < seriesLength; k++) {
-          series.add(xV[k], yV[k]);
-        }
-        dataset.addSeries(series);
-      }
+      addXYSeries(dataset, titles, xValues, yValues, 0);
       return dataset;
     }
+    
+    
+    public void addXYSeries(XYMultipleSeriesDataset dataset, String[] titles, List<double[]> xValues,
+    	      List<double[]> yValues, int scale) {
+    	    int length = titles.length;
+    	    for (int i = 0; i < length; i++) {
+    	      XYSeries series = new XYSeries(titles[i], scale);
+    	      double[] xV = xValues.get(i);
+    	      double[] yV = yValues.get(i);
+    	      int seriesLength = xV.length;
+    	      for (int k = 0; k < seriesLength; k++) {
+    	        series.add(xV[k], yV[k]);
+    	      }
+    	      dataset.addSeries(series);
+    	    }
+    	  }
+    
+    
+//    /**
+//     * Builds an XY multiple time dataset using the provided values.
+//     * 
+//     * @param titles the series titles
+//     * @param xValues the values for the X axis
+//     * @param yValues the values for the Y axis
+//     * @return the XY multiple time dataset
+//     */
+//    private XYMultipleSeriesDataset buildDateDataset(String[] titles, List<Date[]> xValues,
+//        List<double[]> yValues) {
+//      XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
+//      int length = titles.length;
+//      for (int i = 0; i < length; i++) {
+//        TimeSeries series = new TimeSeries(titles[i]);
+//        Date[] xV = xValues.get(i);
+//        double[] yV = yValues.get(i);
+//        int seriesLength = xV.length;
+//        for (int k = 0; k < seriesLength; k++) {
+//          series.add(xV[k], yV[k]);
+//        }
+//        dataset.addSeries(series);
+//      }
+//      return dataset;
+//    }
     
     
     
