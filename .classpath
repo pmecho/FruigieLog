@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="/home/peter/android/3rdParty/achartengine-0.7.0.jar">
+	<classpathentry kind="lib" path="/home/peter/workspace/FrugieLog/lib/achartengine-0.7.0.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/home/peter/android/3rdParty/achartengine-0.7.0-javadocs.zip!/"/>
+			<attribute name="javadoc_location" value="jar:file:/home/peter/workspace/FrugieLog/lib/achartengine-0.7.0-javadocs.zip!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
