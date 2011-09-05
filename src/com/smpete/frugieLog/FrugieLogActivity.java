@@ -193,7 +193,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	
     	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
     									null, 
-    									FrugieColumns.DATE + " BETWEEN '" + pastDate + "' AND '" + nowDate + "'", 
+    									"date <= '" + nowDate + "'", 
     									null, 
     									FrugieColumns.DATE + " DESC");
         

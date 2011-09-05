@@ -68,6 +68,9 @@ public class HistoryChart {
         renderer.setShowGrid(true);
         renderer.setXLabelsAlign(Align.CENTER);
         renderer.setYLabelsAlign(Align.RIGHT);
+        renderer.setPanEnabled(true, false);
+        renderer.setZoomEnabled(true, false);
+        
         
         
         view = ChartFactory.getLineChartView(context, buildDataset(titles, x, values), renderer);
