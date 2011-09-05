@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.achartengine.ChartFactory;
+import org.achartengine.GraphicalView;
+
 
 import com.smpete.frugieLog.charting.*;
 
@@ -87,7 +90,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
             }
         });
         
-        // TODO Kept simple for now, only created on create...
+        // Only create the chart onCreate, no need for persistence
         createHistoryChart();
     }
 
@@ -180,17 +183,15 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	getContentResolver().update(uri, values, null, null);
     }
     
-    // TODO Clean this up, major hacks!!!!!!
+
+    /**
+     * Creates the history chart and adds it to the view
+     */
     private void createHistoryChart(){
     	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
     	String nowDate = dateFormat.format(new Date());
     	
-    	// Set new data
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.DATE, -30);
-		String pastDate = dateFormat.format(cal.getTime());
-    	
+    	// Pull data prior to and including the current date
     	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
     									null, 
     									"date <= '" + nowDate + "'", 
@@ -213,14 +214,15 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
 
             } while (cursor.moveToNext());
         
-        HistoryChart chart = new HistoryChart(this, fruits, veggies, count);
-        
-        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
-        layout.addView(chart.getView(), new LayoutParams(LayoutParams.FILL_PARENT,
-                LayoutParams.FILL_PARENT));
+            // Create the chart and chart's view and add to layout
+	        HistoryChart chart = new HistoryChart(this, fruits, veggies, count);
+	        GraphicalView chartView = ChartFactory.getLineChartView(this, 
+	        		chart.getDataset(), chart.getRenderer());
+	        
+	        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
+	        layout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT,
+	                LayoutParams.FILL_PARENT));
         }
-
-
     }
 
     private void setHalfServing(boolean newServing){
