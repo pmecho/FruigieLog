@@ -4,67 +4,21 @@
 		android:orientation="vertical" 
 		android:layout_width="fill_parent" 
 		android:layout_height="fill_parent">
-        <RelativeLayout android:id="@+id/day_nav_layout" 
-        	android:layout_height="wrap_content" 
-        	android:layout_width="fill_parent" 
-        	android:gravity="left">
-			<ImageButton android:id="@+id/dec_day_button"
-				android:src="@drawable/left_arrow_button" 
-            	android:background="@null"
-            	android:onClick="changeDate"
-            	android:layout_height="wrap_content"
-      			android:layout_width="wrap_content"
-				android:layout_weight="1"
-         		android:layout_centerVertical="true" 
-     			android:layout_alignParentLeft="true" 
-     			android:layout_marginLeft="10dp" 
-     			android:layout_marginRight="10dp" 
-     			android:layout_marginTop="10dp" 
-     			android:layout_marginBottom="10dp">
-           	</ImageButton>
-           	<RelativeLayout android:id="@+id/date_layout" 
-				android:layout_height="wrap_content" 
-				android:layout_width="wrap_content"
-				android:gravity="center" 
-     			android:layout_centerInParent="true" 
-           		android:layout_alignParentTop="true">
-           		<TextView android:id="@+id/day_text"
-	            	android:text="Monday"
-	            	android:layout_height="wrap_content"
-	            	android:layout_width="wrap_content"
-	            	android:layout_centerHorizontal="true">
-	           	</TextView>
-	            <TextView android:id="@+id/date_text"
-	            	android:text="August 22, 2011"
-	            	android:layout_below="@id/day_text"
-	            	android:layout_height="wrap_content"
-	            	android:layout_width="wrap_content"
-	            	android:layout_centerHorizontal="true" 
-	            	android:layout_centerInParent="true">
-	           	</TextView>
-           	</RelativeLayout>
-           	<ImageButton android:id="@+id/inc_day_button"
-				android:src="@drawable/right_arrow_button" 
-            	android:background="@null"
-            	android:onClick="changeDate"
-            	android:layout_height="wrap_content"
-      			android:layout_width="wrap_content"
-            	android:layout_weight="1"
-         		android:layout_centerVertical="true" 
-         		android:layout_alignParentRight="true" 
-         		android:layout_marginLeft="10dp" 
-         		android:layout_marginRight="10dp" 
-         		android:layout_marginTop="10dp" 
-         		android:layout_marginBottom="10dp">
-           	</ImageButton>
-   		</RelativeLayout>
-        <LinearLayout android:id="@+id/serving_layout"
-         	android:layout_width="wrap_content"
+
+        <RelativeLayout android:id="@+id/static_control_layout"
+         	android:layout_width="match_parent"
          	android:layout_height="wrap_content">
+       	 	<TextView android:id="@+id/date_text"
+            	android:text="Monday, August 22, 2011"
+            	android:layout_height="wrap_content"
+            	android:layout_width="wrap_content"
+            	android:layout_centerHorizontal="true">
+           	</TextView>
 	        <RadioGroup android:id="@+id/serving_radio_group" 
 	        	android:layout_height="wrap_content" 
 	        	android:layout_width="wrap_content" 
-	        	android:orientation="horizontal">
+	        	android:orientation="horizontal"
+	        	android:layout_below="@id/date_text">
 	            <TextView android:id="@+id/serving_text"
 	            	android:text="Serving Size: "
 	            	android:textAppearance="?android:attr/textAppearanceMedium" 
@@ -90,7 +44,7 @@
 		            android:onClick="changeToHalfServing">
 	            </RadioButton>
 	        </RadioGroup>
-        </LinearLayout>
+        </RelativeLayout>
         <RelativeLayout android:id="@+id/fruit_layout" 
         	android:layout_height="100dp" 
         	android:baselineAligned="true" 

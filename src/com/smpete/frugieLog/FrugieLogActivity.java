@@ -211,13 +211,6 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
 		updateData(curDate);
     }
     
-    public void changeDate(View view){
-    	if(view.getId() == R.id.inc_day_button)
-    		changeDate(1);
-    	else
-    		changeDate(-1);
-    }
-    
     public void changeToFullServing(View view){
     	halfServing = false;
     	// Change images
@@ -267,14 +260,10 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     }
     
     private void updateDateText(){
-    	SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
-    	SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy");
 
     	TextView dateText = (TextView)findViewById(R.id.date_text);
     	dateText.setText(dateFormat.format(curDate));
-
-    	TextView dayText = (TextView)findViewById(R.id.day_text);
-    	dayText.setText(dayFormat.format(curDate));
     }
     
     private void updateStatsText()
