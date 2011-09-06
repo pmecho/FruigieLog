@@ -5,6 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.achartengine.ChartFactory;
+import org.achartengine.GraphicalView;
+
+
+import com.smpete.frugieLog.charting.*;
+
 import com.smpete.frugieLog.Frugie.FrugieColumns;
 import com.smpete.frugieLog.R;
 import com.smpete.frugieLog.Frugie.FrugieType;
@@ -16,17 +22,17 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class FrugieLogActivity extends Activity implements OnClickListener {
 
@@ -82,6 +88,8 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
             }
         });
         
+        // Only create the chart onCreate, no need for persistence
+        createHistoryChart();
     }
 
     @Override
@@ -93,11 +101,13 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         currentVeggie = new Frugie(FrugieType.VEGGIE);
         updateData(curDate);
     }
+    
     @Override
     protected void onResume() {
         super.onResume();
         // The activity has become visible (it is now "resumed").
     }
+    
     @Override
     public void onPause(){
     	super.onPause();
@@ -109,6 +119,7 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         super.onStop();
         // The activity is no longer visible (it is now "stopped")
     }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -178,12 +189,48 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
     	
     	getContentResolver().update(uri, values, null, null);
     }
-    
+
 	/**
-	 * Sets the serving size to either half or full
-	 * 
-	 * @param newServing True to set serving size to a half serving
-	 */
+     * Creates the history chart and adds it to the view
+     */
+    private void createHistoryChart(){
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
+    	String nowDate = dateFormat.format(new Date());
+    	
+    	// Pull data prior to and including the current date
+    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
+    									null, 
+    									"date <= '" + nowDate + "'", 
+    									null, 
+    									FrugieColumns.DATE + " DESC");
+        
+        if (cursor.moveToFirst()) {
+            int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT); 
+            int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
+            
+            double[] fruits = new double[cursor.getCount()];
+            double[] veggies = new double[cursor.getCount()];
+            double[] count = new double[cursor.getCount()];
+            do {
+            	int i = cursor.getPosition();
+                // Get the field values
+                fruits[i] = cursor.getDouble(fruitColumn) / 10;
+                veggies[i] = cursor.getDouble(veggieColumn) / 10;
+                count[i] = i;
+
+            } while (cursor.moveToNext());
+        
+            // Create the chart and chart's view and add to layout
+	        HistoryChart chart = new HistoryChart(this, fruits, veggies, count);
+	        GraphicalView chartView = ChartFactory.getLineChartView(this, 
+	        		chart.getDataset(), chart.getRenderer());
+	        
+	        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
+	        layout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT,
+	                LayoutParams.FILL_PARENT));
+        }
+    }
+
     private void setHalfServing(boolean newServing){
     	halfServing = newServing;
     	RadioGroup radios = (RadioGroup) findViewById(R.id.serving_radio_group);
