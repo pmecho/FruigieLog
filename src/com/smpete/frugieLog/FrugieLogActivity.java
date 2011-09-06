@@ -22,6 +22,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -34,7 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-public class FrugieLogActivity extends Activity implements OnClickListener {
+public class FrugieLogActivity extends FragmentActivity implements OnClickListener {
 
 	private Frugie currentFruit;
 	private Frugie currentVeggie;
@@ -74,6 +75,15 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
         	curDate = new Date();
         	setHalfServing(false);
         }
+        
+        
+        
+        // During initial setup, plug in the details fragment.
+//        MainControlFragment details = new MainControlFragment();
+//        details.setArguments(getIntent().getExtras());
+//        getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
+        
+        
 
         // Gesture detection
         View mainView = (View) findViewById(R.id.screen_layout);
@@ -230,22 +240,15 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
 	                LayoutParams.FILL_PARENT));
         }
     }
-
-    private void setHalfServing(boolean newServing){
-    	halfServing = newServing;
-    	RadioGroup radios = (RadioGroup) findViewById(R.id.serving_radio_group);
-    	if(newServing)
-    		radios.check(R.id.half_radio);
-    	else
-    		radios.check(R.id.full_radio);
-    	
-    	updateImages();
-    }
     
+
     /**
-     * Update fruit and vegetable images based on the serving size
+     * Update serving size and set correct fruit and vegetable images
+     * @param newServing Value of new serving size
      */
-    private void updateImages(){
+    public void setHalfServing(boolean newServing){
+    	halfServing = newServing;
+    	
     	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
     	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
     	if(halfServing){
@@ -275,40 +278,6 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
 		curDate = cal.getTime();
 		
 		updateData(curDate);
-    }
-    
-    /**
-     * Called from a view - changes the date
-     * 
-     * @param view View of caller
-     */
-    public void changeDate(View view){
-    	if(view.getId() == R.id.inc_day_button)
-    		changeDate(1);
-    	else
-    		changeDate(-1);
-    }
-    
-    /**
-     * Called from a view - changes serving size to full serving
-     * 
-     * @param view View of caller
-     */
-    public void changeToFullServing(View view){
-    	halfServing = false;
-    	// Change images
-    	updateImages();
-    }
-    
-    /**
-     * Called from a view - changes serving size to half serving
-     * 
-     * @param view View of caller
-     */
-    public void changeToHalfServing(View view){
-    	halfServing = true;
-    	// Change images
-    	updateImages();
     }
     
     /**
@@ -362,14 +331,10 @@ public class FrugieLogActivity extends Activity implements OnClickListener {
      * Updates the date text cased on the current date
      */
     private void updateDateText(){
-    	SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
-    	SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy");
 
     	TextView dateText = (TextView)findViewById(R.id.date_text);
     	dateText.setText(dateFormat.format(curDate));
-
-    	TextView dayText = (TextView)findViewById(R.id.day_text);
-    	dayText.setText(dayFormat.format(curDate));
     }
     
     /**
