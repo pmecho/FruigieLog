@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 public class MainControlFragment extends Fragment {
 
+	private OnMainControlChangedListener mListener;
 	private Date curDate;
 	/** Whether a half serving is selected */
 	private boolean halfServing;
@@ -25,6 +27,15 @@ public class MainControlFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		
+
+		
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+		// Inflate the layout for this fragment
+		super.onCreateView(inflater, container, savedInstanceState);
 		
         // Restore saved data
         if(savedInstanceState != null){
@@ -42,15 +53,23 @@ public class MainControlFragment extends Fragment {
         	curDate = new Date();
         	setHalfServing(false, true);
         }
+        updateDateText();
 		
-	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-		// Inflate the layout for this fragment
         return inflater.inflate(R.layout.main_control_fragment_layout, container, false);
 	}
 	
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        
+        // Ensure that the interface is implemented
+        try {
+            mListener = (OnMainControlChangedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnMainControlChangedListener");
+        }
+    }
+    
 	@Override
 	public void onPause(){
 		super.onPause();
@@ -99,8 +118,7 @@ public class MainControlFragment extends Fragment {
      */
     public void changeDate(int days){
     	// Save old data
-    	//TODO
-    	//saveData();
+    	mListener.onPreDateChange();
 
     	// Set new data
 		Calendar cal = Calendar.getInstance();
@@ -108,8 +126,8 @@ public class MainControlFragment extends Fragment {
 		cal.add(Calendar.DATE, days);
 		curDate = cal.getTime();
 		
-		//TODO
-		//updateData(curDate);
+		mListener.onPostDateChange(curDate);
+		updateDateText();
     }
     
     private void setHalfServing(boolean newServing, boolean updateRadios){
@@ -123,7 +141,7 @@ public class MainControlFragment extends Fragment {
     	halfServing = newServing;
     	
     	//TODO
-    	//getActivity().setHalfServing(halfServing);
+    	mListener.onServingSizeChanged(halfServing);
     }
     
     /**
@@ -134,5 +152,12 @@ public class MainControlFragment extends Fragment {
 
     	TextView dateText = (TextView) getActivity().findViewById(R.id.date_text);
     	dateText.setText(dateFormat.format(curDate));
+    }
+    
+    
+    public interface OnMainControlChangedListener{
+    	public void onPreDateChange();
+    	public void onPostDateChange(Date date);
+    	public void onServingSizeChanged(boolean halfServing);
     }
 }

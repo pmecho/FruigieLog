@@ -12,6 +12,7 @@ import org.achartengine.GraphicalView;
 import com.smpete.frugieLog.charting.*;
 
 import com.smpete.frugieLog.Frugie.FrugieColumns;
+import com.smpete.frugieLog.MainControlFragment.OnMainControlChangedListener;
 import com.smpete.frugieLog.R;
 import com.smpete.frugieLog.Frugie.FrugieType;
 import com.smpete.frugieLog.Frugie.PortionSize;
@@ -35,7 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-public class FrugieLogActivity extends FragmentActivity implements OnClickListener {
+public class FrugieLogActivity extends FragmentActivity implements OnClickListener, OnMainControlChangedListener {
 
 	private Frugie currentFruit;
 	private Frugie currentVeggie;
@@ -352,6 +353,19 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     	veggieText.setText("" + oneDigit.format((double)currentVeggie.getServingTenths() / 10));
     }
     
+    private void updateImages(){
+    	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
+    	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
+    	if(halfServing){
+        	fruitImage.setImageResource(R.drawable.banana_half);
+        	veggieImage.setImageResource(R.drawable.carrot_half);
+    	}
+    	else{
+        	fruitImage.setImageResource(R.drawable.banana);
+        	veggieImage.setImageResource(R.drawable.carrot);
+    	}
+    }
+    
 	public void onClick(View v) {
 		// TODO Auto-generated method stub	
 	}
@@ -391,4 +405,28 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         }
 
     }
+
+
+
+	@Override
+	public void onPreDateChange() {
+		// Handle work prior to date being changed
+		saveData();
+		
+	}
+
+	@Override
+	public void onPostDateChange(Date date) {
+		// Handle work afer date is changed
+		updateData(date);
+		curDate = date;
+	}
+
+	@Override
+	public void onServingSizeChanged(boolean halfServing) {
+		// Handle work on a serving size change
+		this.halfServing = halfServing;
+		updateImages();
+		
+	}
 }
