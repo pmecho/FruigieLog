@@ -24,18 +24,34 @@ public class MainControlFragment extends Fragment {
 	private final String SAVED_DATE_KEY = "id";
 	private final String SAVED_HALF_SERVING_KEY = "serving";
 	
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        
+        // Ensure that the interface is implemented
+        try {
+            mListener = (OnMainControlChangedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnMainControlChangedListener");
+        }
+    }
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		
-
-		
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		// Inflate the layout for this fragment
 		super.onCreateView(inflater, container, savedInstanceState);
+		
+        return inflater.inflate(R.layout.main_control_fragment_layout, container, false);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState){
+		super.onActivityCreated(savedInstanceState);
 		
         // Restore saved data
         if(savedInstanceState != null){
@@ -54,21 +70,8 @@ public class MainControlFragment extends Fragment {
         	setHalfServing(false, true);
         }
         updateDateText();
-		
-        return inflater.inflate(R.layout.main_control_fragment_layout, container, false);
 	}
-	
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        
-        // Ensure that the interface is implemented
-        try {
-            mListener = (OnMainControlChangedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnMainControlChangedListener");
-        }
-    }
+
     
 	@Override
 	public void onPause(){
