@@ -55,11 +55,19 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
     private GestureDetector gestureDetector;
     
+    // Fragments
+    private MainControlFragment mainControlFrag;
+    private ServingFragment servingFrag;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        // Get fragments
+
+    	mainControlFrag = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
+    	servingFrag = (ServingFragment) getSupportFragmentManager().findFragmentById(R.id.serving_fragment);
         
         // During initial setup, plug in the details fragment.
 //        MainControlFragment details = new MainControlFragment();
@@ -90,12 +98,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         super.onStart();
         // The activity is about to become visible.     
         
-        // Get current date from the main control fragment
-    	MainControlFragment fragment = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
-    	curDate = fragment.getDate();
+
         
-        currentFruit = new Frugie(FrugieType.FRUIT);
-        currentVeggie = new Frugie(FrugieType.VEGGIE);
+        // Get current date from the main control fragment
+    	curDate = mainControlFrag.getDate();
+        
         updateData(curDate);
     }
     
@@ -153,8 +160,8 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     		int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT);
     		int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
     		currentId = cursor.getLong(idColumn);
-    		currentFruit.setServingTenths(cursor.getShort(fruitColumn));
-    		currentVeggie.setServingTenths(cursor.getShort(veggieColumn));
+    		servingFrag.setFruitTenths(cursor.getShort(fruitColumn));
+    		servingFrag.setVeggieTenths(cursor.getShort(veggieColumn));
     	}
     	else{ // Need to insert new entry!
     		ContentValues values = new ContentValues();
@@ -167,12 +174,12 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     		
     		Uri uri = getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
     		currentId = ContentUris.parseId(uri);
-    		currentFruit.setServingTenths((short) 0);
-    		currentVeggie.setServingTenths((short) 0);
+    		servingFrag.setFruitTenths((short) 0);
+    		servingFrag.setVeggieTenths((short) 0);
     	}
         
     	updateDateText();
-    	updateStatsText();
+    	servingFrag.updateStatsText();
     }
     
     /**
@@ -181,8 +188,8 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     private void saveData(){
     	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, currentId);
 		ContentValues values = new ContentValues();
-		values.put(FrugieColumns.FRUIT, currentFruit.getServingTenths());
-		values.put(FrugieColumns.VEGGIE, currentVeggie.getServingTenths());
+		values.put(FrugieColumns.FRUIT, servingFrag.getFruitTenths());
+		values.put(FrugieColumns.VEGGIE, servingFrag.getVeggieTenths());
     	
     	getContentResolver().update(uri, values, null, null);
     }
@@ -279,20 +286,10 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
      */
     public void incrementPortion(View view){
     	ImageButton button = (ImageButton)view;
-    	if(button.getId() == R.id.inc_fruit_button){
-    		if(halfServing)
-    			currentFruit.incServing(PortionSize.HALF);
-    		else
-    			currentFruit.incServing(PortionSize.FULL);
-    	}
-    	else{
-    		if(halfServing)
-    			currentVeggie.incServing(PortionSize.HALF);
-    		else
-    			currentVeggie.incServing(PortionSize.FULL);
-    	}
-    	
-    	updateStatsText();
+    	if(button.getId() == R.id.inc_fruit_button)
+    		servingFrag.modifyFruit(true);
+    	else
+    		servingFrag.modifyVeggie(true);
     }
     
     /**
@@ -303,19 +300,10 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
      */
     public void decrementPortion(View view){
     	ImageButton button = (ImageButton)view;
-    	if(button.getId() == R.id.dec_fruit_button){
-    		if(halfServing)
-    			currentFruit.decServing(PortionSize.HALF);
-    		else
-    			currentFruit.decServing(PortionSize.FULL);
-    	}
-    	else{
-    		if(halfServing)
-    			currentVeggie.decServing(PortionSize.HALF);
-    		else
-    			currentVeggie.decServing(PortionSize.FULL);
-    	}
-    	updateStatsText();
+    	if(button.getId() == R.id.dec_fruit_button)
+    		servingFrag.modifyFruit(false);
+    	else
+    		servingFrag.modifyVeggie(false);
     }
     
     /**
@@ -324,8 +312,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
      * @param view View of caller
      */
     public void changeToFullServing(View view){
-    	MainControlFragment fragment = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
-    	fragment.setHalfServing(false, false);
+    	mainControlFrag.setHalfServing(false, false);
     }
     
     /**
@@ -334,8 +321,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
      * @param view View of caller
      */
     public void changeToHalfServing(View view){
-    	MainControlFragment fragment = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
-    	fragment.setHalfServing(true, false);
+    	mainControlFrag.setHalfServing(true, false);
     }
     
     // END EVENT HANDLERS
@@ -351,35 +337,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     	TextView dateText = (TextView)findViewById(R.id.date_text);
     	dateText.setText(dateFormat.format(curDate));
     }
-    
-    /**
-     * Updates the fruit and veggie portion text based on the current 
-     * fruit and veggie objects
-     */
-    private void updateStatsText()
-    {
-    	DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
 
-    	TextView fruitText = (TextView)findViewById(R.id.current_fruit_text);
-    	fruitText.setText("" + oneDigit.format((double)currentFruit.getServingTenths() / 10));
-
-    	TextView veggieText = (TextView)findViewById(R.id.current_veggie_text);
-    	veggieText.setText("" + oneDigit.format((double)currentVeggie.getServingTenths() / 10));
-    }
-    
-    private void updateImages(){
-    	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
-    	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
-    	if(halfServing){
-        	fruitImage.setImageResource(R.drawable.banana_half);
-        	veggieImage.setImageResource(R.drawable.carrot_half);
-    	}
-    	else{
-        	fruitImage.setImageResource(R.drawable.banana);
-        	veggieImage.setImageResource(R.drawable.carrot);
-    	}
-    }
-    
 	public void onClick(View v) {
 		// TODO Auto-generated method stub	
 	}
@@ -440,7 +398,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 	public void onServingSizeChanged(boolean halfServing) {
 		// Handle work on a serving size change
 		this.halfServing = halfServing;
-		updateImages();
+		servingFrag.updateImages();
 		
 	}
 }
