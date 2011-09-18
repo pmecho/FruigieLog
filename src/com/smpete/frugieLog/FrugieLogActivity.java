@@ -60,24 +60,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        // Restore saved data
-        if(savedInstanceState != null){
-	        // Check for saved date
-	        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
-	        if(savedDate == 0L)
-	        	curDate = new Date();
-	        else
-	        	curDate = new Date(savedDate);
-	        
-	        // Set saved serving size, if empty then full serving will be set
-	        setHalfServing(savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY));
-        }
-        else{
-        	curDate = new Date();
-        	setHalfServing(false);
-        }
-        
-        
         
         // During initial setup, plug in the details fragment.
 //        MainControlFragment details = new MainControlFragment();
@@ -107,6 +89,10 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     protected void onStart() {
         super.onStart();
         // The activity is about to become visible.     
+        
+        // Get current date from the main control fragment
+    	MainControlFragment fragment = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
+    	curDate = fragment.getDate();
         
         currentFruit = new Frugie(FrugieType.FRUIT);
         currentVeggie = new Frugie(FrugieType.VEGGIE);
@@ -281,6 +267,10 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 		updateData(curDate);
     }
     
+    
+    
+    // BEGIN EVENT HANDLERS
+    
     /**
      * Called from a view - Increments portion of a fruit or veggie, 
      * based on the view
@@ -327,6 +317,30 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     	}
     	updateStatsText();
     }
+    
+    /**
+     * Called from a view - changes serving size to full serving
+     * 
+     * @param view View of caller
+     */
+    public void changeToFullServing(View view){
+    	MainControlFragment fragment = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
+    	fragment.setHalfServing(false, false);
+    }
+    
+    /**
+     * Called from a view - changes serving size to half serving
+     * 
+     * @param view View of caller
+     */
+    public void changeToHalfServing(View view){
+    	MainControlFragment fragment = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
+    	fragment.setHalfServing(true, false);
+    }
+    
+    // END EVENT HANDLERS
+    
+    
     
     /**
      * Updates the date text cased on the current date

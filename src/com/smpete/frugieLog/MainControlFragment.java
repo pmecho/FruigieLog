@@ -94,26 +94,16 @@ public class MainControlFragment extends Fragment {
 	public boolean getHalfServing(){
 		return halfServing;
 	}
+
+	/**
+	 * Accessor method of date
+	 * @return current date
+	 */
+	public Date getDate(){
+		return curDate;
+	}
 	
-    /**
-     * Called from a view - changes serving size to full serving
-     * 
-     * @param view View of caller
-     */
-    public void changeToFullServing(View view){
-    	setHalfServing(false, false);
-    }
-    
-    /**
-     * Called from a view - changes serving size to half serving
-     * 
-     * @param view View of caller
-     */
-    public void changeToHalfServing(View view){
-    	setHalfServing(true, false);
-    }
-    
-    /**
+	/**
      * Changes the current date based on the number of days to
      * increment or decrement
      * 
@@ -133,7 +123,7 @@ public class MainControlFragment extends Fragment {
 		updateDateText();
     }
     
-    private void setHalfServing(boolean newServing, boolean updateRadios){
+    public void setHalfServing(boolean newServing, boolean updateRadios){
     	if(updateRadios){
         	RadioGroup radios = (RadioGroup) getActivity().findViewById(R.id.serving_radio_group);
         	if(newServing)
