@@ -37,17 +37,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 public class FrugieLogActivity extends FragmentActivity implements OnClickListener, OnMainControlChangedListener {
-
-	private Frugie currentFruit;
-	private Frugie currentVeggie;
 	private long currentId;
-
-	private final String SAVED_DATE_KEY = "id";
-	private final String SAVED_HALF_SERVING_KEY = "serving";
-	
-	private Date curDate;
-	/** Whether a half serving is selected */
-	private boolean halfServing;
 	
 	// For guestures
     private static final int SWIPE_MIN_DISTANCE = 120;
@@ -97,13 +87,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     protected void onStart() {
         super.onStart();
         // The activity is about to become visible.     
-        
-
-        
-        // Get current date from the main control fragment
-    	curDate = mainControlFrag.getDate();
-        
-        updateData(curDate);
     }
     
     @Override
@@ -129,24 +112,13 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         super.onDestroy();
         // The activity is about to be destroyed.
     }
-    
-    @Override
-    protected void onSaveInstanceState(Bundle outState){
-    	super.onSaveInstanceState(outState);
-    	// Save the current date
-    	outState.putLong(SAVED_DATE_KEY, curDate.getTime());
-    	//TODO Test!!
-    	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
-    }
 
     /**
      * Update date and fruit/veggie servings from database given a date
      * 
      * @param date Date to update the data to
      */
-    private void updateData(Date date){
-    	//TODO Read from current date, dont allow date to be passed!!
-    	
+    private void updateData(Date date){    	
     	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
     	String formattedDate = dateFormat.format(date);
     	
@@ -178,7 +150,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     		servingFrag.setVeggieTenths((short) 0);
     	}
         
-    	updateDateText();
     	servingFrag.updateStatsText();
     }
     
@@ -235,45 +206,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         }
     }
     
-
-    /**
-     * Update serving size and set correct fruit and vegetable images
-     * @param newServing Value of new serving size
-     */
-    public void setHalfServing(boolean newServing){
-    	halfServing = newServing;
-    	
-    	ImageView fruitImage = (ImageView)findViewById(R.id.fruit_image);
-    	ImageView veggieImage = (ImageView)findViewById(R.id.veggie_image);
-    	if(halfServing){
-        	fruitImage.setImageResource(R.drawable.banana_half);
-        	veggieImage.setImageResource(R.drawable.carrot_half);
-    	}
-    	else{
-        	fruitImage.setImageResource(R.drawable.banana);
-        	veggieImage.setImageResource(R.drawable.carrot);
-    	}
-    }
-    
-    /**
-     * Changes the current date based on the number of days to
-     * increment or decrement
-     * 
-     * @param days Number of days to add to the current date
-     */
-    private void changeDate(int days){
-    	// Save old data
-    	saveData();
-
-    	// Set new data
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(curDate);
-		cal.add(Calendar.DATE, days);
-		curDate = cal.getTime();
-		
-		updateData(curDate);
-    }
-    
     
     
     // BEGIN EVENT HANDLERS
@@ -325,18 +257,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     }
     
     // END EVENT HANDLERS
-    
-    
-    
-    /**
-     * Updates the date text cased on the current date
-     */
-    private void updateDateText(){
-    	SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy");
 
-    	TextView dateText = (TextView)findViewById(R.id.date_text);
-    	dateText.setText(dateFormat.format(curDate));
-    }
 
 	public void onClick(View v) {
 		// TODO Auto-generated method stub	
@@ -359,10 +280,10 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
                 // right to left swipe
                 if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     //Toast.makeText(FrugieLogActivity.this, "Left Swipe", Toast.LENGTH_SHORT).show();
-                    changeDate(1);
+                    mainControlFrag.changeDate(1);
                 }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     //Toast.makeText(FrugieLogActivity.this, "Right Swipe", Toast.LENGTH_SHORT).show();
-                    changeDate(-1);
+                    mainControlFrag.changeDate(-1);
                 }
             } catch (Exception e) {
                 // nothing
@@ -391,13 +312,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 	public void onPostDateChange(Date date) {
 		// Handle work afer date is changed
 		updateData(date);
-		curDate = date;
 	}
 
 	@Override
 	public void onServingSizeChanged(boolean halfServing) {
 		// Handle work on a serving size change
-		this.halfServing = halfServing;
 		servingFrag.setHalfServing(halfServing);
 		
 	}

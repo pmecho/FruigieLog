@@ -80,7 +80,10 @@ public class ServingFragment extends Fragment{
     	super.onSaveInstanceState(outState);
     }
     
-    
+    /**
+     * Update serving size and set correct fruit and vegetable images
+     * @param newServing Value of new serving size
+     */
     public void setHalfServing(boolean newServing){
     	halfServing = newServing;
     	ImageView fruitImage = (ImageView) getActivity().findViewById(R.id.fruit_image);

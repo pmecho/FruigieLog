@@ -70,6 +70,7 @@ public class MainControlFragment extends Fragment {
         	setHalfServing(false, true);
         }
         updateDateText();
+		mListener.onPostDateChange(curDate);
 	}
 
     
