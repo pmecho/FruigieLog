@@ -81,7 +81,8 @@ public class ServingFragment extends Fragment{
     }
     
     
-    public void updateImages(){
+    public void setHalfServing(boolean newServing){
+    	halfServing = newServing;
     	ImageView fruitImage = (ImageView) getActivity().findViewById(R.id.fruit_image);
     	ImageView veggieImage = (ImageView) getActivity().findViewById(R.id.veggie_image);
     	if(halfServing){

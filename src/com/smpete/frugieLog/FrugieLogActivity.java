@@ -398,7 +398,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 	public void onServingSizeChanged(boolean halfServing) {
 		// Handle work on a serving size change
 		this.halfServing = halfServing;
-		servingFrag.updateImages();
+		servingFrag.setHalfServing(halfServing);
 		
 	}
 }
