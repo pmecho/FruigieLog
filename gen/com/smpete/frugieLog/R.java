@@ -46,11 +46,11 @@ public final class R {
         public static final int main_control_fragment=0x7f050001;
         public static final int main_control_layout=0x7f050004;
         public static final int screen_layout=0x7f050000;
-        public static final int serving_fragment=0x7f050002;
         public static final int serving_radio_group=0x7f050006;
         public static final int serving_text=0x7f050007;
         public static final int veggie_image=0x7f050010;
         public static final int veggie_layout=0x7f05000f;
+        public static final int viewpager=0x7f050002;
     }
     public static final class layout {
         public static final int main=0x7f030000;

@@ -1,8 +1,6 @@
 package com.smpete.frugieLog;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.achartengine.ChartFactory;
@@ -14,16 +12,16 @@ import com.smpete.frugieLog.charting.*;
 import com.smpete.frugieLog.Frugie.FrugieColumns;
 import com.smpete.frugieLog.MainControlFragment.OnMainControlChangedListener;
 import com.smpete.frugieLog.R;
-import com.smpete.frugieLog.Frugie.FrugieType;
-import com.smpete.frugieLog.Frugie.PortionSize;
 
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -31,10 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 
 public class FrugieLogActivity extends FragmentActivity implements OnClickListener, OnMainControlChangedListener {
 	private long currentId;
@@ -49,15 +44,77 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     private MainControlFragment mainControlFrag;
     private ServingFragment servingFrag;
     
+    private int focusedPage = 0;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        
+	    ServingPagerAdapter adapter = new ServingPagerAdapter(getSupportFragmentManager());
+	    ViewPager pager =
+	        (ViewPager)findViewById( R.id.viewpager );
+	    pager.setAdapter( adapter );
+	    pager.setCurrentItem(1);
+	    
+	    
+	    
+	    pager.setOnPageChangeListener(new OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                    focusedPage = position;
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset,
+                            int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                    if (state == ViewPager.SCROLL_STATE_IDLE) {
+                            Log.d("ElectricSleep", "IDLE at page " + focusedPage);
+
+//                            if (focusedPage == 0) {
+//                                    
+//                                    Time time = new Time(mTime);
+//                                    time.month-=2;
+//                                    time.normalize(true);
+//                                    MonthView mv = new MonthView(HistoryMonthActivity.this);
+//                                    mv.setLayoutParams(new ViewSwitcher.LayoutParams(
+//                                                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+//                                                    android.view.ViewGroup.LayoutParams.MATCH_PARENT));
+//                                    mv.setSelectedTime(time);
+//                                    
+//                                    //monthAdapter.replaceViewAt(monthPager, 0, mv);
+//                                    monthAdapter.destroyItem(monthPager, 2, monthPager.getChildAt(2));
+//                                    monthAdapter.destroyItem(monthPager, 1, monthPager.getChildAt(1));
+//                                    monthAdapter.destroyItem(monthPager, 0, monthPager.getChildAt(0));
+//                                    monthAdapter.instantiateItem(monthPager, 0);
+//                                    monthAdapter.instantiateItem(monthPager, 1);
+//                                    monthAdapter.instantiateItem(monthPager, 2);
+//                            } else if (focusedPage == 2) {
+//                                    mTime.month++;
+//                                    mTime.normalize(true);
+//                            }
+//
+//                            HistoryMonthActivity.this.setTitle(Utils.formatMonthYear(HistoryMonthActivity.this, mTime));
+//                            //monthAdapter.notifyDataSetChanged();
+//                            
+//                            // always set to middle page to continue to be able to
+//                            // scroll up/down
+//                            monthPager.setCurrentItem(1, false);
+                    }
+            }
+    });
+	    
+        
         // Get fragments
 
     	mainControlFrag = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
-    	servingFrag = (ServingFragment) getSupportFragmentManager().findFragmentById(R.id.serving_fragment);
+//    	servingFrag = (ServingFragment) getSupportFragmentManager().findFragmentById(R.id.serving_fragment);
         
         // During initial setup, plug in the details fragment.
 //        MainControlFragment details = new MainControlFragment();
@@ -67,17 +124,17 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         
 
         // Gesture detection
-        View mainView = (View) findViewById(R.id.screen_layout);
-     
-        gestureDetector = new GestureDetector(new MyGestureDetector());
-        mainView.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                if (gestureDetector.onTouchEvent(event)) {
-                    return true;
-                }
-                return false;
-            }
-        });
+//        View mainView = (View) findViewById(R.id.screen_layout);
+//     
+//        gestureDetector = new GestureDetector(new MyGestureDetector());
+//        mainView.setOnTouchListener(new View.OnTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (gestureDetector.onTouchEvent(event)) {
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
         
         // Only create the chart onCreate, no need for persistence
         createHistoryChart();
@@ -132,8 +189,8 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     		int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT);
     		int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
     		currentId = cursor.getLong(idColumn);
-    		servingFrag.setFruitTenths(cursor.getShort(fruitColumn));
-    		servingFrag.setVeggieTenths(cursor.getShort(veggieColumn));
+//    		servingFrag.setFruitTenths(cursor.getShort(fruitColumn));
+//    		servingFrag.setVeggieTenths(cursor.getShort(veggieColumn));
     	}
     	else{ // Need to insert new entry!
     		ContentValues values = new ContentValues();
@@ -146,11 +203,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     		
     		Uri uri = getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
     		currentId = ContentUris.parseId(uri);
-    		servingFrag.setFruitTenths((short) 0);
-    		servingFrag.setVeggieTenths((short) 0);
+//    		servingFrag.setFruitTenths((short) 0);
+//    		servingFrag.setVeggieTenths((short) 0);
     	}
         
-    	servingFrag.updateStatsText();
+//    	servingFrag.updateStatsText();
     }
     
     /**
@@ -159,8 +216,8 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     private void saveData(){
     	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, currentId);
 		ContentValues values = new ContentValues();
-		values.put(FrugieColumns.FRUIT, servingFrag.getFruitTenths());
-		values.put(FrugieColumns.VEGGIE, servingFrag.getVeggieTenths());
+//		values.put(FrugieColumns.FRUIT, servingFrag.getFruitTenths());
+//		values.put(FrugieColumns.VEGGIE, servingFrag.getVeggieTenths());
     	
     	getContentResolver().update(uri, values, null, null);
     }
@@ -263,42 +320,44 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 		// TODO Auto-generated method stub	
 	}
     
+	
+	
     
+//    /**
+//     * Rudimentary guesture handling, need to polish
+//     * 
+//     * @author peter
+//     *
+//     */
+//    class MyGestureDetector extends SimpleOnGestureListener {
+//        @Override
+//        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//            try {
+//                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+//                    return false;
+//                // right to left swipe
+//                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+//                    //Toast.makeText(FrugieLogActivity.this, "Left Swipe", Toast.LENGTH_SHORT).show();
+//                    mainControlFrag.changeDate(1);
+//                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+//                    //Toast.makeText(FrugieLogActivity.this, "Right Swipe", Toast.LENGTH_SHORT).show();
+//                    mainControlFrag.changeDate(-1);
+//                }
+//            } catch (Exception e) {
+//                // nothing
+//            }
+//            return false;
+//        }
+//        
+//        // It is necessary to return true from onDown for the onFling event to register
+//        @Override
+//        public boolean onDown(MotionEvent e) {
+//            	return true;
+//        }
+//
+//    }
+ 
     
-    /**
-     * Rudimentary guesture handling, need to polish
-     * 
-     * @author peter
-     *
-     */
-    class MyGestureDetector extends SimpleOnGestureListener {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            try {
-                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-                    return false;
-                // right to left swipe
-                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    //Toast.makeText(FrugieLogActivity.this, "Left Swipe", Toast.LENGTH_SHORT).show();
-                    mainControlFrag.changeDate(1);
-                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    //Toast.makeText(FrugieLogActivity.this, "Right Swipe", Toast.LENGTH_SHORT).show();
-                    mainControlFrag.changeDate(-1);
-                }
-            } catch (Exception e) {
-                // nothing
-            }
-            return false;
-        }
-        
-        // It is necessary to return true from onDown for the onFling event to register
-        @Override
-        public boolean onDown(MotionEvent e) {
-            	return true;
-        }
-
-    }
-
 
 
 	@Override
@@ -317,7 +376,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 	@Override
 	public void onServingSizeChanged(boolean halfServing) {
 		// Handle work on a serving size change
-		servingFrag.setHalfServing(halfServing);
+//		servingFrag.setHalfServing(halfServing);
 		
 	}
 }
