@@ -37,6 +37,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     // Fragments
     private MainControlFragment mainControlFrag;
     private ServingFragment servingFrag;
+    private ServingPagerAdapter adapter;
     
     private int focusedPage = 0;
     
@@ -46,11 +47,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         setContentView(R.layout.main);
         
         
-	    ServingPagerAdapter adapter = new ServingPagerAdapter(getSupportFragmentManager());
+	    adapter = new ServingPagerAdapter(getSupportFragmentManager(), new Date());
 	    ViewPager pager =
 	        (ViewPager)findViewById( R.id.viewpager );
 	    pager.setAdapter( adapter );
-	    pager.setCurrentItem(5);
+	    pager.setCurrentItem(1);
 	    
 	    
 	    
@@ -58,12 +59,14 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
             @Override
             public void onPageSelected(int position) {
                     focusedPage = position;
+                    adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onPageScrolled(int position, float positionOffset,
                             int positionOffsetPixels) {
 
+                adapter.notifyDataSetChanged();
             }
 
             @Override
