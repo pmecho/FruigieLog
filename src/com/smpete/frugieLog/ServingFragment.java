@@ -1,13 +1,19 @@
 package com.smpete.frugieLog;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.smpete.frugieLog.Frugie.FrugieColumns;
 import com.smpete.frugieLog.Frugie.FrugieType;
 import com.smpete.frugieLog.Frugie.PortionSize;
 import com.smpete.frugieLog.MainControlFragment.OnMainControlChangedListener;
 
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -25,6 +31,12 @@ public class ServingFragment extends Fragment{
 	private Frugie currentVeggie;
 	/** Whether a half serving is selected */
 	private boolean halfServing;
+	
+	private Date curDate;
+	
+	public ServingFragment(Date date){
+		curDate = date;
+	}
 	
     @Override
     public void onAttach(Activity activity) {
@@ -66,6 +78,39 @@ public class ServingFragment extends Fragment{
 			halfServing = true;
 		}
 		
+		
+		
+		// HACKINESS :(
+		FrugieLogActivity act = (FrugieLogActivity)getActivity();
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
+    	String formattedDate = dateFormat.format(curDate);
+    	
+    	Cursor cursor = act.managedQuery(FrugieColumns.CONTENT_URI, 
+    									null, 
+    									FrugieColumns.DATE +"='" + formattedDate + "'", 
+    									null, 
+    									null);
+    	if(cursor.moveToFirst()){
+    		int idColumn = cursor.getColumnIndex(FrugieColumns._ID);
+    		int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT);
+    		int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
+    		currentFruit.setServingTenths(cursor.getShort(fruitColumn));
+    		currentVeggie.setServingTenths(cursor.getShort(veggieColumn));
+    	}
+    	else{ // Need to insert new entry!
+    		ContentValues values = new ContentValues();
+    		
+    		// Set defaults
+    		values.put(FrugieColumns.DATE, formattedDate);
+    		values.put(FrugieColumns.FRUIT, 0);
+    		values.put(FrugieColumns.VEGGIE, 0);
+    		
+    		
+    		Uri uri = act.getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
+    		currentFruit.setServingTenths((short) 0);
+    		currentVeggie.setServingTenths((short) 0);
+    	}
+		updateStatsText();
 		
 	}
 

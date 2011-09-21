@@ -33,12 +33,6 @@ import android.widget.LinearLayout;
 
 public class FrugieLogActivity extends FragmentActivity implements OnClickListener, OnMainControlChangedListener {
 	private long currentId;
-	
-	// For guestures
-    private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_OFF_PATH = 250;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-    private GestureDetector gestureDetector;
     
     // Fragments
     private MainControlFragment mainControlFrag;
@@ -56,7 +50,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 	    ViewPager pager =
 	        (ViewPager)findViewById( R.id.viewpager );
 	    pager.setAdapter( adapter );
-	    pager.setCurrentItem(1);
+	    pager.setCurrentItem(5);
 	    
 	    
 	    
@@ -175,7 +169,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
      * 
      * @param date Date to update the data to
      */
-    private void updateData(Date date){    	
+    public void updateData(Date date){    	
     	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
     	String formattedDate = dateFormat.format(date);
     	
