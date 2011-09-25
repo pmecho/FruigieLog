@@ -1,5 +1,9 @@
 package com.smpete.frugieLog;
 
+
+
+import java.util.Date;
+
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -18,15 +22,13 @@ public class Frugie{
 		FULL,
 		HALF
 	};
-	
-	public static enum FrugieType{
-		FRUIT,
-		VEGGIE
-	};
 
-	private FrugieType name;
 	// Easy way to not have to mess with floats/doubles
-	private short servingTenths;
+	private short fruitServingTenths;
+	// Easy way to not have to mess with floats/doubles
+	private short veggieServingTenths;
+	private long id;
+	
 
 
 	/**
@@ -34,18 +36,17 @@ public class Frugie{
 	 * 
 	 * @param name Type of fruige to set
 	 */
-	public Frugie(FrugieType name){
-		this.name = name;
-		servingTenths = 0;
+	public Frugie(){
+		id = -1;
+		fruitServingTenths = 0;
+		veggieServingTenths = 0;
 	}
 	
-	/**
-	 * Accessor for name
-	 * 
-	 * @return Name of the Frugie
-	 */
-	public FrugieType getName(){
-		return name;
+	
+	public Frugie(long id, short fruitServingTenths, short veggieServingTenths){
+		this.id = id;
+		this.fruitServingTenths = fruitServingTenths;
+		this.veggieServingTenths = veggieServingTenths;
 	}
 	
 	/**
@@ -53,20 +54,28 @@ public class Frugie{
 	 * 
 	 * @param portion PortionSize to increment by
 	 */
-	public void incServing(PortionSize portion){
+	public void incServing(PortionSize portion, boolean fruit){
 		switch(portion){
 		case FULL:
-			servingTenths += 10;
+			if(fruit)
+				fruitServingTenths += 10;
+			else
+				veggieServingTenths += 10;
 			break;
 		case HALF:
-			servingTenths += 5;
+			if(fruit)
+				fruitServingTenths += 5;
+			else
+				veggieServingTenths += 5;
 			break;
 		default:
 				
 		}
 		
-		if(servingTenths < 0)
-			servingTenths = 0;
+		if(fruitServingTenths < 0)
+			fruitServingTenths = 0;
+		if(veggieServingTenths < 0)
+			veggieServingTenths = 0;
 	}
 	
 	/**
@@ -74,19 +83,28 @@ public class Frugie{
 	 * 
 	 * @param portion PortionSize to decrement by
 	 */
-	public void decServing(PortionSize portion){
+	public void decServing(PortionSize portion, boolean fruit){
 		switch(portion){
 		case FULL:
-			servingTenths -= 10;
+			if(fruit)
+				fruitServingTenths -= 10;
+			else
+				veggieServingTenths -= 10;
 			break;
 		case HALF:
-			servingTenths -= 5;
+			if(fruit)
+				fruitServingTenths -= 5;
+			else
+				veggieServingTenths -= 5;
 			break;
 		default:
 				
 		}
-		if(servingTenths < 0)
-			servingTenths = 0;
+		
+		if(fruitServingTenths < 0)
+			fruitServingTenths = 0;
+		if(veggieServingTenths < 0)
+			veggieServingTenths = 0;
 	}
 	
 	/**
@@ -94,8 +112,8 @@ public class Frugie{
 	 * 
 	 * @return Servings in tenths
 	 */
-	public short getServingTenths() {
-		return servingTenths;
+	public short getFruitServingTenths() {
+		return fruitServingTenths;
 	}
 
 	/**
@@ -103,8 +121,26 @@ public class Frugie{
 	 * 
 	 * @param servingTenths New serving amount to set
 	 */
-	public void setServingTenths(short servingTenths) {
-		this.servingTenths = servingTenths;
+	public void setFruitServingTenths(short servingTenths) {
+		this.fruitServingTenths = servingTenths;
+	}
+	
+	/**
+	 * Accessor for tenths
+	 * 
+	 * @return Servings in tenths
+	 */
+	public short getVeggieServingTenths() {
+		return veggieServingTenths;
+	}
+
+	/**
+	 * Mutator for tenths
+	 * 
+	 * @param servingTenths New serving amount to set
+	 */
+	public void setVeggieTenths(short servingTenths) {
+		this.veggieServingTenths = veggieServingTenths;
 	}
 	
 	/**

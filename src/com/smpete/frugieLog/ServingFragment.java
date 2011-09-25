@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.smpete.frugieLog.Frugie.FrugieColumns;
-import com.smpete.frugieLog.Frugie.FrugieType;
 import com.smpete.frugieLog.Frugie.PortionSize;
 import com.smpete.frugieLog.MainControlFragment.OnMainControlChangedListener;
 
@@ -16,6 +15,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,13 +26,17 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 public class ServingFragment extends Fragment{
-	
-	private Frugie currentFruit;
-	private Frugie currentVeggie;
+	private long currentId;
+    
+	private Frugie frugie;
 	/** Whether a half serving is selected */
 	private boolean halfServing;
 	
 	private Date curDate;
+	private OnServingChangedListener mListener;
+	
+
+	static int i = 20;
 	
 	public ServingFragment(Date date){
 		curDate = date;
@@ -42,21 +46,18 @@ public class ServingFragment extends Fragment{
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         
-//        // Ensure that the interface is implemented
-//        try {
-//            mListener = (OnMainControlChangedListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString() + " must implement OnMainControlChangedListener");
-//        }
+        // Ensure that the interface is implemented
+        try {
+            mListener = (OnServingChangedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnServingChangedListener");
+        }
     }
     
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		
-        currentFruit = new Frugie(FrugieType.FRUIT);
-        currentVeggie = new Frugie(FrugieType.VEGGIE);
-        
+		frugie = mListener.onLoadData(curDate);
 	}
 	
 	@Override
@@ -64,7 +65,17 @@ public class ServingFragment extends Fragment{
 		// Inflate the layout for this fragment
 		super.onCreateView(inflater, container, savedInstanceState);
 		
-        return inflater.inflate(R.layout.serving_fragment_layout, container, false);
+		View view = inflater.inflate(R.layout.serving_fragment_layout, container, false);
+
+    	DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
+
+    	TextView fruitText = (TextView) view.findViewById(R.id.current_fruit_text);
+    	fruitText.setText("" + oneDigit.format((double)frugie.getFruitServingTenths() / 10));
+
+    	TextView veggieText = (TextView) view.findViewById(R.id.current_veggie_text);
+    	veggieText.setText("" + oneDigit.format((double)frugie.getVeggieServingTenths() / 10));
+		
+		return view;
 	}
 	
 	@Override
@@ -76,48 +87,21 @@ public class ServingFragment extends Fragment{
 			halfServing = false;
 		}else{
 			halfServing = true;
-		}
-		
-		
-		
-		// HACKINESS :(
-		FrugieLogActivity act = (FrugieLogActivity)getActivity();
-    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
-    	String formattedDate = dateFormat.format(curDate);
-    	
-    	Cursor cursor = act.managedQuery(FrugieColumns.CONTENT_URI, 
-    									null, 
-    									FrugieColumns.DATE +"='" + formattedDate + "'", 
-    									null, 
-    									null);
-    	if(cursor.moveToFirst()){
-    		int idColumn = cursor.getColumnIndex(FrugieColumns._ID);
-    		int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT);
-    		int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
-    		currentFruit.setServingTenths(cursor.getShort(fruitColumn));
-    		currentVeggie.setServingTenths(cursor.getShort(veggieColumn));
-    	}
-    	else{ // Need to insert new entry!
-    		ContentValues values = new ContentValues();
-    		
-    		// Set defaults
-    		values.put(FrugieColumns.DATE, formattedDate);
-    		values.put(FrugieColumns.FRUIT, 0);
-    		values.put(FrugieColumns.VEGGIE, 0);
-    		
-    		
-    		Uri uri = act.getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
-    		currentFruit.setServingTenths((short) 0);
-    		currentVeggie.setServingTenths((short) 0);
-    	}
-		updateStatsText();
-		
+		}		
 	}
 
+	@Override
+	public void onResume(){
+		super.onResume();
+
+        Log.d("ServingFrag", "Resume");
+	}
     
 	@Override
 	public void onPause(){
 		super.onPause();
+		mListener.onSaveState(this);
+        Log.d("ServingFrag", "Pause");
 	}
 	
     @Override
@@ -152,41 +136,41 @@ public class ServingFragment extends Fragment{
     	DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
 
     	TextView fruitText = (TextView) getActivity().findViewById(R.id.current_fruit_text);
-    	fruitText.setText("" + oneDigit.format((double)currentFruit.getServingTenths() / 10));
+    	fruitText.setText("" + oneDigit.format((double)frugie.getFruitServingTenths() / 10));
 
     	TextView veggieText = (TextView) getActivity().findViewById(R.id.current_veggie_text);
-    	veggieText.setText("" + oneDigit.format((double)currentVeggie.getServingTenths() / 10));
+    	veggieText.setText("" + oneDigit.format((double)frugie.getVeggieServingTenths() / 10));
     }
     
     
-    public void setFruitTenths(short tenths){
-    	currentFruit.setServingTenths(tenths);
-    }
-    
-    public void setVeggieTenths(short tenths){
-    	currentVeggie.setServingTenths(tenths);
-    }
-    
+//    public void setFruitTenths(short tenths){
+//    	currentFruit.setServingTenths(tenths);
+//    }
+//    
+//    public void setVeggieTenths(short tenths){
+//    	currentVeggie.setServingTenths(tenths);
+//    }
+//    
     public short getFruitTenths(){
-    	return currentFruit.getServingTenths();
+    	return frugie.getFruitServingTenths();
     }
     
     public short getVeggieTenths(){
-    	return currentVeggie.getServingTenths();
+    	return frugie.getVeggieServingTenths();
     }
     
 
     public void modifyFruit(boolean increment){
     	if(increment){
 	    	if(halfServing)
-				currentFruit.incServing(PortionSize.HALF);
+	    		frugie.incServing(PortionSize.HALF, true);
 			else
-				currentFruit.incServing(PortionSize.FULL);
+				frugie.incServing(PortionSize.FULL, true);
     	}else{
     		if(halfServing)
-    			currentFruit.decServing(PortionSize.HALF);
+    			frugie.decServing(PortionSize.HALF, true);
     		else
-    			currentFruit.decServing(PortionSize.FULL);
+    			frugie.decServing(PortionSize.FULL, true);
     	}
     	updateStatsText();
     }
@@ -194,15 +178,24 @@ public class ServingFragment extends Fragment{
     public void modifyVeggie(boolean increment){
     	if(increment){
 	    	if(halfServing)
-	    		currentVeggie.incServing(PortionSize.HALF);
+	    		frugie.incServing(PortionSize.HALF, false);
 			else
-				currentVeggie.incServing(PortionSize.FULL);
+				frugie.incServing(PortionSize.FULL, false);
     	}else{
     		if(halfServing)
-    			currentVeggie.decServing(PortionSize.HALF);
+    			frugie.decServing(PortionSize.HALF, false);
     		else
-    			currentVeggie.decServing(PortionSize.FULL);
+    			frugie.decServing(PortionSize.FULL, false);
     	}
     	updateStatsText();
+    }
+
+    
+    
+    
+    public interface OnServingChangedListener{
+    	public void onServingChanged();
+    	public void onSaveState(ServingFragment fragment);
+    	public Frugie onLoadData(Date date);
     }
 }

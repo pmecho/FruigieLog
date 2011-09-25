@@ -12,6 +12,7 @@ import com.smpete.frugieLog.charting.*;
 import com.smpete.frugieLog.Frugie.FrugieColumns;
 import com.smpete.frugieLog.MainControlFragment.OnMainControlChangedListener;
 import com.smpete.frugieLog.R;
+import com.smpete.frugieLog.ServingFragment.OnServingChangedListener;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -31,7 +32,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-public class FrugieLogActivity extends FragmentActivity implements OnClickListener, OnMainControlChangedListener {
+public class FrugieLogActivity extends FragmentActivity implements OnClickListener, OnMainControlChangedListener, OnServingChangedListener {
 	private long currentId;
     
     // Fragments
@@ -46,8 +47,10 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        Date date = new Date(111,8,1);
         
-	    adapter = new ServingPagerAdapter(getSupportFragmentManager(), new Date());
+        
+	    adapter = new ServingPagerAdapter(getSupportFragmentManager(), date);
 	    ViewPager pager =
 	        (ViewPager)findViewById( R.id.viewpager );
 	    pager.setAdapter( adapter );
@@ -59,14 +62,14 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
             @Override
             public void onPageSelected(int position) {
                     focusedPage = position;
-                    adapter.notifyDataSetChanged();
+//                    adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onPageScrolled(int position, float positionOffset,
                             int positionOffsetPixels) {
 
-                adapter.notifyDataSetChanged();
+//                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -375,5 +378,56 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 		// Handle work on a serving size change
 //		servingFrag.setHalfServing(halfServing);
 		
+	}
+
+	@Override
+	public void onServingChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSaveState(ServingFragment fragment) {
+		// TODO Auto-generated method stub
+    	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, currentId);
+		ContentValues values = new ContentValues();
+		values.put(FrugieColumns.FRUIT, fragment.getFruitTenths());
+		values.put(FrugieColumns.VEGGIE, fragment.getVeggieTenths());
+    	
+    	getContentResolver().update(uri, values, null, null);
+	}
+
+	@Override
+	public Frugie onLoadData(Date date) {
+		// TODO Auto-generated method stub
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
+    	String formattedDate = dateFormat.format(date);
+    	
+    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
+				null, 
+				FrugieColumns.DATE +"='" + formattedDate + "'", 
+				null, 
+				null);
+    	if(cursor.moveToFirst()){
+    		int idColumn = cursor.getColumnIndex(FrugieColumns._ID);
+    		int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT);
+    		int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
+    		return new Frugie(cursor.getLong(idColumn), 
+    				cursor.getShort(fruitColumn), 
+    				cursor.getShort(veggieColumn));
+    	}
+    	else{ // Need to insert new entry!
+    		ContentValues values = new ContentValues();
+    		
+    		// Set defaults
+    		values.put(FrugieColumns.DATE, formattedDate);
+    		values.put(FrugieColumns.FRUIT, 0);
+    		values.put(FrugieColumns.VEGGIE, 0);
+    		
+    		
+    		Uri uri = getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
+    		currentId = ContentUris.parseId(uri);
+    		return new Frugie(ContentUris.parseId(uri), (short)0, (short)0);
+    	}
 	}
 }
