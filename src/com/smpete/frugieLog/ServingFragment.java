@@ -69,12 +69,8 @@ public class ServingFragment extends Fragment{
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		
-		RadioButton fullRB = (RadioButton) getActivity().findViewById(R.id.full_radio);
-		if(fullRB.isChecked()){
-			halfServing = false;
-		}else{
-			halfServing = true;
-		}		
+		RadioButton halfRB = (RadioButton) getActivity().findViewById(R.id.half_radio);
+		setHalfServing(halfRB.isChecked());
 	}
 
 	@Override
