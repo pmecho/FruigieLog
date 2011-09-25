@@ -16,7 +16,7 @@ import android.widget.TextView;
 public class MainControlFragment extends Fragment {
 
 	private OnMainControlChangedListener mListener;
-	private Date curDate;
+	private Date date;
 	/** Whether a half serving is selected */
 	private boolean halfServing;
 	
@@ -58,19 +58,18 @@ public class MainControlFragment extends Fragment {
 	        // Check for saved date
 	        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
 	        if(savedDate == 0L)
-	        	curDate = new Date();
+	        	date = new Date();
 	        else
-	        	curDate = new Date(savedDate);
+	        	date = new Date(savedDate);
 	        
 	        // Set saved serving size, if empty then full serving will be set
 	        setHalfServing(savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY), true);
         }
         else{
-        	curDate = new Date();
+        	date = new Date();
         	setHalfServing(false, true);
         }
         updateDateText();
-		mListener.onPostDateChange(curDate);
 	}
 
     
@@ -79,14 +78,14 @@ public class MainControlFragment extends Fragment {
 		super.onPause();
 	}
 	
-    @Override
-    public void onSaveInstanceState(Bundle outState){
-    	super.onSaveInstanceState(outState);
-    	// Save the current date
-    	outState.putLong(SAVED_DATE_KEY, curDate.getTime());
-    	//TODO Test!!
-    	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState){
+//    	super.onSaveInstanceState(outState);
+//    	// Save the current date
+//    	outState.putLong(SAVED_DATE_KEY, date.getTime());
+//    	//TODO Test!!
+//    	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
+//    }
 	
 	/**
 	 * Accessor method of halfServing
@@ -101,31 +100,11 @@ public class MainControlFragment extends Fragment {
 	 * @return current date
 	 */
 	public Date getDate(){
-		return curDate;
+		return date;
 	}
-	
-	/**
-     * Changes the current date based on the number of days to
-     * increment or decrement
-     * 
-     * @param days Number of days to add to the current date
-     */
-    public void changeDate(int days){
-    	// Save old data
-    	mListener.onPreDateChange();
-
-    	// Set new data
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(curDate);
-		cal.add(Calendar.DATE, days);
-		curDate = cal.getTime();
-		
-		mListener.onPostDateChange(curDate);
-		updateDateText();
-    }
     
     public void setDate(Date date){
-    	curDate = date;
+    	this.date = date;
     	updateDateText();
     }
     
@@ -150,13 +129,10 @@ public class MainControlFragment extends Fragment {
     	SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy");
 
     	TextView dateText = (TextView) getActivity().findViewById(R.id.date_text);
-    	dateText.setText(dateFormat.format(curDate));
+    	dateText.setText(dateFormat.format(date));
     }
     
-    
     public interface OnMainControlChangedListener{
-    	public void onPreDateChange();
-    	public void onPostDateChange(Date date);
     	public void onServingSizeChanged(boolean halfServing);
     }
 }

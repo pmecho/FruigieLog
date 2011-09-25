@@ -31,14 +31,23 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 public class FrugieLogActivity extends FragmentActivity implements OnMainControlChangedListener, OnServingChangedListener {
 	private long currentId;
     
     // Fragments
-    private MainControlFragment mainControlFrag;
 //    private ServingFragment servingFrag;
     private ServingPagerAdapter adapter;
+    
+    private Date currentDate;
+	/** Whether a half serving is selected */
+	private boolean halfServing;
+	
+	/** Constants for saved bundle keys */
+	private final String SAVED_DATE_KEY = "id";
+	private final String SAVED_HALF_SERVING_KEY = "serving";
     
     private int focusedPage = 1;
     
@@ -47,24 +56,46 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        Date date = new Date(111,8,1);
+        Date date;
+        boolean savedHalfServing;
+        
+        // Restore saved data
+        if(savedInstanceState != null){
+	        // Check for saved date
+	        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
+	        if(savedDate == 0L)
+	        	date = new Date();
+	        else
+	        	date = new Date(savedDate);
+	        
+	        // Set saved serving size, if empty then full serving will be set
+	        savedHalfServing = savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY);
+        }
+        else{
+        	date = new Date(111,8,1);
+        	savedHalfServing = false;
+        }
+        updateDateText(date);
         
         
+        
+        
+        
+        // Handle adapter and pager
 	    adapter = new ServingPagerAdapter(this, getSupportFragmentManager(), date);
+	    adapter.setServingSize(savedHalfServing);
+	    
 	    ViewPager pager =
 	        (ViewPager)findViewById( R.id.viewpager );
 	    pager.setAdapter( adapter );
 	    pager.setCurrentItem(focusedPage);
-
-	    
-	    
 	    
 	    pager.setOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                     focusedPage = position;
                     ServingFragment servingFrag = adapter.getServingFragment(focusedPage);
-                    mainControlFrag.setDate(servingFrag.getDate());
+                    updateDateText(servingFrag.getDate());
 //                    adapter.notifyDataSetChanged();
             }
 
@@ -82,12 +113,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
                     }
             }
     });
-	    
-        
-        // Get fragments
-    	mainControlFrag = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
-    	mainControlFrag.setDate(date);
-
 
         // Only create the chart onCreate, no need for persistence
         createHistoryChart();
@@ -96,6 +121,9 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
     @Override
     protected void onStart() {
         super.onStart();
+        
+        // Get fragments
+        Date date = new Date(111,8,1);
         // The activity is about to become visible.     
     }
     
@@ -122,7 +150,18 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
         super.onDestroy();
         // The activity is about to be destroyed.
     }
-
+    
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+    	super.onSaveInstanceState(outState);
+    	
+    	ServingFragment frag = adapter.getServingFragment(focusedPage);
+    	// Save the current date
+    	outState.putLong(SAVED_DATE_KEY, frag.getDate().getTime());
+    	//TODO Test!!
+    	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
+    }
+    
     /**
      * Update date and fruit/veggie servings from database given a date
      * 
@@ -217,6 +256,29 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
     }
     
     
+    /**
+     * Updates the date text cased on the current date
+     */
+    private void updateDateText(Date date){
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy");
+
+    	TextView dateText = (TextView) findViewById(R.id.date_text);
+    	dateText.setText(dateFormat.format(date));
+    }
+    
+    public void setHalfServing(boolean newServing, boolean updateRadios){
+    	if(updateRadios){
+        	RadioGroup radios = (RadioGroup) findViewById(R.id.serving_radio_group);
+        	if(newServing)
+        		radios.check(R.id.half_radio);
+        	else
+        		radios.check(R.id.full_radio);
+    	}
+    	halfServing = newServing;
+    	adapter.setServingSize(newServing);
+    }
+    
+    
     
     // BEGIN EVENT HANDLERS
     
@@ -256,8 +318,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
      * @param view View of caller
      */
     public void changeToFullServing(View view){
-    	mainControlFrag.setHalfServing(false, false);
-    	adapter.setServingSize(false);
+    	setHalfServing(false, false);
     }
     
     /**
@@ -266,28 +327,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
      * @param view View of caller
      */
     public void changeToHalfServing(View view){
-    	mainControlFrag.setHalfServing(true, false);
-    	adapter.setServingSize(true);
+    	setHalfServing(true, false);
     }
     
     // END EVENT HANDLERS
     
- 
-    
-
-
-	@Override
-	public void onPreDateChange() {
-		// Handle work prior to date being changed
-		saveData();
-		
-	}
-
-	@Override
-	public void onPostDateChange(Date date) {
-		// Handle work afer date is changed
-		updateData(date);
-	}
 
 	@Override
 	public void onServingSizeChanged(boolean halfServing) {
