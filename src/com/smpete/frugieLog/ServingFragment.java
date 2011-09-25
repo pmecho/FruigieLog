@@ -95,6 +95,10 @@ public class ServingFragment extends Fragment{
     	super.onSaveInstanceState(outState);
     }
     
+    public Date getDate(){
+    	return curDate;
+    }
+    
     /**
      * Update serving size and set correct fruit and vegetable images
      * @param newServing Value of new serving size

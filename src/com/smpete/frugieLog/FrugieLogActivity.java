@@ -63,6 +63,8 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
             @Override
             public void onPageSelected(int position) {
                     focusedPage = position;
+                    ServingFragment servingFrag = adapter.getServingFragment(focusedPage);
+                    mainControlFrag.setDate(servingFrag.getDate());
 //                    adapter.notifyDataSetChanged();
             }
 
@@ -77,67 +79,15 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
             public void onPageScrollStateChanged(int state) {
                     if (state == ViewPager.SCROLL_STATE_IDLE) {
                             Log.d("ElectricSleep", "IDLE at page " + focusedPage);
-                            
-
-//                            if (focusedPage == 0) {
-//                                    
-//                                    Time time = new Time(mTime);
-//                                    time.month-=2;
-//                                    time.normalize(true);
-//                                    MonthView mv = new MonthView(HistoryMonthActivity.this);
-//                                    mv.setLayoutParams(new ViewSwitcher.LayoutParams(
-//                                                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-//                                                    android.view.ViewGroup.LayoutParams.MATCH_PARENT));
-//                                    mv.setSelectedTime(time);
-//                                    
-//                                    //monthAdapter.replaceViewAt(monthPager, 0, mv);
-//                                    monthAdapter.destroyItem(monthPager, 2, monthPager.getChildAt(2));
-//                                    monthAdapter.destroyItem(monthPager, 1, monthPager.getChildAt(1));
-//                                    monthAdapter.destroyItem(monthPager, 0, monthPager.getChildAt(0));
-//                                    monthAdapter.instantiateItem(monthPager, 0);
-//                                    monthAdapter.instantiateItem(monthPager, 1);
-//                                    monthAdapter.instantiateItem(monthPager, 2);
-//                            } else if (focusedPage == 2) {
-//                                    mTime.month++;
-//                                    mTime.normalize(true);
-//                            }
-//
-//                            HistoryMonthActivity.this.setTitle(Utils.formatMonthYear(HistoryMonthActivity.this, mTime));
-//                            //monthAdapter.notifyDataSetChanged();
-//                            
-//                            // always set to middle page to continue to be able to
-//                            // scroll up/down
-//                            monthPager.setCurrentItem(1, false);
                     }
             }
     });
 	    
         
         // Get fragments
-
     	mainControlFrag = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
-//    	servingFrag = (ServingFragment) getSupportFragmentManager().findFragmentById(R.id.serving_fragment);
-        
-        // During initial setup, plug in the details fragment.
-//        MainControlFragment details = new MainControlFragment();
-//        details.setArguments(getIntent().getExtras());
-//        getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
-        
-        
 
-        // Gesture detection
-//        View mainView = (View) findViewById(R.id.screen_layout);
-//     
-//        gestureDetector = new GestureDetector(new MyGestureDetector());
-//        mainView.setOnTouchListener(new View.OnTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (gestureDetector.onTouchEvent(event)) {
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-        
+
         // Only create the chart onCreate, no need for persistence
         createHistoryChart();
     }

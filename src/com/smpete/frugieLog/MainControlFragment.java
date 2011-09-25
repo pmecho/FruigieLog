@@ -124,6 +124,11 @@ public class MainControlFragment extends Fragment {
 		updateDateText();
     }
     
+    public void setDate(Date date){
+    	curDate = date;
+    	updateDateText();
+    }
+    
     public void setHalfServing(boolean newServing, boolean updateRadios){
     	if(updateRadios){
         	RadioGroup radios = (RadioGroup) getActivity().findViewById(R.id.serving_radio_group);
