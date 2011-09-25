@@ -32,15 +32,15 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-public class FrugieLogActivity extends FragmentActivity implements OnClickListener, OnMainControlChangedListener, OnServingChangedListener {
+public class FrugieLogActivity extends FragmentActivity implements OnMainControlChangedListener, OnServingChangedListener {
 	private long currentId;
     
     // Fragments
     private MainControlFragment mainControlFrag;
-    private ServingFragment servingFrag;
+//    private ServingFragment servingFrag;
     private ServingPagerAdapter adapter;
     
-    private int focusedPage = 0;
+    private int focusedPage = 1;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,11 +50,12 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
         Date date = new Date(111,8,1);
         
         
-	    adapter = new ServingPagerAdapter(getSupportFragmentManager(), date);
+	    adapter = new ServingPagerAdapter(this, getSupportFragmentManager(), date);
 	    ViewPager pager =
 	        (ViewPager)findViewById( R.id.viewpager );
 	    pager.setAdapter( adapter );
-	    pager.setCurrentItem(1);
+	    pager.setCurrentItem(focusedPage);
+
 	    
 	    
 	    
@@ -76,6 +77,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
             public void onPageScrollStateChanged(int state) {
                     if (state == ViewPager.SCROLL_STATE_IDLE) {
                             Log.d("ElectricSleep", "IDLE at page " + focusedPage);
+                            
 
 //                            if (focusedPage == 0) {
 //                                    
@@ -155,7 +157,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     @Override
     public void onPause(){
     	super.onPause();
-    	saveData();
+//    	saveData();
     }
     
     @Override
@@ -274,6 +276,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
      * @param view View of caller
      */
     public void incrementPortion(View view){
+    	ServingFragment servingFrag = adapter.getServingFragment(focusedPage);
     	ImageButton button = (ImageButton)view;
     	if(button.getId() == R.id.inc_fruit_button)
     		servingFrag.modifyFruit(true);
@@ -288,6 +291,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
      * @param view View of caller
      */
     public void decrementPortion(View view){
+    	ServingFragment servingFrag = adapter.getServingFragment(focusedPage);
     	ImageButton button = (ImageButton)view;
     	if(button.getId() == R.id.dec_fruit_button)
     		servingFrag.modifyFruit(false);
@@ -314,48 +318,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
     }
     
     // END EVENT HANDLERS
-
-
-	public void onClick(View v) {
-		// TODO Auto-generated method stub	
-	}
     
-	
-	
-    
-//    /**
-//     * Rudimentary guesture handling, need to polish
-//     * 
-//     * @author peter
-//     *
-//     */
-//    class MyGestureDetector extends SimpleOnGestureListener {
-//        @Override
-//        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-//            try {
-//                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-//                    return false;
-//                // right to left swipe
-//                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-//                    //Toast.makeText(FrugieLogActivity.this, "Left Swipe", Toast.LENGTH_SHORT).show();
-//                    mainControlFrag.changeDate(1);
-//                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-//                    //Toast.makeText(FrugieLogActivity.this, "Right Swipe", Toast.LENGTH_SHORT).show();
-//                    mainControlFrag.changeDate(-1);
-//                }
-//            } catch (Exception e) {
-//                // nothing
-//            }
-//            return false;
-//        }
-//        
-//        // It is necessary to return true from onDown for the onFling event to register
-//        @Override
-//        public boolean onDown(MotionEvent e) {
-//            	return true;
-//        }
-//
-//    }
  
     
 
@@ -389,7 +352,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnClickListen
 	@Override
 	public void onSaveState(ServingFragment fragment) {
 		// TODO Auto-generated method stub
-    	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, currentId);
+    	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, fragment.getFruigieId());
 		ContentValues values = new ContentValues();
 		values.put(FrugieColumns.FRUIT, fragment.getFruitTenths());
 		values.put(FrugieColumns.VEGGIE, fragment.getVeggieTenths());

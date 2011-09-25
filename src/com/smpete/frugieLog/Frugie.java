@@ -143,6 +143,10 @@ public class Frugie{
 		this.veggieServingTenths = veggieServingTenths;
 	}
 	
+	public long getId() {
+		return id;
+	}
+
 	/**
 	 * Represents columns of the database table
 	 * 

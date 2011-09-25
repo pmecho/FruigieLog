@@ -1,32 +1,21 @@
 package com.smpete.frugieLog;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.smpete.frugieLog.Frugie.FrugieColumns;
 import com.smpete.frugieLog.Frugie.PortionSize;
-import com.smpete.frugieLog.MainControlFragment.OnMainControlChangedListener;
 
 import android.app.Activity;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 public class ServingFragment extends Fragment{
-	private long currentId;
     
 	private Frugie frugie;
 	/** Whether a half serving is selected */
@@ -34,10 +23,8 @@ public class ServingFragment extends Fragment{
 	
 	private Date curDate;
 	private OnServingChangedListener mListener;
-	
+	private View view;
 
-	static int i = 20;
-	
 	public ServingFragment(Date date){
 		curDate = date;
 	}
@@ -65,7 +52,7 @@ public class ServingFragment extends Fragment{
 		// Inflate the layout for this fragment
 		super.onCreateView(inflater, container, savedInstanceState);
 		
-		View view = inflater.inflate(R.layout.serving_fragment_layout, container, false);
+		view = inflater.inflate(R.layout.serving_fragment_layout, container, false);
 
     	DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
 
@@ -93,7 +80,6 @@ public class ServingFragment extends Fragment{
 	@Override
 	public void onResume(){
 		super.onResume();
-
         Log.d("ServingFrag", "Resume");
 	}
     
@@ -135,28 +121,23 @@ public class ServingFragment extends Fragment{
     {
     	DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
 
-    	TextView fruitText = (TextView) getActivity().findViewById(R.id.current_fruit_text);
+    	TextView fruitText = (TextView) view.findViewById(R.id.current_fruit_text);
     	fruitText.setText("" + oneDigit.format((double)frugie.getFruitServingTenths() / 10));
 
-    	TextView veggieText = (TextView) getActivity().findViewById(R.id.current_veggie_text);
+    	TextView veggieText = (TextView) view.findViewById(R.id.current_veggie_text);
     	veggieText.setText("" + oneDigit.format((double)frugie.getVeggieServingTenths() / 10));
     }
-    
-    
-//    public void setFruitTenths(short tenths){
-//    	currentFruit.setServingTenths(tenths);
-//    }
-//    
-//    public void setVeggieTenths(short tenths){
-//    	currentVeggie.setServingTenths(tenths);
-//    }
-//    
+
     public short getFruitTenths(){
     	return frugie.getFruitServingTenths();
     }
     
     public short getVeggieTenths(){
     	return frugie.getVeggieServingTenths();
+    }
+    
+    public long getFruigieId(){
+    	return frugie.getId();
     }
     
 
@@ -189,9 +170,6 @@ public class ServingFragment extends Fragment{
     	}
     	updateStatsText();
     }
-
-    
-    
     
     public interface OnServingChangedListener{
     	public void onServingChanged();
