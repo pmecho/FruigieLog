@@ -28,6 +28,12 @@ public class ServingPagerAdapter extends
 		//TODO Reload objects based on new date?
 	}
 	
+	public void setServingSize(boolean half){
+		for(ServingFragment frag : fragments){
+			frag.setHalfServing(half);
+		}
+	}
+	
 	public ServingFragment getServingFragment(int position){
 		return fragments[position];
 	}

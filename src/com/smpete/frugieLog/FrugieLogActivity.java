@@ -86,6 +86,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
         
         // Get fragments
     	mainControlFrag = (MainControlFragment) getSupportFragmentManager().findFragmentById(R.id.main_control_fragment);
+    	mainControlFrag.setDate(date);
 
 
         // Only create the chart onCreate, no need for persistence
@@ -256,6 +257,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
      */
     public void changeToFullServing(View view){
     	mainControlFrag.setHalfServing(false, false);
+    	adapter.setServingSize(false);
     }
     
     /**
@@ -265,6 +267,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
      */
     public void changeToHalfServing(View view){
     	mainControlFrag.setHalfServing(true, false);
+    	adapter.setServingSize(true);
     }
     
     // END EVENT HANDLERS

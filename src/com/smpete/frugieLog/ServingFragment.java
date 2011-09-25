@@ -105,8 +105,8 @@ public class ServingFragment extends Fragment{
      */
     public void setHalfServing(boolean newServing){
     	halfServing = newServing;
-    	ImageView fruitImage = (ImageView) getActivity().findViewById(R.id.fruit_image);
-    	ImageView veggieImage = (ImageView) getActivity().findViewById(R.id.veggie_image);
+    	ImageView fruitImage = (ImageView) view.findViewById(R.id.fruit_image);
+    	ImageView veggieImage = (ImageView) view.findViewById(R.id.veggie_image);
     	if(halfServing){
         	fruitImage.setImageResource(R.drawable.banana_half);
         	veggieImage.setImageResource(R.drawable.carrot_half);
