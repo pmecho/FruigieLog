@@ -34,7 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-public class FrugieLogActivity extends FragmentActivity implements OnMainControlChangedListener, OnServingChangedListener {
+public class FrugieLogActivity extends FragmentActivity implements OnServingChangedListener {
 	private long currentId;
     
     // Fragments
@@ -57,7 +57,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
         setContentView(R.layout.main);
         
         Date date;
-        boolean savedHalfServing;
         
         // Restore saved data
         if(savedInstanceState != null){
@@ -69,11 +68,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
 	        	date = new Date(savedDate);
 	        
 	        // Set saved serving size, if empty then full serving will be set
-	        savedHalfServing = savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY);
+	        halfServing = savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY);
         }
         else{
         	date = new Date(111,8,1);
-        	savedHalfServing = false;
+        	halfServing = false;
         }
         updateDateText(date);
         
@@ -83,7 +82,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
         
         // Handle adapter and pager
 	    adapter = new ServingPagerAdapter(this, getSupportFragmentManager(), date);
-	    adapter.setServingSize(savedHalfServing);
 	    
 	    ViewPager pager =
 	        (ViewPager)findViewById( R.id.viewpager );
@@ -121,9 +119,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
     @Override
     protected void onStart() {
         super.onStart();
-        
-        // Get fragments
-        Date date = new Date(111,8,1);
         // The activity is about to become visible.     
     }
     
@@ -160,58 +155,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
     	outState.putLong(SAVED_DATE_KEY, frag.getDate().getTime());
     	//TODO Test!!
     	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
-    }
-    
-    /**
-     * Update date and fruit/veggie servings from database given a date
-     * 
-     * @param date Date to update the data to
-     */
-    public void updateData(Date date){    	
-    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
-    	String formattedDate = dateFormat.format(date);
-    	
-    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
-    									null, 
-    									FrugieColumns.DATE +"='" + formattedDate + "'", 
-    									null, 
-    									null);
-    	if(cursor.moveToFirst()){
-    		int idColumn = cursor.getColumnIndex(FrugieColumns._ID);
-    		int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT);
-    		int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
-    		currentId = cursor.getLong(idColumn);
-//    		servingFrag.setFruitTenths(cursor.getShort(fruitColumn));
-//    		servingFrag.setVeggieTenths(cursor.getShort(veggieColumn));
-    	}
-    	else{ // Need to insert new entry!
-    		ContentValues values = new ContentValues();
-    		
-    		// Set defaults
-    		values.put(FrugieColumns.DATE, formattedDate);
-    		values.put(FrugieColumns.FRUIT, 0);
-    		values.put(FrugieColumns.VEGGIE, 0);
-    		
-    		
-    		Uri uri = getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
-    		currentId = ContentUris.parseId(uri);
-//    		servingFrag.setFruitTenths((short) 0);
-//    		servingFrag.setVeggieTenths((short) 0);
-    	}
-        
-//    	servingFrag.updateStatsText();
-    }
-    
-    /**
-     * Write current date's data to the database
-     */
-    private void saveData(){
-    	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, currentId);
-		ContentValues values = new ContentValues();
-//		values.put(FrugieColumns.FRUIT, servingFrag.getFruitTenths());
-//		values.put(FrugieColumns.VEGGIE, servingFrag.getVeggieTenths());
-    	
-    	getContentResolver().update(uri, values, null, null);
     }
 
 	/**
@@ -333,19 +276,17 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
     // END EVENT HANDLERS
     
 
-	@Override
-	public void onServingSizeChanged(boolean halfServing) {
-		// Handle work on a serving size change
-//		servingFrag.setHalfServing(halfServing);
-		
-	}
-
+    
+    // Callbacks from serving fragment
 	@Override
 	public void onServingChanged() {
 		// TODO Auto-generated method stub
 		
 	}
-
+    
+    /**
+     * Write current date's data to the database
+     */
 	@Override
 	public void onSaveState(ServingFragment fragment) {
 		// TODO Auto-generated method stub
@@ -357,6 +298,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
     	getContentResolver().update(uri, values, null, null);
 	}
 
+    /**
+     * Update date and fruit/veggie servings from database given a date
+     * 
+     * @param date Date to update the data to
+     */
 	@Override
 	public Frugie onLoadData(Date date) {
 		// TODO Auto-generated method stub
@@ -389,5 +335,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnMainControl
     		currentId = ContentUris.parseId(uri);
     		return new Frugie(ContentUris.parseId(uri), (short)0, (short)0);
     	}
+	}
+
+	@Override
+	public boolean onCheckHalfServing() {
+		// TODO Auto-generated method stub
+		return halfServing;
 	}
 }

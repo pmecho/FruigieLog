@@ -21,6 +21,16 @@ public class ServingPagerAdapter extends
 		this.date = date;
 		mActivity = activity;
 		// TODO Auto-generated constructor stub
+		
+//		Calendar cal = Calendar.getInstance();
+//		cal.setTime(date);
+//		cal.add(Calendar.DATE, -1);
+//		
+//		for(int i = 0; i < 3; i++, cal.add(Calendar.DATE, 1)){
+//			fragments[i] = new ServingFragment(cal.getTime());
+//		}
+
+		
 	}
 
 	public void setDate(Date date){
@@ -49,6 +59,8 @@ public class ServingPagerAdapter extends
 		ServingFragment frag = new ServingFragment(cal.getTime());
 		fragments[position] = frag;
 		return frag;
+		
+//		return fragments[position];
 	}
 	
 	@Override

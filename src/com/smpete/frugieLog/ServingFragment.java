@@ -68,9 +68,10 @@ public class ServingFragment extends Fragment{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
-		
-		RadioButton halfRB = (RadioButton) getActivity().findViewById(R.id.half_radio);
-		setHalfServing(halfRB.isChecked());
+//		
+//		RadioButton halfRB = (RadioButton) getActivity().findViewById(R.id.half_radio);
+//		setHalfServing(halfRB.isChecked());
+		setHalfServing(mListener.onCheckHalfServing());
 	}
 
 	@Override
@@ -175,5 +176,6 @@ public class ServingFragment extends Fragment{
     	public void onServingChanged();
     	public void onSaveState(ServingFragment fragment);
     	public Frugie onLoadData(Date date);
+    	public boolean onCheckHalfServing();
     }
 }
