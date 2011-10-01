@@ -10,7 +10,6 @@ import org.achartengine.GraphicalView;
 import com.smpete.frugieLog.charting.*;
 
 import com.smpete.frugieLog.Frugie.FrugieColumns;
-import com.smpete.frugieLog.MainControlFragment.OnMainControlChangedListener;
 import com.smpete.frugieLog.R;
 import com.smpete.frugieLog.ServingFragment.OnServingChangedListener;
 
@@ -23,11 +22,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -35,13 +30,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 public class FrugieLogActivity extends FragmentActivity implements OnServingChangedListener {
-	private long currentId;
     
     // Fragments
 //    private ServingFragment servingFrag;
     private ServingPagerAdapter adapter;
     
-    private Date currentDate;
 	/** Whether a half serving is selected */
 	private boolean halfServing;
 	
@@ -49,7 +42,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
 	private final String SAVED_DATE_KEY = "id";
 	private final String SAVED_HALF_SERVING_KEY = "serving";
     
-    private int focusedPage = 1;
+    private int focusedPage = 5;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,7 +74,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
         
         
         // Handle adapter and pager
-	    adapter = new ServingPagerAdapter(this, getSupportFragmentManager(), date);
+	    adapter = new ServingPagerAdapter(getSupportFragmentManager(), date);
 	    
 	    ViewPager pager =
 	        (ViewPager)findViewById( R.id.viewpager );
@@ -332,7 +325,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
     		
     		
     		Uri uri = getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
-    		currentId = ContentUris.parseId(uri);
     		return new Frugie(ContentUris.parseId(uri), (short)0, (short)0);
     	}
 	}

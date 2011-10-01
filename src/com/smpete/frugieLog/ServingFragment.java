@@ -2,6 +2,7 @@ package com.smpete.frugieLog;
 
 import java.text.DecimalFormat;
 import java.util.Date;
+
 import com.smpete.frugieLog.Frugie.PortionSize;
 
 import android.app.Activity;
@@ -12,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class ServingFragment extends Fragment{
@@ -24,9 +24,15 @@ public class ServingFragment extends Fragment{
 	private Date curDate;
 	private OnServingChangedListener mListener;
 	private View view;
+	
+	public static ServingFragment newInstance(long date){
+		ServingFragment frag = new ServingFragment();
 
-	public ServingFragment(Date date){
-		curDate = date;
+        // Supply num input as an argument.
+        Bundle args = new Bundle();
+        args.putLong("date", date);
+        frag.setArguments(args);
+		return frag;
 	}
 	
     @Override
@@ -44,6 +50,8 @@ public class ServingFragment extends Fragment{
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+
+        curDate = getArguments() != null ? (new Date(getArguments().getLong("date"))) : (new Date());
 		frugie = mListener.onLoadData(curDate);
 	}
 	

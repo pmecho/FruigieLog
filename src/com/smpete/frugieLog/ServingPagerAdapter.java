@@ -2,34 +2,23 @@ package com.smpete.frugieLog;
 
 import java.util.Calendar;
 import java.util.Date;
-
-import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
+
 public class ServingPagerAdapter extends
 		android.support.v4.app.FragmentPagerAdapter {
 
+	private static final int COUNT = 11;
 	private Date date;
-	private ServingFragment[] fragments = new ServingFragment[3];
-	private Activity mActivity;
+	private static ServingFragment[] fragments = new ServingFragment[COUNT];
 	
-	public ServingPagerAdapter(Activity activity, FragmentManager fm, Date date) {
+	public ServingPagerAdapter(FragmentManager fm, Date date) {
 		super(fm);
 		this.date = date;
-		mActivity = activity;
-		// TODO Auto-generated constructor stub
 		
-//		Calendar cal = Calendar.getInstance();
-//		cal.setTime(date);
-//		cal.add(Calendar.DATE, -1);
-//		
-//		for(int i = 0; i < 3; i++, cal.add(Calendar.DATE, 1)){
-//			fragments[i] = new ServingFragment(cal.getTime());
-//		}
-
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, -1);
 		
 	}
 
@@ -50,23 +39,19 @@ public class ServingPagerAdapter extends
 	
 	@Override
 	public Fragment getItem(int position) {
-		// TODO Auto-generated method stub
-		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
-		cal.add(Calendar.DATE, position - 1);
+		cal.add(Calendar.DATE, position - 5);
 		
-		ServingFragment frag = new ServingFragment(cal.getTime());
+		ServingFragment frag = ServingFragment.newInstance(cal.getTimeInMillis());
 		fragments[position] = frag;
 		return frag;
-		
-//		return fragments[position];
 	}
 	
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return 3;
+		return COUNT;
 	}
 
 }
