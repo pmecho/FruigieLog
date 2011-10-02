@@ -51,6 +51,7 @@ public class ServingFragment extends Fragment{
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 
+        Log.d("ServingFrag", "Create");
         curDate = getArguments() != null ? (new Date(getArguments().getLong("date"))) : (new Date());
 		frugie = mListener.onLoadData(curDate);
 	}
@@ -76,9 +77,7 @@ public class ServingFragment extends Fragment{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
-//		
-//		RadioButton halfRB = (RadioButton) getActivity().findViewById(R.id.half_radio);
-//		setHalfServing(halfRB.isChecked());
+
 		setHalfServing(mListener.onCheckHalfServing());
 	}
 
@@ -93,6 +92,12 @@ public class ServingFragment extends Fragment{
 		super.onPause();
 		mListener.onSaveState(this);
         Log.d("ServingFrag", "Pause");
+	}
+	
+	@Override
+	public void onStop(){
+		super.onStop();
+        Log.d("ServingFrag", "Stop");
 	}
 	
     @Override

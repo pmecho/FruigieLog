@@ -33,7 +33,8 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
     
     // Fragments
 //    private ServingFragment servingFrag;
-    private ServingPagerAdapter adapter;
+    private MyFragmentStatePagerAdapter adapter;
+    private ViewPager pager;
     
 	/** Whether a half serving is selected */
 	private boolean halfServing;
@@ -41,43 +42,50 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
 	/** Constants for saved bundle keys */
 	private final String SAVED_DATE_KEY = "id";
 	private final String SAVED_HALF_SERVING_KEY = "serving";
+	private final String SAVED_FOCUSED_PAGE_KEY = "focusedPage";
     
-    private int focusedPage = 5;
+    private int focusedPage = -1;
+    
+    private Date centralDate;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        Date date;
-        
         // Restore saved data
         if(savedInstanceState != null){
 	        // Check for saved date
 	        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
 	        if(savedDate == 0L)
-	        	date = new Date();
+	        	centralDate = new Date();
 	        else
-	        	date = new Date(savedDate);
+	        	centralDate = new Date(savedDate);
 	        
 	        // Set saved serving size, if empty then full serving will be set
 	        halfServing = savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY);
+	        
+	        // Get focused page 
+	        focusedPage = savedInstanceState.getInt(SAVED_FOCUSED_PAGE_KEY, -1);
         }
         else{
-        	date = new Date(111,8,1);
+        	centralDate = new Date();
+//        	date = new Date(111,8,1);
         	halfServing = false;
         }
-        updateDateText(date);
-        
-        
-        
-        
-        
+
         // Handle adapter and pager
-	    adapter = new ServingPagerAdapter(getSupportFragmentManager(), date);
+	    pager = (ViewPager)findViewById( R.id.viewpager );
+	    adapter = new MyFragmentStatePagerAdapter(getSupportFragmentManager(), centralDate);
 	    
-	    ViewPager pager =
-	        (ViewPager)findViewById( R.id.viewpager );
+	    // Set focused page if it hasn't been saved to the middle.
+	    if(focusedPage == -1){
+	    	focusedPage = (int)Math.floor(adapter.getCount()/ 2);
+	    }
+	    
+	    // Update date text appropriately
+	    updateDateText(adapter.getDateOfItem(focusedPage));
+	    
 	    pager.setAdapter( adapter );
 	    pager.setCurrentItem(focusedPage);
 	    
@@ -87,22 +95,20 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
                     focusedPage = position;
                     ServingFragment servingFrag = adapter.getServingFragment(focusedPage);
                     updateDateText(servingFrag.getDate());
-//                    adapter.notifyDataSetChanged();
             }
 
-            @Override
-            public void onPageScrolled(int position, float positionOffset,
-                            int positionOffsetPixels) {
+			@Override
+			public void onPageScrolled(int position, float positionOffset,
+					int positionOffsetPixels) {
+				// TODO Auto-generated method stub
+				
+			}
 
-//                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                    if (state == ViewPager.SCROLL_STATE_IDLE) {
-                            Log.d("ElectricSleep", "IDLE at page " + focusedPage);
-                    }
-            }
+			@Override
+			public void onPageScrollStateChanged(int state) {
+				// TODO Auto-generated method stub
+				
+			}
     });
 
         // Only create the chart onCreate, no need for persistence
@@ -143,11 +149,11 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
     public void onSaveInstanceState(Bundle outState){
     	super.onSaveInstanceState(outState);
     	
-    	ServingFragment frag = adapter.getServingFragment(focusedPage);
     	// Save the current date
-    	outState.putLong(SAVED_DATE_KEY, frag.getDate().getTime());
+    	outState.putLong(SAVED_DATE_KEY, centralDate.getTime());
     	//TODO Test!!
     	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
+    	outState.putInt(SAVED_FOCUSED_PAGE_KEY, focusedPage);
     }
 
 	/**
