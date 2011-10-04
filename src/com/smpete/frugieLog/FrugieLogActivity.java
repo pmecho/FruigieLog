@@ -22,6 +22,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
@@ -154,6 +156,13 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
     	//TODO Test!!
     	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
     	outState.putInt(SAVED_FOCUSED_PAGE_KEY, focusedPage);
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
     }
 
 	/**
