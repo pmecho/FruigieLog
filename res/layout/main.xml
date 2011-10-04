@@ -4,188 +4,54 @@
 		android:orientation="vertical" 
 		android:layout_width="fill_parent" 
 		android:layout_height="fill_parent">
-        <RelativeLayout android:id="@+id/day_nav_layout" 
-        	android:layout_height="wrap_content" 
-        	android:layout_width="fill_parent" 
-        	android:gravity="left">
-			<ImageButton android:id="@+id/dec_day_button"
-				android:src="@drawable/left_arrow_button" 
-            	android:background="@null"
-            	android:onClick="changeDate"
-            	android:layout_height="wrap_content"
-      			android:layout_width="wrap_content"
-				android:layout_weight="1"
-         		android:layout_centerVertical="true" 
-     			android:layout_alignParentLeft="true" 
-     			android:layout_marginLeft="10dp" 
-     			android:layout_marginRight="10dp" 
-     			android:layout_marginTop="10dp" 
-     			android:layout_marginBottom="10dp">
-           	</ImageButton>
-           	<RelativeLayout android:id="@+id/date_layout" 
+		
+	<RelativeLayout android:id="@+id/main_control_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<TextView android:id="@+id/date_text"
+	      	android:text="Monday, August 22, 2011"
+	      	android:layout_height="wrap_content"
+	      	android:layout_width="wrap_content"
+	      	android:layout_centerHorizontal="true">
+	  	</TextView>
+		<RadioGroup android:id="@+id/serving_radio_group" 
+			android:layout_height="wrap_content" 
+	     	android:layout_width="wrap_content" 
+	     	android:orientation="horizontal"
+	     	android:layout_below="@id/date_text">
+			<TextView android:id="@+id/serving_text"
+				android:text="Serving Size: "
+	         	android:textAppearance="?android:attr/textAppearanceMedium" 
+	         	android:layout_height="wrap_content"
+				android:layout_width="wrap_content" 
+				android:layout_marginLeft="10dp">
+			</TextView>
+			<RadioButton android:id="@+id/full_radio" 
 				android:layout_height="wrap_content" 
-				android:layout_width="wrap_content"
-				android:gravity="center" 
-     			android:layout_centerInParent="true" 
-           		android:layout_alignParentTop="true">
-           		<TextView android:id="@+id/day_text"
-	            	android:text="Monday"
-	            	android:layout_height="wrap_content"
-	            	android:layout_width="wrap_content"
-	            	android:layout_centerHorizontal="true">
-	           	</TextView>
-	            <TextView android:id="@+id/date_text"
-	            	android:text="August 22, 2011"
-	            	android:layout_below="@id/day_text"
-	            	android:layout_height="wrap_content"
-	            	android:layout_width="wrap_content"
-	            	android:layout_centerHorizontal="true" 
-	            	android:layout_centerInParent="true">
-	           	</TextView>
-           	</RelativeLayout>
-           	<ImageButton android:id="@+id/inc_day_button"
-				android:src="@drawable/right_arrow_button" 
-            	android:background="@null"
-            	android:onClick="changeDate"
-            	android:layout_height="wrap_content"
-      			android:layout_width="wrap_content"
-            	android:layout_weight="1"
-         		android:layout_centerVertical="true" 
-         		android:layout_alignParentRight="true" 
-         		android:layout_marginLeft="10dp" 
-         		android:layout_marginRight="10dp" 
-         		android:layout_marginTop="10dp" 
-         		android:layout_marginBottom="10dp">
-           	</ImageButton>
-   		</RelativeLayout>
-        <LinearLayout android:id="@+id/serving_layout"
-         	android:layout_width="wrap_content"
-         	android:layout_height="wrap_content">
-	        <RadioGroup android:id="@+id/serving_radio_group" 
-	        	android:layout_height="wrap_content" 
-	        	android:layout_width="wrap_content" 
-	        	android:orientation="horizontal">
-	            <TextView android:id="@+id/serving_text"
-	            	android:text="Serving Size: "
-	            	android:textAppearance="?android:attr/textAppearanceMedium" 
-	            	android:layout_height="wrap_content"
-					android:layout_width="wrap_content" 
-					android:layout_marginLeft="10dp">
-				</TextView>
-	            <RadioButton android:id="@+id/full_radio" 
-		            android:layout_height="wrap_content" 
-		            android:text="Full" 
-		            android:layout_width="wrap_content" 
-		            android:checked="true" 
-		            android:layout_marginLeft="5dp" 
-		            android:layout_marginRight="5dp"
-		            android:onClick="changeToFullServing">
-	            </RadioButton>
-	            <RadioButton android:id="@+id/half_radio" 
-		            android:layout_height="wrap_content" 
-		            android:text="Half" 
-		            android:layout_width="wrap_content" 
-		            android:layout_marginLeft="5dp" 
-		            android:layout_marginRight="5dp"
-		            android:onClick="changeToHalfServing">
-	            </RadioButton>
-	        </RadioGroup>
-        </LinearLayout>
-        <RelativeLayout android:id="@+id/fruit_layout" 
-        	android:layout_height="100dp" 
-        	android:baselineAligned="true" 
-        	android:layout_width="wrap_content" 
-        	android:gravity="left">
-            <ImageView android:id="@+id/fruit_image"
-            	android:src="@drawable/banana" 
-				android:layout_marginLeft="10dp"
-				android:layout_marginRight="10dp"
-				android:layout_height="100dp"
-				android:layout_width="75dp"
-				android:layout_centerVertical="true" 
-				android:layout_alignParentLeft="true">
-  			</ImageView>
-            <ImageButton android:id="@+id/dec_fruit_button"
-            	android:src="@drawable/minus_button" 
-            	android:layout_height="wrap_content" 
-            	android:background="@null"
-            	android:layout_toRightOf="@id/fruit_image" 
-            	android:onClick="decrementPortion"
-            	android:layout_weight="1"
-            	android:layout_centerVertical="true"
-            	android:layout_width="wrap_content">
-           	</ImageButton>
-            <TextView android:id="@+id/current_fruit_text"
-            	android:layout_toRightOf="@id/dec_fruit_button"
-            	android:text="0.0" 
-            	android:textAppearance="?android:attr/textAppearanceLarge" 
-            	android:layout_height="wrap_content" 
-            	android:layout_weight="1"
-            	android:layout_width="45dp"
-            	android:layout_centerVertical="true"
-				android:gravity="center"
-            	android:layout_marginLeft="15dp"
-            	android:layout_marginRight="15dp">
-           	</TextView>
-            <ImageButton android:id="@+id/inc_fruit_button"
-            	android:src="@drawable/plus_button" 
-            	android:layout_height="wrap_content" 
-				android:layout_toRightOf="@id/current_fruit_text"
-            	android:background="@null"
-            	android:onClick="incrementPortion"
-            	android:layout_weight="1"
-            	android:layout_width="wrap_content"
-            	android:layout_centerVertical="true">
-           	</ImageButton>
-        </RelativeLayout>
-        
-		<RelativeLayout android:id="@+id/veggie_layout" 
-			android:layout_height="100dp" 
-			android:baselineAligned="true" 
-			android:layout_width="wrap_content" 
-			android:gravity="left">
-            <ImageView android:id="@+id/veggie_image"
-				android:src="@drawable/carrot" 
-				android:layout_marginLeft="10dp"
-				android:layout_marginRight="10dp"
-				android:layout_height="100dp"
-				android:layout_width="75dp"
-				android:layout_centerVertical="true" 
-				android:layout_alignParentLeft="true">
-			</ImageView>
-            <ImageButton android:id="@+id/dec_veggie_button"
-            	android:src="@drawable/minus_button" 
-            	android:layout_height="wrap_content" 
-            	android:background="@null"
-            	android:layout_toRightOf="@id/veggie_image" 
-            	android:onClick="decrementPortion"
-            	android:layout_weight="1"
-            	android:layout_centerVertical="true"
-            	android:layout_width="wrap_content">
-           	</ImageButton>
-            <TextView android:id="@+id/current_veggie_text"
-            	android:layout_toRightOf="@id/dec_veggie_button"
-            	android:text="0.0" 
-            	android:textAppearance="?android:attr/textAppearanceLarge" 
-            	android:layout_height="wrap_content" 
-            	android:layout_weight="1"
-            	android:layout_width="45dp"
-            	android:layout_centerVertical="true"
-				android:gravity="center"
-            	android:layout_marginLeft="15dp"
-            	android:layout_marginRight="15dp">
-           	</TextView>
-            <ImageButton android:id="@+id/inc_veggie_button"
-            	android:src="@drawable/plus_button" 
-            	android:layout_height="wrap_content" 
-				android:layout_toRightOf="@id/current_veggie_text"
-            	android:background="@null"
-            	android:onClick="incrementPortion"
-            	android:layout_weight="1"
-            	android:layout_width="wrap_content"
-            	android:layout_centerVertical="true">
-           	</ImageButton>
-        </RelativeLayout>
+				android:text="Full" 
+				android:layout_width="wrap_content" 
+				android:checked="true" 
+				android:layout_marginLeft="5dp" 
+				android:layout_marginRight="5dp"
+				android:onClick="changeToFullServing">
+			</RadioButton>
+			<RadioButton android:id="@+id/half_radio" 
+				android:layout_height="wrap_content" 
+				android:text="Half" 
+				android:layout_width="wrap_content" 
+				android:layout_marginLeft="5dp" 
+				android:layout_marginRight="5dp"
+				android:onClick="changeToHalfServing">
+			</RadioButton>
+		</RadioGroup>
+	</RelativeLayout>
+            
+    	<android.support.v4.view.ViewPager
+	        android:id="@+id/viewpager"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1" />
+       
         
         <LinearLayout android:id="@+id/chart_layout" android:orientation="horizontal"
 		android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" />
