@@ -34,7 +34,7 @@ public class HistoryChart {
 	 */
 	public HistoryChart(Context context, double[] fruits, double[] veggies, double[] count){
         // Build dataset
-        String[] titles = new String[] { "Veggie", "Fruit" };
+        String[] titles = new String[] { "Fruit", "Veggie" };
         List<double[]> xValues = new ArrayList<double[]>();
         List<double[]> yValues = new ArrayList<double[]>();
         xValues.add(count);
@@ -44,7 +44,7 @@ public class HistoryChart {
         dataset = createDataset(titles, xValues, yValues, 0);
 
         // Create renderer
-        int[] colors = new int[] { Color.GREEN, Color.RED };
+        int[] colors = new int[] { Color.RED, Color.GREEN };
         PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE, PointStyle.DIAMOND };
         renderer = createRenderer(colors, styles, getMax(fruits, veggies));
         
