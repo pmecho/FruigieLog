@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">FrugieLog</string>
     <string name="menu_about">About</string>
     <string name="menu_report">Report</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="serving_size">Serving Size:</string>
+    <string name="full">Full</string>
+    <string name="half">Half</string>
+    <string name="empty_count">0.0</string>
+    <string name="cd_dec_fruit">Decrement fruit serving</string>
+    <string name="cd_inc_fruit">Increment fruit serving</string>
+    <string name="cd_dec_veggie">Decrement veggie serving</string>
+    <string name="cd_inc_veggie">Increment veggie serving</string>
+    <string name="cd_fruit_image">Fruit image</string>
+    <string name="cd_veggie_image">Veggie image</string>
+
 </resources>

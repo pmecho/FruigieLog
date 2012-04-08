@@ -1,42 +1,44 @@
 package com.smpete.frugieLog;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
-
-
-import com.smpete.frugieLog.charting.*;
-
-import com.smpete.frugieLog.Frugie.FrugieColumns;
-import com.smpete.frugieLog.R;
-import com.smpete.frugieLog.ServingFragment.OnServingChangedListener;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
-public class FrugieLogActivity extends FragmentActivity implements OnServingChangedListener {
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.smpete.frugieLog.Frugie.FrugieColumns;
+import com.smpete.frugieLog.ServingFragment.OnServingChangedListener;
+import com.smpete.frugieLog.charting.HistoryChart;
+
+public class FrugieLogActivity extends SherlockFragmentActivity implements OnServingChangedListener {
     
+
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
+	private static final SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+	
     // Fragments
 //    private ServingFragment servingFrag;
-    private MyFragmentStatePagerAdapter adapter;
-    private ViewPager pager;
+    private ServingPagerAdapter adapter;
+    private ViewPager mPager;
     
 	/** Whether a half serving is selected */
 	private boolean halfServing;
@@ -46,7 +48,7 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
 	private final String SAVED_HALF_SERVING_KEY = "serving";
 	private final String SAVED_FOCUSED_PAGE_KEY = "focusedPage";
     
-    private int focusedPage = -1;
+    private int mFocusedPage = -1;
     
     private Date centralDate;
     
@@ -68,59 +70,43 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
 	        halfServing = savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY);
 	        
 	        // Get focused page 
-	        focusedPage = savedInstanceState.getInt(SAVED_FOCUSED_PAGE_KEY, -1);
+	        setFocusedPage(savedInstanceState.getInt(SAVED_FOCUSED_PAGE_KEY, -1));
         }
         else{
         	centralDate = new Date();
-//        	date = new Date(111,8,1);
         	halfServing = false;
         }
 
         // Handle adapter and pager
-	    pager = (ViewPager)findViewById( R.id.viewpager );
-	    adapter = new MyFragmentStatePagerAdapter(getSupportFragmentManager(), centralDate);
+	    mPager = (ViewPager)findViewById( R.id.viewpager );
+	    adapter= new ServingPagerAdapter(getSupportFragmentManager(), centralDate);
 	    
 	    // Set focused page if it hasn't been saved to the middle.
-	    if(focusedPage == -1){
-	    	focusedPage = (int)Math.floor(adapter.getCount()/ 2);
+	    if(mFocusedPage == -1){
+	    	setFocusedPage(ServingPagerAdapter.MIDDLE);
 	    }
 	    
-	    // Update date text appropriately
-	    updateDateText(adapter.getDateOfItem(focusedPage));
+	    mPager.setAdapter( adapter );
+	    mPager.setCurrentItem(mFocusedPage);
 	    
-	    pager.setAdapter( adapter );
-	    pager.setCurrentItem(focusedPage);
-	    
-	    pager.setOnPageChangeListener(new OnPageChangeListener() {
+	    mPager.setOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                    focusedPage = position;
-                    ServingFragment servingFrag = adapter.getServingFragment(focusedPage);
-                    updateDateText(servingFrag.getDate());
+                    setFocusedPage(position);
             }
 
 			@Override
 			public void onPageScrolled(int position, float positionOffset,
 					int positionOffsetPixels) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
 			public void onPageScrollStateChanged(int state) {
-				// TODO Auto-generated method stub
-				
 			}
-    });
-
+	    });
+	    
         // Only create the chart onCreate, no need for persistence
         createHistoryChart();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // The activity is about to become visible.     
     }
     
     @Override
@@ -136,18 +122,6 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
     }
     
     @Override
-    protected void onStop() {
-        super.onStop();
-        // The activity is no longer visible (it is now "stopped")
-    }
-    
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // The activity is about to be destroyed.
-    }
-    
-    @Override
     public void onSaveInstanceState(Bundle outState){
     	super.onSaveInstanceState(outState);
     	
@@ -155,15 +129,15 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
     	outState.putLong(SAVED_DATE_KEY, centralDate.getTime());
     	//TODO Test!!
     	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
-    	outState.putInt(SAVED_FOCUSED_PAGE_KEY, focusedPage);
+    	outState.putInt(SAVED_FOCUSED_PAGE_KEY, mFocusedPage);
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.main_menu, menu);
+//        return true;
+//    }
 
 	/**
      * Creates the history chart and adds it to the view
@@ -206,15 +180,32 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
         }
     }
     
-    
     /**
-     * Updates the date text cased on the current date
+     * Set focused page and update the action bar's title
+     * @param focusedPage
      */
-    private void updateDateText(Date date){
-    	SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy");
+    private void setFocusedPage(int focusedPage) {
+    	mFocusedPage = focusedPage;
+    	
+    	Calendar cal = Calendar.getInstance();
+    	cal.add(Calendar.DATE, mFocusedPage - ServingPagerAdapter.MIDDLE);
+    	
+    	Calendar today = Calendar.getInstance(); // today
+    	Calendar yesterday = Calendar.getInstance();
+    	yesterday.add(Calendar.DAY_OF_YEAR, -1); // yesterday
 
-    	TextView dateText = (TextView) findViewById(R.id.date_text);
-    	dateText.setText(dateFormat.format(date));
+    	// Use "Today" if date is today
+    	if (cal.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+    			&& cal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+    		getSupportActionBar().setTitle(R.string.today);
+    	} else if (cal.get(Calendar.YEAR) == yesterday.get(Calendar.YEAR)
+    			&& cal.get(Calendar.DAY_OF_YEAR) == yesterday.get(Calendar.DAY_OF_YEAR)) {
+    		getSupportActionBar().setTitle(R.string.yesterday);
+    	} else {
+    		getSupportActionBar().setTitle(dayFormat.format(cal.getTime()));
+    	}
+    	
+    	getSupportActionBar().setSubtitle(dateFormat.format(cal.getTime()));
     }
     
     public void setHalfServing(boolean newServing, boolean updateRadios){
@@ -226,42 +217,9 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
         		radios.check(R.id.full_radio);
     	}
     	halfServing = newServing;
-    	adapter.setServingSize(newServing);
     }
-    
-    
     
     // BEGIN EVENT HANDLERS
-    
-    /**
-     * Called from a view - Increments portion of a fruit or veggie, 
-     * based on the view
-     * 
-     * @param view View of caller
-     */
-    public void incrementPortion(View view){
-    	ServingFragment servingFrag = adapter.getServingFragment(focusedPage);
-    	ImageButton button = (ImageButton)view;
-    	if(button.getId() == R.id.inc_fruit_button)
-    		servingFrag.modifyFruit(true);
-    	else
-    		servingFrag.modifyVeggie(true);
-    }
-    
-    /**
-     * Called from a view - Decrements portion of a fruit or veggie, 
-     * based on the view
-     * 
-     * @param view View of caller
-     */
-    public void decrementPortion(View view){
-    	ServingFragment servingFrag = adapter.getServingFragment(focusedPage);
-    	ImageButton button = (ImageButton)view;
-    	if(button.getId() == R.id.dec_fruit_button)
-    		servingFrag.modifyFruit(false);
-    	else
-    		servingFrag.modifyVeggie(false);
-    }
     
     /**
      * Called from a view - changes serving size to full serving
@@ -349,4 +307,46 @@ public class FrugieLogActivity extends FragmentActivity implements OnServingChan
 		// TODO Auto-generated method stub
 		return halfServing;
 	}
+	
+	
+	private class ServingPagerAdapter extends FragmentStatePagerAdapter {
+
+		private static final int COUNT = Short.MAX_VALUE;
+		public static final int MIDDLE = Short.MAX_VALUE / 2;
+		
+		private Date date;
+		
+		public ServingPagerAdapter(FragmentManager fm, Date date) {
+			super(fm);
+			this.date = date;
+		}
+
+		public ServingFragment getServingFragment(int position){
+			return (ServingFragment)getItem(mPager.getCurrentItem());
+		}
+		
+		@Override
+		public Fragment getItem(int position) {
+			Log.v("ServingPagerAdapter", "getItem: " + position);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+			cal.add(Calendar.DATE, position - MIDDLE);
+			
+			ServingFragment frag = ServingFragment.newInstance(cal.getTimeInMillis(), halfServing);
+			return frag;
+		}
+		
+		@Override
+		public int getCount() {
+			return COUNT;
+		}
+		
+		@Override
+		public void setPrimaryItem(ViewGroup container, int position,
+				Object object) {
+			super.setPrimaryItem(container, position, object);
+			((ServingFragment)object).setHalfServing(halfServing);
+		}
+	}
+
 }

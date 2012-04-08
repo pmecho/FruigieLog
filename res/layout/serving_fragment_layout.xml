@@ -1,102 +1,117 @@
-<LinearLayout android:id="@+id/screen_layout" 
-		xmlns:android="http://schemas.android.com/apk/res/android" 
-		android:orientation="vertical" 
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent">
-			
-	 <RelativeLayout android:id="@+id/fruit_layout" 
-		android:layout_height="100dp" 
-		android:baselineAligned="true" 
-		android:layout_width="wrap_content" 
-		android:gravity="left">
-		<ImageView android:id="@+id/fruit_image"
-			android:src="@drawable/banana" 
-			android:layout_marginLeft="10dp"
-			android:layout_marginRight="10dp"
-			android:layout_height="100dp"
-			android:layout_width="75dp"
-			android:layout_centerVertical="true" 
-			android:layout_alignParentLeft="true">
-		</ImageView>
-	    <ImageButton android:id="@+id/dec_fruit_button"
-			android:src="@drawable/minus_button" 
-			android:layout_height="wrap_content" 
-			android:background="@null"
-			android:layout_toRightOf="@id/fruit_image" 
-			android:onClick="decrementPortion"
-			android:layout_weight="1"
-			android:layout_centerVertical="true"
-			android:layout_width="wrap_content">
-		</ImageButton>
-		<TextView android:id="@+id/current_fruit_text"
-			android:layout_toRightOf="@id/dec_fruit_button"
-			android:text="0.0" 
-			android:textAppearance="?android:attr/textAppearanceLarge" 
-			android:layout_height="wrap_content" 
-			android:layout_weight="1"
-			android:layout_width="45dp"
-			android:layout_centerVertical="true"
-			android:gravity="center"
-			android:layout_marginLeft="15dp"
-			android:layout_marginRight="15dp">
-		</TextView>
-		<ImageButton android:id="@+id/inc_fruit_button"
-	       	android:src="@drawable/plus_button" 
-	       	android:layout_height="wrap_content" 
-			android:layout_toRightOf="@id/current_fruit_text"
-	       	android:background="@null"
-	       	android:onClick="incrementPortion"
-	       	android:layout_weight="1"
-	       	android:layout_width="wrap_content"
-	       	android:layout_centerVertical="true">
-	  	</ImageButton>
-	</RelativeLayout>
-	      
-	<RelativeLayout android:id="@+id/veggie_layout" 
-		android:layout_height="100dp" 
-		android:baselineAligned="true" 
-		android:layout_width="wrap_content" 
-		android:gravity="left">
-		<ImageView android:id="@+id/veggie_image"
-			android:src="@drawable/carrot" 
-			android:layout_marginLeft="10dp"
-			android:layout_marginRight="10dp"
-			android:layout_height="100dp"
-			android:layout_width="75dp"
-			android:layout_centerVertical="true" 
-			android:layout_alignParentLeft="true">
-		</ImageView>
-	    <ImageButton android:id="@+id/dec_veggie_button"
-	       	android:src="@drawable/minus_button" 
-	       	android:layout_height="wrap_content" 
-	       	android:background="@null"
-	       	android:layout_toRightOf="@id/veggie_image" 
-	       	android:onClick="decrementPortion"
-	       	android:layout_weight="1"
-	       	android:layout_centerVertical="true"
-	       	android:layout_width="wrap_content">
-		</ImageButton>
-		<TextView android:id="@+id/current_veggie_text"
-	       	android:layout_toRightOf="@id/dec_veggie_button"
-	       	android:text="0.0" 
-	       	android:textAppearance="?android:attr/textAppearanceLarge" 
-	       	android:layout_height="wrap_content" 
-	       	android:layout_weight="1"
-	       	android:layout_width="45dp"
-	       	android:layout_centerVertical="true"
-			android:gravity="center"
-	       	android:layout_marginLeft="15dp"
-	       	android:layout_marginRight="15dp">
-		</TextView>
-		<ImageButton android:id="@+id/inc_veggie_button"
-	       	android:src="@drawable/plus_button" 
-	       	android:layout_height="wrap_content" 
-			android:layout_toRightOf="@id/current_veggie_text"
-	       	android:background="@null"
-	       	android:onClick="incrementPortion"
-	       	android:layout_weight="1"
-	       	android:layout_width="wrap_content"
-	       	android:layout_centerVertical="true">
-	   	</ImageButton>
-	</RelativeLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/screen_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/fruit_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:baselineAligned="true"
+        android:gravity="left" >
+
+        <ImageView
+            android:id="@+id/fruit_image"
+            android:layout_width="75dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:contentDescription="@string/cd_fruit_image"
+            android:src="@drawable/banana" >
+        </ImageView>
+
+        <ImageButton
+            android:id="@+id/dec_fruit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/fruit_image"
+            android:background="@null"
+            android:contentDescription="@string/cd_dec_fruit"
+            android:src="@drawable/minus_button" >
+        </ImageButton>
+
+        <TextView
+            android:id="@+id/current_fruit_text"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_toRightOf="@id/dec_fruit_button"
+            android:gravity="center"
+            android:text="@string/empty_count"
+            android:textAppearance="?android:attr/textAppearanceLarge" >
+        </TextView>
+
+        <ImageButton
+            android:id="@+id/inc_fruit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/current_fruit_text"
+            android:background="@null"
+            android:contentDescription="@string/cd_inc_fruit"
+            android:src="@drawable/plus_button" >
+        </ImageButton>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/veggie_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:baselineAligned="true"
+        android:gravity="left" >
+
+        <ImageView
+            android:id="@+id/veggie_image"
+            android:layout_width="75dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:contentDescription="@string/cd_veggie_image"
+            android:src="@drawable/carrot" >
+        </ImageView>
+
+        <ImageButton
+            android:id="@+id/dec_veggie_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/veggie_image"
+            android:background="@null"
+            android:contentDescription="@string/cd_dec_veggie"
+            android:src="@drawable/minus_button" >
+        </ImageButton>
+
+        <TextView
+            android:id="@+id/current_veggie_text"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_toRightOf="@id/dec_veggie_button"
+            android:gravity="center"
+            android:text="@string/empty_count"
+            android:textAppearance="?android:attr/textAppearanceLarge" >
+        </TextView>
+
+        <ImageButton
+            android:id="@+id/inc_veggie_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/current_veggie_text"
+            android:background="@null"
+            android:contentDescription="@string/cd_inc_veggie"
+            android:src="@drawable/plus_button" >
+        </ImageButton>
+    </RelativeLayout>
+
 </LinearLayout>

@@ -3,17 +3,19 @@ package com.smpete.frugieLog;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-import com.smpete.frugieLog.Frugie.PortionSize;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.smpete.frugieLog.Frugie.PortionSize;
 
 public class ServingFragment extends Fragment{
     
@@ -25,12 +27,14 @@ public class ServingFragment extends Fragment{
 	private OnServingChangedListener mListener;
 	private View view;
 	
-	public static ServingFragment newInstance(long date){
+	
+	public static ServingFragment newInstance(long date, boolean halfServing){
 		ServingFragment frag = new ServingFragment();
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putLong("date", date);
+        args.putBoolean("halfServing", halfServing);
         frag.setArguments(args);
 		return frag;
 	}
@@ -53,6 +57,7 @@ public class ServingFragment extends Fragment{
 
         Log.d("ServingFrag", "Create");
         curDate = getArguments() != null ? (new Date(getArguments().getLong("date"))) : (new Date());
+        halfServing = getArguments() != null ? (getArguments().getBoolean("halfServing")) : false;
 		frugie = mListener.onLoadData(curDate);
 	}
 	
@@ -70,6 +75,44 @@ public class ServingFragment extends Fragment{
 
     	TextView veggieText = (TextView) view.findViewById(R.id.current_veggie_text);
     	veggieText.setText("" + oneDigit.format((double)frugie.getVeggieServingTenths() / 10));
+    	
+    	ImageButton decFruit = (ImageButton) view.findViewById(R.id.dec_fruit_button);
+    	decFruit.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				modifyFruit(false);
+			}
+		});
+    	
+    	ImageButton incFruit = (ImageButton) view.findViewById(R.id.inc_fruit_button);
+    	incFruit.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				modifyFruit(true);
+			}
+		});
+    	
+    	ImageButton decVeggie = (ImageButton) view.findViewById(R.id.dec_veggie_button);
+    	decVeggie.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				modifyVeggie(false);
+			}
+		});
+    	
+    	ImageButton incVeggie = (ImageButton) view.findViewById(R.id.inc_veggie_button);
+    	incVeggie.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				modifyVeggie(true);
+			}
+		});
+    	
+    	setHalfServing(halfServing);
 		
 		return view;
 	}
@@ -77,13 +120,13 @@ public class ServingFragment extends Fragment{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
-
-		setHalfServing(mListener.onCheckHalfServing());
 	}
 
 	@Override
 	public void onResume(){
 		super.onResume();
+
+		setHalfServing(mListener.onCheckHalfServing());
         Log.d("ServingFrag", "Resume");
 	}
     
@@ -115,15 +158,17 @@ public class ServingFragment extends Fragment{
      */
     public void setHalfServing(boolean newServing){
     	halfServing = newServing;
-    	ImageView fruitImage = (ImageView) view.findViewById(R.id.fruit_image);
-    	ImageView veggieImage = (ImageView) view.findViewById(R.id.veggie_image);
-    	if(halfServing){
-        	fruitImage.setImageResource(R.drawable.banana_half);
-        	veggieImage.setImageResource(R.drawable.carrot_half);
-    	}
-    	else{
-        	fruitImage.setImageResource(R.drawable.banana);
-        	veggieImage.setImageResource(R.drawable.carrot);
+    	if (view != null) {
+	    	ImageView fruitImage = (ImageView) view.findViewById(R.id.fruit_image);
+	    	ImageView veggieImage = (ImageView) view.findViewById(R.id.veggie_image);
+	    	if(halfServing){
+	        	fruitImage.setImageResource(R.drawable.banana_half);
+	        	veggieImage.setImageResource(R.drawable.carrot_half);
+	    	}
+	    	else{
+	        	fruitImage.setImageResource(R.drawable.banana);
+	        	veggieImage.setImageResource(R.drawable.carrot);
+	    	}
     	}
     }
     

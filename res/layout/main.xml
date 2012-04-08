@@ -1,60 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/screen_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <LinearLayout android:id="@+id/screen_layout" 
-		xmlns:android="http://schemas.android.com/apk/res/android" 
-		android:orientation="vertical" 
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent">
-		
-	<RelativeLayout android:id="@+id/main_control_layout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
-		<TextView android:id="@+id/date_text"
-	      	android:text="Monday, August 22, 2011"
-	      	android:layout_height="wrap_content"
-	      	android:layout_width="wrap_content"
-	      	android:layout_centerHorizontal="true">
-	  	</TextView>
-		<RadioGroup android:id="@+id/serving_radio_group" 
-			android:layout_height="wrap_content" 
-	     	android:layout_width="wrap_content" 
-	     	android:orientation="horizontal"
-	     	android:layout_below="@id/date_text">
-			<TextView android:id="@+id/serving_text"
-				android:text="Serving Size: "
-	         	android:textAppearance="?android:attr/textAppearanceMedium" 
-	         	android:layout_height="wrap_content"
-				android:layout_width="wrap_content" 
-				android:layout_marginLeft="10dp">
-			</TextView>
-			<RadioButton android:id="@+id/full_radio" 
-				android:layout_height="wrap_content" 
-				android:text="Full" 
-				android:layout_width="wrap_content" 
-				android:checked="true" 
-				android:layout_marginLeft="5dp" 
-				android:layout_marginRight="5dp"
-				android:onClick="changeToFullServing">
-			</RadioButton>
-			<RadioButton android:id="@+id/half_radio" 
-				android:layout_height="wrap_content" 
-				android:text="Half" 
-				android:layout_width="wrap_content" 
-				android:layout_marginLeft="5dp" 
-				android:layout_marginRight="5dp"
-				android:onClick="changeToHalfServing">
-			</RadioButton>
-		</RadioGroup>
-	</RelativeLayout>
-            
-    	<android.support.v4.view.ViewPager
-	        android:id="@+id/viewpager"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="1" />
-       
-        
-        <LinearLayout android:id="@+id/chart_layout" android:orientation="horizontal"
-		android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" />
-	
+    <RadioGroup
+        android:id="@+id/serving_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/serving_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/serving_size"
+            android:textAppearance="?android:attr/textAppearanceMedium" >
+        </TextView>
+
+        <RadioButton
+            android:id="@+id/full_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:checked="true"
+            android:onClick="changeToFullServing"
+            android:text="@string/full" >
+        </RadioButton>
+
+        <RadioButton
+            android:id="@+id/half_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:onClick="changeToHalfServing"
+            android:text="@string/half" >
+        </RadioButton>
+    </RadioGroup>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:id="@+id/chart_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal" />
+
+</LinearLayout>
