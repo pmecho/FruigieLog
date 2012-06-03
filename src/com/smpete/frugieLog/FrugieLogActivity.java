@@ -3,10 +3,14 @@ package com.smpete.frugieLog;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
+import org.achartengine.model.XYMultipleSeriesDataset;
 
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -19,10 +23,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.smpete.frugieLog.Frugie.FrugieColumns;
@@ -54,10 +61,44 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     private ServingFragment mCurrentFrag;
     
+    private XYMultipleSeriesDataset mDataSet;
+    private GraphicalView mChartView;
+    private TextView mActionBarTitle;
+    private TextView mActionBarSubtitle;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+    	getSupportActionBar().setDisplayShowCustomEnabled(true);
+    	getSupportActionBar().setDisplayShowTitleEnabled(false);
+    	getSupportActionBar().setCustomView(R.layout.action_bar_title);
+    	
+    	View v = getSupportActionBar().getCustomView();
+    	mActionBarTitle = (TextView)v.findViewById(R.id.day);
+    	mActionBarSubtitle = (TextView)v.findViewById(R.id.date);
+    	v.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Calendar cal = Calendar.getInstance();
+				new DatePickerDialog(FrugieLogActivity.this, new OnDateSetListener() {
+					
+					@Override
+					public void onDateSet(DatePicker view, int year, int monthOfYear,
+							int dayOfMonth) {
+						Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+						centralDate = cal.getTime();
+						adapter.setDate(centralDate);
+						adapter.notifyDataSetChanged();
+						setFocusedPage(ServingPagerAdapter.MIDDLE);
+						mPager.setCurrentItem(mFocusedPage, false);
+						
+					}
+				}, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+			}
+		});
         
         // Restore saved data
         if(savedInstanceState != null){
@@ -88,7 +129,7 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 	    	setFocusedPage(ServingPagerAdapter.MIDDLE);
 	    }
 	    
-	    mPager.setAdapter( adapter );
+	    mPager.setAdapter(adapter);
 	    mPager.setCurrentItem(mFocusedPage);
 	    
 	    mPager.setOnPageChangeListener(new OnPageChangeListener() {
@@ -162,22 +203,23 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
             double[] fruits = new double[cursor.getCount()];
             double[] veggies = new double[cursor.getCount()];
             double[] count = new double[cursor.getCount()];
+            
             do {
             	int i = cursor.getPosition();
                 // Get the field values
                 fruits[i] = cursor.getDouble(fruitColumn) / 10;
                 veggies[i] = cursor.getDouble(veggieColumn) / 10;
                 count[i] = i;
-
             } while (cursor.moveToNext());
         
             // Create the chart and chart's view and add to layout
 	        HistoryChart chart = new HistoryChart(this, fruits, veggies, count);
-	        GraphicalView chartView = ChartFactory.getLineChartView(this, 
+	        mDataSet = chart.getDataset();
+	        mChartView = ChartFactory.getLineChartView(this, 
 	        		chart.getDataset(), chart.getRenderer());
 	        
 	        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
-	        layout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT,
+	        layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT,
 	                LayoutParams.FILL_PARENT));
         }
     }
@@ -190,6 +232,7 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     	mFocusedPage = focusedPage;
     	
     	Calendar cal = Calendar.getInstance();
+    	cal.setTime(centralDate);
     	cal.add(Calendar.DATE, mFocusedPage - ServingPagerAdapter.MIDDLE);
     	
     	Calendar today = Calendar.getInstance(); // today
@@ -199,15 +242,15 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     	// Use "Today" if date is today
     	if (cal.get(Calendar.YEAR) == today.get(Calendar.YEAR)
     			&& cal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-    		getSupportActionBar().setTitle(R.string.today);
+    		mActionBarTitle.setText(R.string.today);
     	} else if (cal.get(Calendar.YEAR) == yesterday.get(Calendar.YEAR)
     			&& cal.get(Calendar.DAY_OF_YEAR) == yesterday.get(Calendar.DAY_OF_YEAR)) {
-    		getSupportActionBar().setTitle(R.string.yesterday);
+    		mActionBarTitle.setText(R.string.yesterday);
     	} else {
-    		getSupportActionBar().setTitle(dayFormat.format(cal.getTime()));
+    		mActionBarTitle.setText(dayFormat.format(cal.getTime()));
     	}
     	
-    	getSupportActionBar().setSubtitle(dateFormat.format(cal.getTime()));
+    	mActionBarSubtitle.setText(dateFormat.format(cal.getTime()));
     }
     
     public void setHalfServing(boolean newServing, boolean updateRadios){
@@ -232,6 +275,11 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
      */
     public void changeToFullServing(View view){
     	setHalfServing(false, false);
+    	// TODO Yeah!!! Test code to dynamically change a point
+//    	XYSeries series = mDataSet.getSeriesAt(0);
+//    	double y = series.getY(0);
+//    	series.add(0,y+1);
+//    	mChartView.repaint();
     }
     
     /**
@@ -327,6 +375,15 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 
 		public ServingFragment getServingFragment(int position){
 			return (ServingFragment)getItem(mPager.getCurrentItem());
+		}
+		
+		public void setDate(Date date) {
+			this.date = date;
+		}
+		
+		@Override
+		public int getItemPosition(Object object) {
+		    return POSITION_NONE;
 		}
 		
 		@Override

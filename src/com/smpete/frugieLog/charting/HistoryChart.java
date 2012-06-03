@@ -105,8 +105,8 @@ public class HistoryChart {
         renderer.setChartTitle("History");
         renderer.setXTitle("Days ago");
         renderer.setYTitle("Servings");
-        renderer.setXAxisMin(28);
-        renderer.setXAxisMax(0);
+        renderer.setXAxisMin(0);
+        renderer.setXAxisMax(28);
         renderer.setYAxisMin(0);
         renderer.setYAxisMax(maxY);
         renderer.setAxesColor(Color.LTGRAY);
@@ -118,6 +118,8 @@ public class HistoryChart {
         renderer.setYLabelsAlign(Align.RIGHT);
         renderer.setPanEnabled(true, false);
         renderer.setZoomEnabled(true, false);
+        renderer.setPanLimits(new double[]{0,365,0,0});
+        renderer.setZoomLimits(new double[]{0,365,0,0});
     	
     	return renderer;
     }
