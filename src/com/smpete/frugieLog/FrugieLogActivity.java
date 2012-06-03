@@ -52,6 +52,8 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     private Date centralDate;
     
+    private ServingFragment mCurrentFrag;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -217,6 +219,8 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
         		radios.check(R.id.full_radio);
     	}
     	halfServing = newServing;
+    	if (mCurrentFrag != null) 
+    		mCurrentFrag.setHalfServing(halfServing);
     }
     
     // BEGIN EVENT HANDLERS
@@ -345,7 +349,8 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 		public void setPrimaryItem(ViewGroup container, int position,
 				Object object) {
 			super.setPrimaryItem(container, position, object);
-			((ServingFragment)object).setHalfServing(halfServing);
+			mCurrentFrag = (ServingFragment)object;
+			mCurrentFrag.setHalfServing(halfServing);
 		}
 	}
 
