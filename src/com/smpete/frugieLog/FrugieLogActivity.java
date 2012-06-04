@@ -5,10 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.achartengine.ChartFactory;
-import org.achartengine.GraphicalView;
-import org.achartengine.model.XYMultipleSeriesDataset;
-
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.ContentUris;
@@ -61,8 +57,7 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     private ServingFragment mCurrentFrag;
     
-    private XYMultipleSeriesDataset mDataSet;
-    private GraphicalView mChartView;
+    private HistoryChart mHistoryChart;
     private TextView mActionBarTitle;
     private TextView mActionBarSubtitle;
     
@@ -213,13 +208,11 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
             } while (cursor.moveToNext());
         
             // Create the chart and chart's view and add to layout
-	        HistoryChart chart = new HistoryChart(this, fruits, veggies, count);
-	        mDataSet = chart.getDataset();
-	        mChartView = ChartFactory.getLineChartView(this, 
-	        		chart.getDataset(), chart.getRenderer());
+	        mHistoryChart = new HistoryChart(this, fruits, veggies, count);
+	        mHistoryChart.createChartView(this);
 	        
 	        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
-	        layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT,
+	        layout.addView(mHistoryChart.getChartView(), new LayoutParams(LayoutParams.FILL_PARENT,
 	                LayoutParams.FILL_PARENT));
         }
     }
@@ -275,11 +268,6 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
      */
     public void changeToFullServing(View view){
     	setHalfServing(false, false);
-    	// TODO Yeah!!! Test code to dynamically change a point
-//    	XYSeries series = mDataSet.getSeriesAt(0);
-//    	double y = series.getY(0);
-//    	series.add(0,y+1);
-//    	mChartView.repaint();
     }
     
     /**
@@ -297,9 +285,17 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     // Callbacks from serving fragment
 	@Override
-	public void onServingChanged() {
-		// TODO Auto-generated method stub
-		
+	public void onVeggieChanged(int newServingValue, int dayOffset){
+		if (dayOffset > -1) {
+			mHistoryChart.updateVeggie(newServingValue, dayOffset);
+		}
+	}
+	
+	@Override
+	public void onFruitChanged(int newServingValue, int dayOffset) {
+		if (dayOffset > -1) {
+			mHistoryChart.updateFruit(newServingValue, dayOffset);
+		}
 	}
     
     /**

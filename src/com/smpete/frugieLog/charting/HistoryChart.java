@@ -3,6 +3,8 @@ package com.smpete.frugieLog.charting;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.achartengine.ChartFactory;
+import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
@@ -24,6 +26,8 @@ public class HistoryChart {
 	
 	private XYMultipleSeriesDataset dataset;
 	private XYMultipleSeriesRenderer renderer;
+	private GraphicalView mChartView;
+	private double mMaxY;
 	
 	/**
 	 * Makes a LineChart with 2 sets of x values and 1 set of y values
@@ -42,16 +46,42 @@ public class HistoryChart {
         yValues.add(fruits);
         yValues.add(veggies);
         dataset = createDataset(titles, xValues, yValues, 0);
-
+        mMaxY = getMax(fruits, veggies);
+        
         // Create renderer
         int[] colors = new int[] { Color.RED, Color.GREEN };
         PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE, PointStyle.DIAMOND };
-        renderer = createRenderer(colors, styles, getMax(fruits, veggies));
+        renderer = createRenderer(colors, styles);
         
         int length = renderer.getSeriesRendererCount();
         for (int i = 0; i < length; i++) {
           ((XYSeriesRenderer) renderer.getSeriesRendererAt(i)).setFillPoints(true);
         }
+	}
+	
+	public void createChartView(Context context) {
+		mChartView = ChartFactory.getLineChartView(context, dataset, renderer);
+	}
+	
+	public GraphicalView getChartView() {
+		return mChartView;
+	}
+	
+	public void updateVeggie(int newServingValue, int dayOffset) {
+		updateSeries(dataset.getSeriesAt(1), dayOffset, newServingValue);
+	}
+	
+	public void updateFruit(int newServingValue, int dayOffset) {
+		updateSeries(dataset.getSeriesAt(0), dayOffset, newServingValue);
+	}
+	
+	private void updateSeries(XYSeries series, int newX, int newY) {
+		series.add(newX, newY);
+		
+		double maxY = Math.max(dataset.getSeriesAt(0).getMaxY(), dataset.getSeriesAt(1).getMaxY());
+		
+		renderer.setYAxisMax(maxY);
+    	mChartView.repaint();
 	}
 	
 	/**
@@ -85,7 +115,7 @@ public class HistoryChart {
 	 * @param styles
 	 * @return
 	 */
-    private XYMultipleSeriesRenderer createRenderer(int[] colors, PointStyle[] styles, double maxY) {
+    private XYMultipleSeriesRenderer createRenderer(int[] colors, PointStyle[] styles) {
     	XYMultipleSeriesRenderer renderer = new  XYMultipleSeriesRenderer();
 
     	renderer.setAxisTitleTextSize(16);
@@ -108,7 +138,7 @@ public class HistoryChart {
         renderer.setXAxisMin(0);
         renderer.setXAxisMax(28);
         renderer.setYAxisMin(0);
-        renderer.setYAxisMax(maxY);
+        renderer.setYAxisMax(mMaxY);
         renderer.setAxesColor(Color.LTGRAY);
         renderer.setLabelsColor(Color.LTGRAY);
         renderer.setXLabels(15);

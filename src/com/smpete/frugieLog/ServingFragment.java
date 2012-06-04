@@ -1,6 +1,7 @@
 package com.smpete.frugieLog;
 
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import android.app.Activity;
@@ -26,6 +27,7 @@ public class ServingFragment extends Fragment{
 	private Date curDate;
 	private OnServingChangedListener mListener;
 	private View view;
+	private int mOffsetFromCurrentDate;
 	
 	
 	public static ServingFragment newInstance(long date, boolean halfServing){
@@ -59,6 +61,22 @@ public class ServingFragment extends Fragment{
         curDate = getArguments() != null ? (new Date(getArguments().getLong("date"))) : (new Date());
         halfServing = getArguments() != null ? (getArguments().getBoolean("halfServing")) : false;
 		frugie = mListener.onLoadData(curDate);
+		
+		Calendar currentCal = Calendar.getInstance();
+		Calendar cal = (Calendar) currentCal.clone();
+		Calendar temp = Calendar.getInstance();
+		temp.setTime(curDate);
+		cal.set(Calendar.YEAR, temp.get(Calendar.YEAR));
+		cal.set(Calendar.MONTH, temp.get(Calendar.MONTH));
+		cal.set(Calendar.DAY_OF_MONTH, temp.get(Calendar.DAY_OF_MONTH));
+		
+		int daysBetween = 0;
+		while (cal.before(currentCal)) {
+			cal.add(Calendar.DAY_OF_MONTH, 1);
+			daysBetween++;
+		}
+		mOffsetFromCurrentDate = daysBetween;
+		
 	}
 	
 	@Override
@@ -213,6 +231,7 @@ public class ServingFragment extends Fragment{
     			frugie.decServing(PortionSize.FULL, true);
     	}
     	updateStatsText();
+    	mListener.onFruitChanged(frugie.getFruitServingTenths()/10, mOffsetFromCurrentDate);
     }
     
     public void modifyVeggie(boolean increment){
@@ -228,10 +247,12 @@ public class ServingFragment extends Fragment{
     			frugie.decServing(PortionSize.FULL, false);
     	}
     	updateStatsText();
+    	mListener.onVeggieChanged(frugie.getVeggieServingTenths()/10, mOffsetFromCurrentDate);
     }
     
     public interface OnServingChangedListener{
-    	public void onServingChanged();
+    	public void onVeggieChanged(int newServingValue, int dayOffset);
+    	public void onFruitChanged(int newServingValue, int dayOffset);
     	public void onSaveState(ServingFragment fragment);
     	public Frugie onLoadData(Date date);
     	public boolean onCheckHalfServing();
