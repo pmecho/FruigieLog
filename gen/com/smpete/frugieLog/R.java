@@ -811,7 +811,7 @@ containing a value of this type.
         public static final int veggie=0x7f02006e;
     }
     public static final class id {
-        public static final int about=0x7f04003c;
+        public static final int about=0x7f04003b;
         public static final int abs__action_bar=0x7f040022;
         public static final int abs__action_bar_container=0x7f040021;
         public static final int abs__action_bar_subtitle=0x7f040011;
@@ -841,36 +841,35 @@ containing a value of this type.
         public static final int abs__title=0x7f04001b;
         public static final int abs__titleDivider=0x7f04001c;
         public static final int abs__up=0x7f04000b;
-        public static final int chart_layout=0x7f040030;
-        public static final int current_fruit_text=0x7f040034;
-        public static final int current_veggie_text=0x7f040039;
+        public static final int current_fruit_text=0x7f040033;
+        public static final int current_veggie_text=0x7f040038;
         public static final int date=0x7f040028;
         public static final int day=0x7f040027;
-        public static final int dec_fruit_button=0x7f040033;
-        public static final int dec_veggie_button=0x7f040038;
+        public static final int dec_fruit_button=0x7f040032;
+        public static final int dec_veggie_button=0x7f040037;
         public static final int disableHome=0x7f040009;
-        public static final int fruit_image=0x7f040032;
-        public static final int fruit_layout=0x7f040031;
-        public static final int full_radio=0x7f04002d;
-        public static final int half_radio=0x7f04002e;
+        public static final int fruit_image=0x7f040031;
+        public static final int fruit_layout=0x7f040030;
+        public static final int full_radio=0x7f04002c;
+        public static final int half_radio=0x7f04002d;
         public static final int homeAsUp=0x7f040006;
-        public static final int inc_fruit_button=0x7f040035;
-        public static final int inc_veggie_button=0x7f04003a;
+        public static final int inc_fruit_button=0x7f040034;
+        public static final int inc_veggie_button=0x7f040039;
         public static final int layout=0x7f040029;
         public static final int listMode=0x7f040002;
         public static final int normal=0x7f040001;
-        public static final int report=0x7f04003b;
-        public static final int screen_layout=0x7f04002a;
-        public static final int serving_radio_group=0x7f04002b;
-        public static final int serving_text=0x7f04002c;
+        public static final int report=0x7f04003a;
+        public static final int screen_layout=0x7f04002f;
+        public static final int serving_radio_group=0x7f04002a;
+        public static final int serving_text=0x7f04002b;
         public static final int showCustom=0x7f040008;
         public static final int showHome=0x7f040005;
         public static final int showTitle=0x7f040007;
         public static final int tabMode=0x7f040003;
         public static final int useLogo=0x7f040004;
-        public static final int veggie_image=0x7f040037;
-        public static final int veggie_layout=0x7f040036;
-        public static final int viewpager=0x7f04002f;
+        public static final int veggie_image=0x7f040036;
+        public static final int veggie_layout=0x7f040035;
+        public static final int viewpager=0x7f04002e;
         public static final int wrap_content=0x7f040000;
     }
     public static final class integer {

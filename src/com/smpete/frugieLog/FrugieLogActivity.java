@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar.LayoutParams;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -152,8 +153,9 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
         mHistoryChart = new HistoryChart(false);
         mHistoryChart.createChartView(this);
         
-        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
-        layout.addView(mHistoryChart.getChartView());
+        LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
+        View historyView = mHistoryChart.getChartView();
+        layout.addView(historyView);
         
         getSupportLoaderManager().initLoader(0, null, this);
     }

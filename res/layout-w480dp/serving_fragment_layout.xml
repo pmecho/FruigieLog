@@ -2,7 +2,7 @@
     android:id="@+id/screen_layout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:orientation="horizontal" >
 
     <RelativeLayout
         android:id="@+id/fruit_layout"
@@ -17,8 +17,8 @@
             android:layout_height="100dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:contentDescription="@string/cd_fruit_image"
             android:src="@drawable/banana" >
         </ImageView>
@@ -72,8 +72,8 @@
             android:layout_height="100dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:contentDescription="@string/cd_veggie_image"
             android:src="@drawable/carrot" >
         </ImageView>
