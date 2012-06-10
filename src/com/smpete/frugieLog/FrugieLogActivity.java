@@ -7,44 +7,49 @@ import java.util.GregorianCalendar;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
-import android.content.ContentUris;
-import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
 import com.smpete.frugieLog.Frugie.FrugieColumns;
 import com.smpete.frugieLog.ServingFragment.OnServingChangedListener;
 import com.smpete.frugieLog.charting.HistoryChart;
 
-public class FrugieLogActivity extends SherlockFragmentActivity implements OnServingChangedListener {
+public class FrugieLogActivity extends SherlockFragmentActivity implements OnServingChangedListener, LoaderCallbacks<Cursor> {
     
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
 	private static final SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+
+	public static final int ITEM_ID_7_DAYS = 10;
+	public static final int ITEM_ID_14_DAYS = 11;
+	public static final int ITEM_ID_30_DAYS = 12;
 	
-    // Fragments
-//    private ServingFragment servingFrag;
-    private ServingPagerAdapter adapter;
+    private ServingPagerAdapter mAdapter;
     private ViewPager mPager;
     
 	/** Whether a half serving is selected */
-	private boolean halfServing;
+	private boolean mHalfServing;
 	
 	/** Constants for saved bundle keys */
 	private final String SAVED_DATE_KEY = "id";
@@ -53,7 +58,7 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     private int mFocusedPage = -1;
     
-    private Date centralDate;
+    private Date mCentralDate;
     
     private ServingFragment mCurrentFrag;
     
@@ -84,9 +89,9 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 					public void onDateSet(DatePicker view, int year, int monthOfYear,
 							int dayOfMonth) {
 						Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
-						centralDate = cal.getTime();
-						adapter.setDate(centralDate);
-						adapter.notifyDataSetChanged();
+						mCentralDate = cal.getTime();
+						mAdapter.setDate(mCentralDate);
+						mAdapter.notifyDataSetChanged();
 						setFocusedPage(ServingPagerAdapter.MIDDLE);
 						mPager.setCurrentItem(mFocusedPage, false);
 						
@@ -100,31 +105,31 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 	        // Check for saved date
 	        long savedDate = savedInstanceState.getLong(SAVED_DATE_KEY);
 	        if(savedDate == 0L)
-	        	centralDate = new Date();
+	        	mCentralDate = new Date();
 	        else
-	        	centralDate = new Date(savedDate);
+	        	mCentralDate = new Date(savedDate);
 	        
 	        // Set saved serving size, if empty then full serving will be set
-	        halfServing = savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY);
+	        mHalfServing = savedInstanceState.getBoolean(SAVED_HALF_SERVING_KEY);
 	        
 	        // Get focused page 
 	        setFocusedPage(savedInstanceState.getInt(SAVED_FOCUSED_PAGE_KEY, -1));
         }
         else{
-        	centralDate = new Date();
-        	halfServing = false;
+        	mCentralDate = new Date();
+        	mHalfServing = false;
         }
 
         // Handle adapter and pager
 	    mPager = (ViewPager)findViewById( R.id.viewpager );
-	    adapter= new ServingPagerAdapter(getSupportFragmentManager(), centralDate);
+	    mAdapter= new ServingPagerAdapter(getSupportFragmentManager(), mCentralDate);
 	    
 	    // Set focused page if it hasn't been saved to the middle.
 	    if(mFocusedPage == -1){
 	    	setFocusedPage(ServingPagerAdapter.MIDDLE);
 	    }
 	    
-	    mPager.setAdapter(adapter);
+	    mPager.setAdapter(mAdapter);
 	    mPager.setCurrentItem(mFocusedPage);
 	    
 	    mPager.setOnPageChangeListener(new OnPageChangeListener() {
@@ -143,20 +148,14 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 			}
 	    });
 	    
-        // Only create the chart onCreate, no need for persistence
-        createHistoryChart();
-    }
-    
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // The activity has become visible (it is now "resumed").
-    }
-    
-    @Override
-    public void onPause(){
-    	super.onPause();
-//    	saveData();
+	    // Create the chart and chart's view and add to layout
+        mHistoryChart = new HistoryChart(false);
+        mHistoryChart.createChartView(this);
+        
+        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
+        layout.addView(mHistoryChart.getChartView());
+        
+        getSupportLoaderManager().initLoader(0, null, this);
     }
     
     @Override
@@ -164,58 +163,70 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     	super.onSaveInstanceState(outState);
     	
     	// Save the current date
-    	outState.putLong(SAVED_DATE_KEY, centralDate.getTime());
+    	outState.putLong(SAVED_DATE_KEY, mCentralDate.getTime());
     	//TODO Test!!
-    	outState.putBoolean(SAVED_HALF_SERVING_KEY, halfServing);
+    	outState.putBoolean(SAVED_HALF_SERVING_KEY, mHalfServing);
     	outState.putInt(SAVED_FOCUSED_PAGE_KEY, mFocusedPage);
     }
     
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main_menu, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	MenuItem history = menu.add(R.string.history);
+    	history.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+    	history.setIntent(new Intent(this, HistoryActivity.class));
 
-	/**
-     * Creates the history chart and adds it to the view
-     */
-    private void createHistoryChart(){
-    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
-    	String nowDate = dateFormat.format(new Date());
     	
-    	// Pull data prior to and including the current date
-    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
-    									null, 
-    									"date <= '" + nowDate + "'", 
-    									null, 
-    									FrugieColumns.DATE + " DESC");
-        
-        if (cursor.moveToFirst()) {
-            int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT); 
-            int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
-            
-            double[] fruits = new double[cursor.getCount()];
-            double[] veggies = new double[cursor.getCount()];
-            double[] count = new double[cursor.getCount()];
-            
-            do {
-            	int i = cursor.getPosition();
-                // Get the field values
-                fruits[i] = cursor.getDouble(fruitColumn) / 10;
-                veggies[i] = cursor.getDouble(veggieColumn) / 10;
-                count[i] = i;
-            } while (cursor.moveToNext());
-        
-            // Create the chart and chart's view and add to layout
-	        mHistoryChart = new HistoryChart(this, fruits, veggies, count);
-	        mHistoryChart.createChartView(this);
-	        
-	        LinearLayout layout = (LinearLayout) findViewById(R.id.chart_layout);
-	        layout.addView(mHistoryChart.getChartView(), new LayoutParams(LayoutParams.FILL_PARENT,
-	                LayoutParams.FILL_PARENT));
-        }
+    	SubMenu historyLengthSubMenu = menu.addSubMenu("History Length");
+    	MenuItem days7 = historyLengthSubMenu.add(1, ITEM_ID_7_DAYS, 0, R.string.days_7);
+    	MenuItem days14 = historyLengthSubMenu.add(1, ITEM_ID_14_DAYS, 1, R.string.days_14);
+    	MenuItem days30 = historyLengthSubMenu.add(1, ITEM_ID_30_DAYS, 2, R.string.days_30);
+    	
+    	historyLengthSubMenu.setGroupCheckable(1, true, true);
+    	switch (UserPrefs.getHistoryLengthId(this)) {
+		case ITEM_ID_7_DAYS:
+			days7.setChecked(true);
+			mHistoryChart.show7Days();
+			break;
+		case ITEM_ID_14_DAYS:
+			days14.setChecked(true);
+			mHistoryChart.show14Days();
+			break;
+		case ITEM_ID_30_DAYS:
+			days30.setChecked(true);
+			mHistoryChart.show30Days();
+			break;
+		}
+    	
+        return true;
     }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()) {
+		case ITEM_ID_7_DAYS:
+			item.setChecked(true);
+			mHistoryChart.show7Days();
+			UserPrefs.setHistoryLengthId(this, ITEM_ID_7_DAYS);
+			break;
+		case ITEM_ID_14_DAYS:
+			item.setChecked(true);
+			mHistoryChart.show14Days();
+			UserPrefs.setHistoryLengthId(this, ITEM_ID_14_DAYS);
+			break;
+		case ITEM_ID_30_DAYS:
+			item.setChecked(true);
+			mHistoryChart.show30Days();
+			UserPrefs.setHistoryLengthId(this, ITEM_ID_30_DAYS);
+			break;
+
+		default:
+			break;
+		}
+    	
+    	// TODO Auto-generated method stub
+    	return super.onOptionsItemSelected(item);
+    }
+
     
     /**
      * Set focused page and update the action bar's title
@@ -225,7 +236,7 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     	mFocusedPage = focusedPage;
     	
     	Calendar cal = Calendar.getInstance();
-    	cal.setTime(centralDate);
+    	cal.setTime(mCentralDate);
     	cal.add(Calendar.DATE, mFocusedPage - ServingPagerAdapter.MIDDLE);
     	
     	Calendar today = Calendar.getInstance(); // today
@@ -254,9 +265,9 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
         	else
         		radios.check(R.id.full_radio);
     	}
-    	halfServing = newServing;
+    	mHalfServing = newServing;
     	if (mCurrentFrag != null) 
-    		mCurrentFrag.setHalfServing(halfServing);
+    		mCurrentFrag.setHalfServing(mHalfServing);
     }
     
     // BEGIN EVENT HANDLERS
@@ -285,75 +296,23 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     // Callbacks from serving fragment
 	@Override
-	public void onVeggieChanged(int newServingValue, int dayOffset){
+	public void onVeggieChanged(double newServingValue, int dayOffset){
 		if (dayOffset > -1) {
 			mHistoryChart.updateVeggie(newServingValue, dayOffset);
 		}
 	}
 	
 	@Override
-	public void onFruitChanged(int newServingValue, int dayOffset) {
+	public void onFruitChanged(double newServingValue, int dayOffset) {
 		if (dayOffset > -1) {
 			mHistoryChart.updateFruit(newServingValue, dayOffset);
 		}
 	}
     
-    /**
-     * Write current date's data to the database
-     */
-	@Override
-	public void onSaveState(ServingFragment fragment) {
-		// TODO Auto-generated method stub
-    	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, fragment.getFruigieId());
-		ContentValues values = new ContentValues();
-		values.put(FrugieColumns.FRUIT, fragment.getFruitTenths());
-		values.put(FrugieColumns.VEGGIE, fragment.getVeggieTenths());
-    	
-    	getContentResolver().update(uri, values, null, null);
-	}
-
-    /**
-     * Update date and fruit/veggie servings from database given a date
-     * 
-     * @param date Date to update the data to
-     */
-	@Override
-	public Frugie onLoadData(Date date) {
-		// TODO Auto-generated method stub
-    	SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
-    	String formattedDate = dateFormat.format(date);
-    	
-    	Cursor cursor = managedQuery(FrugieColumns.CONTENT_URI, 
-				null, 
-				FrugieColumns.DATE +"='" + formattedDate + "'", 
-				null, 
-				null);
-    	if(cursor.moveToFirst()){
-    		int idColumn = cursor.getColumnIndex(FrugieColumns._ID);
-    		int fruitColumn = cursor.getColumnIndex(FrugieColumns.FRUIT);
-    		int veggieColumn = cursor.getColumnIndex(FrugieColumns.VEGGIE);
-    		return new Frugie(cursor.getLong(idColumn), 
-    				cursor.getShort(fruitColumn), 
-    				cursor.getShort(veggieColumn));
-    	}
-    	else{ // Need to insert new entry!
-    		ContentValues values = new ContentValues();
-    		
-    		// Set defaults
-    		values.put(FrugieColumns.DATE, formattedDate);
-    		values.put(FrugieColumns.FRUIT, 0);
-    		values.put(FrugieColumns.VEGGIE, 0);
-    		
-    		
-    		Uri uri = getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
-    		return new Frugie(ContentUris.parseId(uri), (short)0, (short)0);
-    	}
-	}
-
 	@Override
 	public boolean onCheckHalfServing() {
 		// TODO Auto-generated method stub
-		return halfServing;
+		return mHalfServing;
 	}
 	
 	
@@ -369,10 +328,6 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 			this.date = date;
 		}
 
-		public ServingFragment getServingFragment(int position){
-			return (ServingFragment)getItem(mPager.getCurrentItem());
-		}
-		
 		public void setDate(Date date) {
 			this.date = date;
 		}
@@ -389,7 +344,7 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 			cal.setTime(date);
 			cal.add(Calendar.DATE, position - MIDDLE);
 			
-			ServingFragment frag = ServingFragment.newInstance(cal.getTimeInMillis(), halfServing);
+			ServingFragment frag = ServingFragment.newInstance(cal.getTimeInMillis(), mHalfServing);
 			return frag;
 		}
 		
@@ -403,8 +358,50 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 				Object object) {
 			super.setPrimaryItem(container, position, object);
 			mCurrentFrag = (ServingFragment)object;
-			mCurrentFrag.setHalfServing(halfServing);
+			mCurrentFrag.setHalfServing(mHalfServing);
 		}
+	}
+
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
+    	String nowDate = dateFormat.format(new Date());
+    	Loader<Cursor> loader = new CursorLoader(this,
+				FrugieColumns.CONTENT_URI, 
+				new String[] {FrugieColumns.FRUIT, FrugieColumns.VEGGIE},
+				"date <= ?",
+				new String[] {nowDate},
+				FrugieColumns.DATE + " DESC");
+    	
+
+    	return loader;
+    }
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data.moveToFirst()) {
+            int fruitColumn = data.getColumnIndex(FrugieColumns.FRUIT); 
+            int veggieColumn = data.getColumnIndex(FrugieColumns.VEGGIE);
+            
+            double[] fruits = new double[data.getCount()];
+            double[] veggies = new double[data.getCount()];
+            do {
+            	int i = data.getPosition();
+                // Get the field values
+                fruits[i] = data.getDouble(fruitColumn) / 10;
+                veggies[i] = data.getDouble(veggieColumn) / 10;
+            } while (data.moveToNext());
+            
+            mHistoryChart.updateDataset(fruits, veggies);
+        }
+        
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
 	}
 
 }

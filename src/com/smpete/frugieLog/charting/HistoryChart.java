@@ -1,8 +1,5 @@
 package com.smpete.frugieLog.charting;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -23,89 +20,89 @@ import android.graphics.Paint.Align;
  *
  */
 public class HistoryChart {
+
+	private static final int FRUIT_SERIES_INDEX = 0;
+	private static final int VEGGIE_SERIES_INDEX = 1;
 	
-	private XYMultipleSeriesDataset dataset;
-	private XYMultipleSeriesRenderer renderer;
+	private XYMultipleSeriesDataset mDataset;
+	private XYSeries mFruitSeries;
+	private XYSeries mVeggieSeries;
+	
+	private XYMultipleSeriesRenderer mRenderer;
 	private GraphicalView mChartView;
 	private double mMaxY;
 	
-	/**
-	 * Makes a LineChart with 2 sets of x values and 1 set of y values
-	 * 
-	 * @param fruits 1st array of x values
-	 * @param veggies 2nd array of x values
-	 * @param count Array of y values
-	 */
-	public HistoryChart(Context context, double[] fruits, double[] veggies, double[] count){
-        // Build dataset
-        String[] titles = new String[] { "Fruit", "Veggie" };
-        List<double[]> xValues = new ArrayList<double[]>();
-        List<double[]> yValues = new ArrayList<double[]>();
-        xValues.add(count);
-        xValues.add(count);
-        yValues.add(fruits);
-        yValues.add(veggies);
-        dataset = createDataset(titles, xValues, yValues, 0);
-        mMaxY = getMax(fruits, veggies);
+	public HistoryChart(boolean scrollable) {
+        mDataset = new XYMultipleSeriesDataset();
+        mFruitSeries = new XYSeries("Fruit");
+        mVeggieSeries = new XYSeries("Veggie");
+        mDataset.addSeries(FRUIT_SERIES_INDEX, mFruitSeries);
+        mDataset.addSeries(VEGGIE_SERIES_INDEX, mVeggieSeries);
         
         // Create renderer
         int[] colors = new int[] { Color.RED, Color.GREEN };
         PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE, PointStyle.DIAMOND };
-        renderer = createRenderer(colors, styles);
+        mRenderer = createRenderer(scrollable, colors, styles);
+        show30Days();
         
-        int length = renderer.getSeriesRendererCount();
+        int length = mRenderer.getSeriesRendererCount();
         for (int i = 0; i < length; i++) {
-          ((XYSeriesRenderer) renderer.getSeriesRendererAt(i)).setFillPoints(true);
+          ((XYSeriesRenderer) mRenderer.getSeriesRendererAt(i)).setFillPoints(true);
         }
 	}
 	
+	public void hideTitle() {
+		mRenderer.setChartTitle("");
+	}
+	
+	public void show7Days() {
+		mRenderer.setXLabels(8);
+		mRenderer.setXAxisMax(7);
+		if (mChartView != null) {
+			mChartView.repaint();
+		}
+	}
+	
+	public void show14Days() {
+		mRenderer.setXLabels(15);
+		mRenderer.setXAxisMax(14);
+		if (mChartView != null) {
+			mChartView.repaint();
+		}
+	}
+	
+	public void show30Days() {
+		mRenderer.setXLabels(15);
+		mRenderer.setXAxisMax(30);
+		if (mChartView != null) {
+			mChartView.repaint();
+		}
+	}
+	
 	public void createChartView(Context context) {
-		mChartView = ChartFactory.getLineChartView(context, dataset, renderer);
+		mChartView = ChartFactory.getLineChartView(context, mDataset, mRenderer);
 	}
 	
 	public GraphicalView getChartView() {
 		return mChartView;
 	}
 	
-	public void updateVeggie(int newServingValue, int dayOffset) {
-		updateSeries(dataset.getSeriesAt(1), dayOffset, newServingValue);
+	public void updateVeggie(double newServingValue, int dayOffset) {
+		updateSeries(mVeggieSeries, dayOffset, newServingValue);
 	}
 	
-	public void updateFruit(int newServingValue, int dayOffset) {
-		updateSeries(dataset.getSeriesAt(0), dayOffset, newServingValue);
+	public void updateFruit(double newServingValue, int dayOffset) {
+		updateSeries(mFruitSeries, dayOffset, newServingValue);
 	}
 	
-	private void updateSeries(XYSeries series, int newX, int newY) {
+	private void updateSeries(XYSeries series, double newX, double newY) {
 		series.add(newX, newY);
-		
-		double maxY = Math.max(dataset.getSeriesAt(0).getMaxY(), dataset.getSeriesAt(1).getMaxY());
-		
-		renderer.setYAxisMax(maxY);
+		mRenderer.setYAxisMax(getMaxY());
     	mChartView.repaint();
 	}
 	
-	/**
-	 * Simple utility method to find the maximum value of two equal length arrays
-	 * 
-	 * @param fruits First array to find max of
-	 * @param veggies Second array to find max of
-	 * @return Maximum value of either array.  -1 returned if arrays are not of equal length
-	 */
-	private double getMax(double[] fruits, double[] veggies){
-		double max = 0;
-		
-		// Something is wrong, they should be the same length
-		if(fruits.length != veggies.length)
-			return -1;
-		
-		for(int i = 0; i < fruits.length; i++){
-			if(fruits[i] > max)
-				max = fruits[i];
-			if(veggies[i] > max)
-				max = veggies[i];
-		}
-		
-		return max;
+	private double getMaxY() {
+		return Math.max(mFruitSeries.getMaxY(), mVeggieSeries.getMaxY()) + .5;
 	}
 	
 	/**
@@ -115,7 +112,7 @@ public class HistoryChart {
 	 * @param styles
 	 * @return
 	 */
-    private XYMultipleSeriesRenderer createRenderer(int[] colors, PointStyle[] styles) {
+    private XYMultipleSeriesRenderer createRenderer(boolean scrollable, int[] colors, PointStyle[] styles) {
     	XYMultipleSeriesRenderer renderer = new  XYMultipleSeriesRenderer();
 
     	renderer.setAxisTitleTextSize(16);
@@ -136,20 +133,18 @@ public class HistoryChart {
         renderer.setXTitle("Days ago");
         renderer.setYTitle("Servings");
         renderer.setXAxisMin(0);
-        renderer.setXAxisMax(28);
+        renderer.setXAxisMax(30);
         renderer.setYAxisMin(0);
         renderer.setYAxisMax(mMaxY);
         renderer.setAxesColor(Color.LTGRAY);
         renderer.setLabelsColor(Color.LTGRAY);
-        renderer.setXLabels(15);
         renderer.setYLabels(7);
         renderer.setShowGrid(true);
         renderer.setXLabelsAlign(Align.CENTER);
         renderer.setYLabelsAlign(Align.RIGHT);
-        renderer.setPanEnabled(true, false);
-        renderer.setZoomEnabled(true, false);
-        renderer.setPanLimits(new double[]{0,365,0,0});
-        renderer.setZoomLimits(new double[]{0,365,0,0});
+
+        renderer.setPanEnabled(scrollable, false);
+        renderer.setZoomEnabled(scrollable, false);
     	
     	return renderer;
     }
@@ -162,37 +157,19 @@ public class HistoryChart {
      * @param yValues Values for the y axis
      * @param scale
      */
-    private XYMultipleSeriesDataset createDataset(String[] titles, List<double[]> xValues, List<double[]> yValues, int scale) {
-    	XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-    	
-		int length = titles.length;
-		for (int i = 0; i < length; i++) {
-			XYSeries series = new XYSeries(titles[i], scale);
-			double[] xV = xValues.get(i);
-			double[] yV = yValues.get(i);
-			int seriesLength = xV.length;
-			for (int k = 0; k < seriesLength; k++) {
-				series.add(xV[k], yV[k]);
-			}
-			dataset.addSeries(series);
+    public void updateDataset(double[] fruits, double[] veggies) {
+    	mFruitSeries.clear();
+    	mVeggieSeries.clear();
+
+		for (int i = 0; i < fruits.length; i++) {
+			mFruitSeries.add(i, fruits[i]);
+			mVeggieSeries.add(i, veggies[i]);
 		}
 		
-		return dataset;
+		mRenderer.setYAxisMax(getMaxY());
+        mRenderer.setPanLimits(new double[]{0,mFruitSeries.getItemCount(),0,0});
+        mRenderer.setZoomLimits(new double[]{0,mFruitSeries.getItemCount(),0,0});
+		mChartView.repaint();
     }
 
-    /**
-     * Accessor method for dataset
-     * @return Current dataset
-     */
-	public XYMultipleSeriesDataset getDataset() {
-		return dataset;
-	}
-
-	/**
-	 * Accessor method for renderer
-	 * @return Current renderer
-	 */
-	public XYMultipleSeriesRenderer getRenderer() {
-		return renderer;
-	}
 }

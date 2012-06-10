@@ -16,5 +16,10 @@
     <string name="cd_inc_veggie">Increment veggie serving</string>
     <string name="cd_fruit_image">Fruit image</string>
     <string name="cd_veggie_image">Veggie image</string>
+    <string name="history">History</string>
+    <string name="preferences">Preferences</string>
+    <string name="days_7">7 days</string>
+    <string name="days_14">14 days</string>
+    <string name="days_30">30 days</string>
 
 </resources>

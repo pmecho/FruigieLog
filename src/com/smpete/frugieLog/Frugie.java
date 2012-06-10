@@ -2,8 +2,6 @@ package com.smpete.frugieLog;
 
 
 
-import java.util.Date;
-
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -117,15 +115,6 @@ public class Frugie{
 	}
 
 	/**
-	 * Mutator for tenths
-	 * 
-	 * @param servingTenths New serving amount to set
-	 */
-	public void setFruitServingTenths(short servingTenths) {
-		this.fruitServingTenths = servingTenths;
-	}
-	
-	/**
 	 * Accessor for tenths
 	 * 
 	 * @return Servings in tenths
@@ -134,19 +123,10 @@ public class Frugie{
 		return veggieServingTenths;
 	}
 
-	/**
-	 * Mutator for tenths
-	 * 
-	 * @param servingTenths New serving amount to set
-	 */
-	public void setVeggieTenths(short servingTenths) {
-		this.veggieServingTenths = veggieServingTenths;
-	}
-	
 	public long getId() {
 		return id;
 	}
-
+	
 	/**
 	 * Represents columns of the database table
 	 * 
@@ -197,7 +177,7 @@ public class Frugie{
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = "date DESC";
-
+        
 	}
 	
 }
