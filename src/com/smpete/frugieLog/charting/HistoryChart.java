@@ -57,7 +57,8 @@ public class HistoryChart {
 	
 	public void show7Days() {
 		mRenderer.setXLabels(8);
-		mRenderer.setXAxisMax(7);
+		mRenderer.setXAxisMin(-0.1);
+		mRenderer.setXAxisMax(7.1);
 		if (mChartView != null) {
 			mChartView.repaint();
 		}
@@ -65,7 +66,8 @@ public class HistoryChart {
 	
 	public void show14Days() {
 		mRenderer.setXLabels(15);
-		mRenderer.setXAxisMax(14);
+		mRenderer.setXAxisMin(-0.25);
+		mRenderer.setXAxisMax(14.25);
 		if (mChartView != null) {
 			mChartView.repaint();
 		}
@@ -73,7 +75,8 @@ public class HistoryChart {
 	
 	public void show30Days() {
 		mRenderer.setXLabels(15);
-		mRenderer.setXAxisMax(30);
+		mRenderer.setXAxisMin(-0.5);
+		mRenderer.setXAxisMax(30.5);
 		if (mChartView != null) {
 			mChartView.repaint();
 		}
@@ -96,9 +99,11 @@ public class HistoryChart {
 	}
 	
 	private void updateSeries(XYSeries series, double newX, double newY) {
-		series.add(newX, newY);
-		mRenderer.setYAxisMax(getMaxY());
-    	mChartView.repaint();
+		if (newX <= mRenderer.getXAxisMax()) {
+			series.add(newX, newY);
+			mRenderer.setYAxisMax(getMaxY());
+    		mChartView.repaint();
+		}
 	}
 	
 	private double getMaxY() {
@@ -132,7 +137,7 @@ public class HistoryChart {
         renderer.setChartTitle("History");
         renderer.setXTitle("Days ago");
         renderer.setYTitle("Servings");
-        renderer.setXAxisMin(0);
+        renderer.setXAxisMin(-0.5);
         renderer.setXAxisMax(30);
         renderer.setYAxisMin(0);
         renderer.setYAxisMax(mMaxY);
@@ -167,8 +172,8 @@ public class HistoryChart {
 		}
 		
 		mRenderer.setYAxisMax(getMaxY());
-        mRenderer.setPanLimits(new double[]{0,mFruitSeries.getItemCount(),0,0});
-        mRenderer.setZoomLimits(new double[]{0,mFruitSeries.getItemCount(),0,0});
+        mRenderer.setPanLimits(new double[]{-0.5,mFruitSeries.getItemCount(),0,0});
+        mRenderer.setZoomLimits(new double[]{-0.5,mFruitSeries.getItemCount(),0,0});
 		mChartView.repaint();
     }
 

@@ -11,6 +11,10 @@
         <provider android:name="com.smpete.frugieLog.FrugieProvider"
             android:authorities="com.smpete.frugieLog.frugieprovider" />
         
+		<provider android:name="com.smpete.frugieLog.CachedFileProvider"
+		    android:authorities="com.smpete.frugieLog.csvprovider"></provider>
+        
+        
         <activity android:name=".FrugieLogActivity"
                   android:label="@string/app_name"
                   android:theme="@style/MyTheme">

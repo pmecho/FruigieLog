@@ -791,24 +791,26 @@ containing a value of this type.
         public static final int abs__tab_unselected_focused_holo=0x7f02005a;
         public static final int abs__tab_unselected_holo=0x7f02005b;
         public static final int abs__tab_unselected_pressed_holo=0x7f02005c;
-        public static final int banana=0x7f02005d;
-        public static final int banana_half=0x7f02005e;
-        public static final int carrot=0x7f02005f;
-        public static final int carrot_half=0x7f020060;
-        public static final int finalarrow1=0x7f020061;
-        public static final int fruit=0x7f020062;
-        public static final int ic_btn_round_minus=0x7f020063;
-        public static final int ic_btn_round_minus_pressed=0x7f020064;
-        public static final int ic_btn_round_plus=0x7f020065;
-        public static final int ic_btn_round_plus_pressed=0x7f020066;
-        public static final int ic_launcher=0x7f020067;
-        public static final int left_arrow=0x7f020068;
-        public static final int left_arrow_button=0x7f020069;
-        public static final int minus_button=0x7f02006a;
-        public static final int plus_button=0x7f02006b;
-        public static final int right_arrow=0x7f02006c;
-        public static final int right_arrow_button=0x7f02006d;
-        public static final int veggie=0x7f02006e;
+        public static final int action_bar_history=0x7f02005d;
+        public static final int action_bar_history_length=0x7f02005e;
+        public static final int banana=0x7f02005f;
+        public static final int banana_half=0x7f020060;
+        public static final int carrot=0x7f020061;
+        public static final int carrot_half=0x7f020062;
+        public static final int finalarrow1=0x7f020063;
+        public static final int fruit=0x7f020064;
+        public static final int ic_btn_round_minus=0x7f020065;
+        public static final int ic_btn_round_minus_pressed=0x7f020066;
+        public static final int ic_btn_round_plus=0x7f020067;
+        public static final int ic_btn_round_plus_pressed=0x7f020068;
+        public static final int ic_launcher=0x7f020069;
+        public static final int left_arrow=0x7f02006a;
+        public static final int left_arrow_button=0x7f02006b;
+        public static final int minus_button=0x7f02006c;
+        public static final int plus_button=0x7f02006d;
+        public static final int right_arrow=0x7f02006e;
+        public static final int right_arrow_button=0x7f02006f;
+        public static final int veggie=0x7f020070;
     }
     public static final class id {
         public static final int about=0x7f04003b;
@@ -948,6 +950,7 @@ containing a value of this type.
         public static final int days_30=0x7f09001d;
         public static final int days_7=0x7f09001b;
         public static final int empty_count=0x7f090012;
+        public static final int failed_csv_creation=0x7f090020;
         public static final int full=0x7f090010;
         public static final int half=0x7f090011;
         public static final int history=0x7f090019;
@@ -955,6 +958,8 @@ containing a value of this type.
         public static final int menu_report=0x7f09000c;
         public static final int preferences=0x7f09001a;
         public static final int serving_size=0x7f09000f;
+        public static final int share_csv=0x7f09001e;
+        public static final int share_subject=0x7f09001f;
         public static final int today=0x7f09000d;
         public static final int yesterday=0x7f09000e;
     }

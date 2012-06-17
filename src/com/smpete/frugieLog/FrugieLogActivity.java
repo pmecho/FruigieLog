@@ -27,7 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar.LayoutParams;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -67,6 +66,10 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     private TextView mActionBarTitle;
     private TextView mActionBarSubtitle;
     
+    private int mHistoryLimitId;
+    
+    private DatePickerDialog mDatePicker;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,28 +79,16 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     	getSupportActionBar().setDisplayShowTitleEnabled(false);
     	getSupportActionBar().setCustomView(R.layout.action_bar_title);
     	
+    	createDatePicker();
     	View v = getSupportActionBar().getCustomView();
     	mActionBarTitle = (TextView)v.findViewById(R.id.day);
     	mActionBarSubtitle = (TextView)v.findViewById(R.id.date);
+    	v.setBackgroundResource(R.drawable.abs__list_selector_holo_dark);
+    	v.setClickable(true);
     	v.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
-				Calendar cal = Calendar.getInstance();
-				new DatePickerDialog(FrugieLogActivity.this, new OnDateSetListener() {
-					
-					@Override
-					public void onDateSet(DatePicker view, int year, int monthOfYear,
-							int dayOfMonth) {
-						Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
-						mCentralDate = cal.getTime();
-						mAdapter.setDate(mCentralDate);
-						mAdapter.notifyDataSetChanged();
-						setFocusedPage(ServingPagerAdapter.MIDDLE);
-						mPager.setCurrentItem(mFocusedPage, false);
-						
-					}
-				}, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+				mDatePicker.show();
 			}
 		});
         
@@ -157,6 +148,8 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
         View historyView = mHistoryChart.getChartView();
         layout.addView(historyView);
         
+        mHistoryLimitId = UserPrefs.getHistoryLengthId(this);
+        
         getSupportLoaderManager().initLoader(0, null, this);
     }
     
@@ -173,18 +166,14 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	MenuItem history = menu.add(R.string.history);
-    	history.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-    	history.setIntent(new Intent(this, HistoryActivity.class));
-
-    	
     	SubMenu historyLengthSubMenu = menu.addSubMenu("History Length");
+    	historyLengthSubMenu.getItem().setIcon(R.drawable.action_bar_history_length).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	MenuItem days7 = historyLengthSubMenu.add(1, ITEM_ID_7_DAYS, 0, R.string.days_7);
     	MenuItem days14 = historyLengthSubMenu.add(1, ITEM_ID_14_DAYS, 1, R.string.days_14);
     	MenuItem days30 = historyLengthSubMenu.add(1, ITEM_ID_30_DAYS, 2, R.string.days_30);
     	
     	historyLengthSubMenu.setGroupCheckable(1, true, true);
-    	switch (UserPrefs.getHistoryLengthId(this)) {
+    	switch (mHistoryLimitId) {
 		case ITEM_ID_7_DAYS:
 			days7.setChecked(true);
 			mHistoryChart.show7Days();
@@ -199,6 +188,10 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 			break;
 		}
     	
+    	MenuItem history = menu.add(R.string.history).setIcon(R.drawable.action_bar_history);
+    	history.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	history.setIntent(new Intent(this, HistoryActivity.class));
+    	
         return true;
     }
     
@@ -209,26 +202,45 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 			item.setChecked(true);
 			mHistoryChart.show7Days();
 			UserPrefs.setHistoryLengthId(this, ITEM_ID_7_DAYS);
+			mHistoryLimitId = ITEM_ID_7_DAYS;
+			getSupportLoaderManager().restartLoader(0, null, this);
 			break;
 		case ITEM_ID_14_DAYS:
 			item.setChecked(true);
 			mHistoryChart.show14Days();
 			UserPrefs.setHistoryLengthId(this, ITEM_ID_14_DAYS);
+			mHistoryLimitId = ITEM_ID_14_DAYS;
+			getSupportLoaderManager().restartLoader(0, null, this);
 			break;
 		case ITEM_ID_30_DAYS:
 			item.setChecked(true);
 			mHistoryChart.show30Days();
 			UserPrefs.setHistoryLengthId(this, ITEM_ID_30_DAYS);
-			break;
-
-		default:
+			mHistoryLimitId = ITEM_ID_30_DAYS;
+			getSupportLoaderManager().restartLoader(0, null, this);
 			break;
 		}
     	
-    	// TODO Auto-generated method stub
     	return super.onOptionsItemSelected(item);
     }
 
+    private void createDatePicker() {
+    	Calendar cal = Calendar.getInstance();
+		mDatePicker = new DatePickerDialog(FrugieLogActivity.this, new OnDateSetListener() {
+			
+			@Override
+			public void onDateSet(DatePicker view, int year, int monthOfYear,
+					int dayOfMonth) {
+				Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+				mCentralDate = cal.getTime();
+				mAdapter.setDate(mCentralDate);
+				mAdapter.notifyDataSetChanged();
+				setFocusedPage(ServingPagerAdapter.MIDDLE);
+				mPager.setCurrentItem(mFocusedPage, false);
+				
+			}
+		}, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+    }
     
     /**
      * Set focused page and update the action bar's title
@@ -313,7 +325,6 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
 	@Override
 	public boolean onCheckHalfServing() {
-		// TODO Auto-generated method stub
 		return mHalfServing;
 	}
 	
@@ -368,6 +379,21 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 
+		int limit;
+		switch (mHistoryLimitId) {
+		case ITEM_ID_7_DAYS:
+			limit = 8;
+			break;
+		case ITEM_ID_14_DAYS:
+			limit = 15;
+			break;
+		case ITEM_ID_30_DAYS:
+			limit = 31;
+			break;
+		default:
+			limit = 31;
+			break;
+		}
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat(FrugieColumns.DATE_FORMAT);
     	String nowDate = dateFormat.format(new Date());
@@ -376,7 +402,7 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 				new String[] {FrugieColumns.FRUIT, FrugieColumns.VEGGIE},
 				"date <= ?",
 				new String[] {nowDate},
-				FrugieColumns.DATE + " DESC");
+				FrugieColumns.DATE + " DESC LIMIT " + limit);
     	
 
     	return loader;
