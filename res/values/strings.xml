@@ -24,5 +24,23 @@
     <string name="share_csv">Export .csv</string>
     <string name="share_subject">FrugieLog data</string>
 	<string name="failed_csv_creation">Failed to create .csv history file :(</string>
-    
+	<string name="about">About</string>
+	<string name="calculator">Goal calculator</string>
+	<string name="history_length">History length</string>
+	
+	<string name="age">Age:</string>
+	<string name="male">Male</string>
+	<string name="female">Female</string>
+	<string name="physical_activity">Daily physical activity outside of everyday life:</string>
+	<string name="fruit_veggie_amounts">Your recommended intake:&lt;br/>Fruits: &lt;b>&lt;font color="#00CC00">%1$s&lt;/font>&lt;/b>  Veggies: &lt;b>&lt;font color="#00CC00">%2$s&lt;/font>&lt;/b></string>
+	<string name="calculate">Calculate</string>
+	
+	<string name="about_welcome">Welcome to FrugieLog.  With this app you can track your daily intake of fruits and vegetables to make sure you\'re getting enough!</string>
+	<string name="about_getting_started">&lt;u>Getting started&lt;/u></string>
+	<string name="about_getting_started_text">\u2022 Swipe left or right to change days or tap on the date to select a date.\n\u2022 Choose between full or half cup and tap the plus or minus to change your intake.\n\u2022 Check out (and export!) your full history in the History page.</string>
+	
+	<string name="about_examples_of_a_cup">&lt;u>Examples of a cup&lt;/u></string>
+	<string name="about_fruit_examples">1 large banana\n1 small apple\n1 large orange\n8oz 100% fruit juice\n1/2 cup dried fruit\n2 snack size (4oz containers) applesauce\n1 small watermelon wedge</string>
+	<string name="about_veggie_examples">1 cup cooked leafy greens\n2 cups raw leafy greens\n1 medium potato\n1 large sweet potato\n10 broccoli florets\n1 large bell pepper\n2 large celery stalks</string>
+	<string name="about_source">Source:\nhttp://www.fruitsandveggiesmatter.gov/</string>
 </resources>

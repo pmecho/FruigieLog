@@ -1,0 +1,9 @@
+<resources>
+
+    <string-array name="activity_levels">
+        <item>Less than 30 minutes</item>
+        <item>30 to 60 minutes</item>
+        <item>More than 60 minutes</item>
+    </string-array>
+
+</resources>

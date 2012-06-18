@@ -8,6 +8,9 @@
 package com.smpete.frugieLog;
 
 public final class R {
+    public static final class array {
+        public static final int activity_levels=0x7f0b0000;
+    }
     public static final class attr {
         /**  Specified if we are forcing an action item overflow menu. 
          <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
@@ -813,102 +816,121 @@ containing a value of this type.
         public static final int veggie=0x7f020070;
     }
     public static final class id {
-        public static final int about=0x7f04003b;
-        public static final int abs__action_bar=0x7f040022;
-        public static final int abs__action_bar_container=0x7f040021;
-        public static final int abs__action_bar_subtitle=0x7f040011;
-        public static final int abs__action_bar_title=0x7f040010;
-        public static final int abs__action_context_bar=0x7f040023;
+        public static final int about=0x7f040044;
+        public static final int abs__action_bar=0x7f040024;
+        public static final int abs__action_bar_container=0x7f040023;
+        public static final int abs__action_bar_subtitle=0x7f040013;
+        public static final int abs__action_bar_title=0x7f040012;
+        public static final int abs__action_context_bar=0x7f040025;
         public static final int abs__action_menu_divider=0x7f04000c;
         public static final int abs__action_menu_presenter=0x7f04000d;
-        public static final int abs__action_mode_bar=0x7f040026;
-        public static final int abs__action_mode_bar_stub=0x7f040025;
-        public static final int abs__action_mode_close_button=0x7f040014;
-        public static final int abs__activity_chooser_view_content=0x7f040015;
-        public static final int abs__checkbox=0x7f04001e;
-        public static final int abs__content=0x7f04001d;
-        public static final int abs__default_activity_button=0x7f040018;
-        public static final int abs__expand_activities_button=0x7f040016;
+        public static final int abs__action_mode_bar=0x7f040028;
+        public static final int abs__action_mode_bar_stub=0x7f040027;
+        public static final int abs__action_mode_close_button=0x7f040016;
+        public static final int abs__activity_chooser_view_content=0x7f040017;
+        public static final int abs__checkbox=0x7f040020;
+        public static final int abs__content=0x7f04001f;
+        public static final int abs__default_activity_button=0x7f04001a;
+        public static final int abs__expand_activities_button=0x7f040018;
         public static final int abs__home=0x7f04000a;
-        public static final int abs__icon=0x7f04001a;
-        public static final int abs__image=0x7f040017;
-        public static final int abs__imageButton=0x7f040012;
-        public static final int abs__list_item=0x7f040019;
+        public static final int abs__icon=0x7f04001c;
+        public static final int abs__image=0x7f040019;
+        public static final int abs__imageButton=0x7f040014;
+        public static final int abs__list_item=0x7f04001b;
         public static final int abs__progress_circular=0x7f04000e;
         public static final int abs__progress_horizontal=0x7f04000f;
-        public static final int abs__radio=0x7f040020;
-        public static final int abs__shortcut=0x7f04001f;
-        public static final int abs__split_action_bar=0x7f040024;
-        public static final int abs__textButton=0x7f040013;
-        public static final int abs__title=0x7f04001b;
-        public static final int abs__titleDivider=0x7f04001c;
+        public static final int abs__radio=0x7f040022;
+        public static final int abs__shortcut=0x7f040021;
+        public static final int abs__split_action_bar=0x7f040026;
+        public static final int abs__textButton=0x7f040015;
+        public static final int abs__title=0x7f04001d;
+        public static final int abs__titleDivider=0x7f04001e;
         public static final int abs__up=0x7f04000b;
-        public static final int current_fruit_text=0x7f040033;
-        public static final int current_veggie_text=0x7f040038;
-        public static final int date=0x7f040028;
-        public static final int day=0x7f040027;
-        public static final int dec_fruit_button=0x7f040032;
-        public static final int dec_veggie_button=0x7f040037;
+        public static final int activity_spinner=0x7f04002f;
+        public static final int age=0x7f04002b;
+        public static final int amounts=0x7f040030;
+        public static final int calculate=0x7f040031;
+        public static final int cup_examples=0x7f040011;
+        public static final int current_fruit_text=0x7f04003c;
+        public static final int current_veggie_text=0x7f040041;
+        public static final int date=0x7f04002a;
+        public static final int day=0x7f040029;
+        public static final int dec_fruit_button=0x7f04003b;
+        public static final int dec_veggie_button=0x7f040040;
         public static final int disableHome=0x7f040009;
-        public static final int fruit_image=0x7f040031;
-        public static final int fruit_layout=0x7f040030;
-        public static final int full_radio=0x7f04002c;
-        public static final int half_radio=0x7f04002d;
+        public static final int female=0x7f04002e;
+        public static final int fruit_image=0x7f04003a;
+        public static final int fruit_layout=0x7f040039;
+        public static final int full_radio=0x7f040035;
+        public static final int gender_radios=0x7f04002c;
+        public static final int getting_started=0x7f040010;
+        public static final int half_radio=0x7f040036;
         public static final int homeAsUp=0x7f040006;
-        public static final int inc_fruit_button=0x7f040034;
-        public static final int inc_veggie_button=0x7f040039;
-        public static final int layout=0x7f040029;
+        public static final int inc_fruit_button=0x7f04003d;
+        public static final int inc_veggie_button=0x7f040042;
+        public static final int layout=0x7f040032;
         public static final int listMode=0x7f040002;
+        public static final int male=0x7f04002d;
         public static final int normal=0x7f040001;
-        public static final int report=0x7f04003a;
-        public static final int screen_layout=0x7f04002f;
-        public static final int serving_radio_group=0x7f04002a;
-        public static final int serving_text=0x7f04002b;
+        public static final int report=0x7f040043;
+        public static final int screen_layout=0x7f040038;
+        public static final int serving_radio_group=0x7f040033;
+        public static final int serving_text=0x7f040034;
         public static final int showCustom=0x7f040008;
         public static final int showHome=0x7f040005;
         public static final int showTitle=0x7f040007;
         public static final int tabMode=0x7f040003;
         public static final int useLogo=0x7f040004;
-        public static final int veggie_image=0x7f040036;
-        public static final int veggie_layout=0x7f040035;
-        public static final int viewpager=0x7f04002e;
+        public static final int veggie_image=0x7f04003f;
+        public static final int veggie_layout=0x7f04003e;
+        public static final int viewpager=0x7f040037;
         public static final int wrap_content=0x7f040000;
     }
     public static final class integer {
         public static final int abs__max_action_buttons=0x7f080000;
     }
     public static final class layout {
-        public static final int abs__action_bar_home=0x7f030000;
-        public static final int abs__action_bar_tab=0x7f030001;
-        public static final int abs__action_bar_tab_bar_view=0x7f030002;
-        public static final int abs__action_bar_title_item=0x7f030003;
-        public static final int abs__action_menu_item_layout=0x7f030004;
-        public static final int abs__action_menu_layout=0x7f030005;
-        public static final int abs__action_mode_bar=0x7f030006;
-        public static final int abs__action_mode_close_item=0x7f030007;
-        public static final int abs__activity_chooser_view=0x7f030008;
-        public static final int abs__activity_chooser_view_list_item=0x7f030009;
-        public static final int abs__dialog_title_holo=0x7f03000a;
-        public static final int abs__list_menu_item_checkbox=0x7f03000b;
-        public static final int abs__list_menu_item_icon=0x7f03000c;
-        public static final int abs__list_menu_item_layout=0x7f03000d;
-        public static final int abs__list_menu_item_radio=0x7f03000e;
-        public static final int abs__popup_menu_item_layout=0x7f03000f;
-        public static final int abs__screen_action_bar=0x7f030010;
-        public static final int abs__screen_action_bar_overlay=0x7f030011;
-        public static final int abs__screen_simple=0x7f030012;
-        public static final int abs__screen_simple_overlay_action_mode=0x7f030013;
-        public static final int action_bar_title=0x7f030014;
-        public static final int history=0x7f030015;
-        public static final int main=0x7f030016;
-        public static final int serving_fragment_layout=0x7f030017;
-        public static final int sherlock_spinner_dropdown_item=0x7f030018;
-        public static final int sherlock_spinner_item=0x7f030019;
+        public static final int about=0x7f030000;
+        public static final int abs__action_bar_home=0x7f030001;
+        public static final int abs__action_bar_tab=0x7f030002;
+        public static final int abs__action_bar_tab_bar_view=0x7f030003;
+        public static final int abs__action_bar_title_item=0x7f030004;
+        public static final int abs__action_menu_item_layout=0x7f030005;
+        public static final int abs__action_menu_layout=0x7f030006;
+        public static final int abs__action_mode_bar=0x7f030007;
+        public static final int abs__action_mode_close_item=0x7f030008;
+        public static final int abs__activity_chooser_view=0x7f030009;
+        public static final int abs__activity_chooser_view_list_item=0x7f03000a;
+        public static final int abs__dialog_title_holo=0x7f03000b;
+        public static final int abs__list_menu_item_checkbox=0x7f03000c;
+        public static final int abs__list_menu_item_icon=0x7f03000d;
+        public static final int abs__list_menu_item_layout=0x7f03000e;
+        public static final int abs__list_menu_item_radio=0x7f03000f;
+        public static final int abs__popup_menu_item_layout=0x7f030010;
+        public static final int abs__screen_action_bar=0x7f030011;
+        public static final int abs__screen_action_bar_overlay=0x7f030012;
+        public static final int abs__screen_simple=0x7f030013;
+        public static final int abs__screen_simple_overlay_action_mode=0x7f030014;
+        public static final int action_bar_title=0x7f030015;
+        public static final int calculator=0x7f030016;
+        public static final int history=0x7f030017;
+        public static final int main=0x7f030018;
+        public static final int serving_fragment_layout=0x7f030019;
+        public static final int sherlock_spinner_dropdown_item=0x7f03001a;
+        public static final int sherlock_spinner_item=0x7f03001b;
     }
     public static final class menu {
-        public static final int main_menu=0x7f0b0000;
+        public static final int main_menu=0x7f0c0000;
     }
     public static final class string {
+        public static final int about=0x7f090021;
+        public static final int about_examples_of_a_cup=0x7f09002d;
+        public static final int about_fruit_examples=0x7f09002e;
+        public static final int about_getting_started=0x7f09002b;
+        public static final int about_getting_started_text=0x7f09002c;
+        public static final int about_source=0x7f090030;
+        public static final int about_veggie_examples=0x7f09002f;
+        public static final int about_welcome=0x7f09002a;
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
          */
         public static final int abs__action_bar_home_description=0x7f090000;
@@ -939,7 +961,10 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abs__shareactionprovider_share_with_application=0x7f090009;
+        public static final int age=0x7f090024;
         public static final int app_name=0x7f09000a;
+        public static final int calculate=0x7f090029;
+        public static final int calculator=0x7f090022;
         public static final int cd_dec_fruit=0x7f090013;
         public static final int cd_dec_veggie=0x7f090015;
         public static final int cd_fruit_image=0x7f090017;
@@ -951,11 +976,16 @@ containing a value of this type.
         public static final int days_7=0x7f09001b;
         public static final int empty_count=0x7f090012;
         public static final int failed_csv_creation=0x7f090020;
+        public static final int female=0x7f090026;
+        public static final int fruit_veggie_amounts=0x7f090028;
         public static final int full=0x7f090010;
         public static final int half=0x7f090011;
         public static final int history=0x7f090019;
+        public static final int history_length=0x7f090023;
+        public static final int male=0x7f090025;
         public static final int menu_about=0x7f09000b;
         public static final int menu_report=0x7f09000c;
+        public static final int physical_activity=0x7f090027;
         public static final int preferences=0x7f09001a;
         public static final int serving_size=0x7f09000f;
         public static final int share_csv=0x7f09001e;

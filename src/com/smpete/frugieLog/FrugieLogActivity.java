@@ -41,9 +41,12 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
 	private static final SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
 
+	public static final int GROUP_ID_HIST_LENGTH = 1;
 	public static final int ITEM_ID_7_DAYS = 10;
 	public static final int ITEM_ID_14_DAYS = 11;
 	public static final int ITEM_ID_30_DAYS = 12;
+	public static final int ITEM_ID_ABOUT = 13;
+	public static final int ITEM_ID_CALCULATOR = 14;
 	
     private ServingPagerAdapter mAdapter;
     private ViewPager mPager;
@@ -166,8 +169,8 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	SubMenu historyLengthSubMenu = menu.addSubMenu("History Length");
-    	historyLengthSubMenu.getItem().setIcon(R.drawable.action_bar_history_length).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	SubMenu historyLengthSubMenu = menu.addSubMenu(R.string.history_length);
+    	historyLengthSubMenu.getItem().setIcon(R.drawable.action_bar_history_length).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     	MenuItem days7 = historyLengthSubMenu.add(1, ITEM_ID_7_DAYS, 0, R.string.days_7);
     	MenuItem days14 = historyLengthSubMenu.add(1, ITEM_ID_14_DAYS, 1, R.string.days_14);
     	MenuItem days30 = historyLengthSubMenu.add(1, ITEM_ID_30_DAYS, 2, R.string.days_30);
@@ -191,35 +194,44 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     	MenuItem history = menu.add(R.string.history).setIcon(R.drawable.action_bar_history);
     	history.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	history.setIntent(new Intent(this, HistoryActivity.class));
+
+    	menu.add(Menu.NONE, ITEM_ID_ABOUT, Menu.NONE, R.string.about);
+    	menu.add(Menu.NONE, ITEM_ID_CALCULATOR, Menu.NONE, R.string.calculator);
     	
         return true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	if (item.getGroupId() == GROUP_ID_HIST_LENGTH) {
+	    	switch (item.getItemId()) {
+			case ITEM_ID_7_DAYS:
+				mHistoryChart.show7Days();
+				break;
+			case ITEM_ID_14_DAYS:
+				mHistoryChart.show14Days();
+				break;
+			case ITEM_ID_30_DAYS:
+				mHistoryChart.show30Days();
+				break;
+	    	}
+			item.setChecked(true);
+	    	mHistoryLimitId = item.getItemId();
+			UserPrefs.setHistoryLengthId(this, mHistoryLimitId);
+			getSupportLoaderManager().restartLoader(0, null, this);
+			return true;
+    	}
+    	
     	switch (item.getItemId()) {
-		case ITEM_ID_7_DAYS:
-			item.setChecked(true);
-			mHistoryChart.show7Days();
-			UserPrefs.setHistoryLengthId(this, ITEM_ID_7_DAYS);
-			mHistoryLimitId = ITEM_ID_7_DAYS;
-			getSupportLoaderManager().restartLoader(0, null, this);
-			break;
-		case ITEM_ID_14_DAYS:
-			item.setChecked(true);
-			mHistoryChart.show14Days();
-			UserPrefs.setHistoryLengthId(this, ITEM_ID_14_DAYS);
-			mHistoryLimitId = ITEM_ID_14_DAYS;
-			getSupportLoaderManager().restartLoader(0, null, this);
-			break;
-		case ITEM_ID_30_DAYS:
-			item.setChecked(true);
-			mHistoryChart.show30Days();
-			UserPrefs.setHistoryLengthId(this, ITEM_ID_30_DAYS);
-			mHistoryLimitId = ITEM_ID_30_DAYS;
-			getSupportLoaderManager().restartLoader(0, null, this);
-			break;
-		}
+		case ITEM_ID_ABOUT:
+    		AboutDialog dialog = new AboutDialog();
+    		dialog.show(getSupportFragmentManager(), "aboutDialog");
+    		return true;
+		case ITEM_ID_CALCULATOR:
+			CalculatorDialog calcDialog =  new CalculatorDialog();
+			calcDialog.show(getSupportFragmentManager(), "calcDialog");
+			return true;
+    	}
     	
     	return super.onOptionsItemSelected(item);
     }
