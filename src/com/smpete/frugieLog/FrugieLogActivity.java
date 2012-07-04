@@ -154,6 +154,11 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
         mHistoryLimitId = UserPrefs.getHistoryLengthId(this);
         
         getSupportLoaderManager().initLoader(0, null, this);
+        if (!UserPrefs.hasShownWelcome(this) && getSupportFragmentManager().findFragmentByTag("aboutDialog") == null) {
+        	AboutDialog dialog = new AboutDialog();
+        	dialog.hideRateButton();
+        	dialog.show(getSupportFragmentManager(), "aboutDialog");
+        }
     }
     
     @Override
@@ -194,9 +199,9 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     	MenuItem history = menu.add(R.string.history).setIcon(R.drawable.action_bar_history);
     	history.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	history.setIntent(new Intent(this, HistoryActivity.class));
-
-    	menu.add(Menu.NONE, ITEM_ID_ABOUT, Menu.NONE, R.string.about);
+    	
     	menu.add(Menu.NONE, ITEM_ID_CALCULATOR, Menu.NONE, R.string.calculator);
+    	menu.add(Menu.NONE, ITEM_ID_ABOUT, Menu.NONE, R.string.about);
     	
         return true;
     }
