@@ -1,9 +1,11 @@
 package com.smpete.frugieLog;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -63,8 +65,6 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     private Date mCentralDate;
     
-    private ServingFragment mCurrentFrag;
-    
     private HistoryChart mHistoryChart;
     private TextView mActionBarTitle;
     private TextView mActionBarSubtitle;
@@ -72,6 +72,8 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     private int mHistoryLimitId;
     
     private DatePickerDialog mDatePicker;
+    
+    private List<ServingFragment> mFragmentList = new ArrayList<ServingFragment>();
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -297,8 +299,10 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
         		radios.check(R.id.full_radio);
     	}
     	mHalfServing = newServing;
-    	if (mCurrentFrag != null) 
-    		mCurrentFrag.setHalfServing(mHalfServing);
+    	
+    	for (ServingFragment fragment : mFragmentList) {
+    		fragment.setHalfServing(mHalfServing);
+    	}
     }
     
     // BEGIN EVENT HANDLERS
@@ -323,61 +327,19 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     // END EVENT HANDLERS
     
-
-    
     // Callbacks from serving fragment
 	@Override
 	public boolean onCheckHalfServing() {
 		return mHalfServing;
 	}
-	
-	
-	private class ServingPagerAdapter extends FragmentStatePagerAdapter {
 
-		private static final int COUNT = Short.MAX_VALUE;
-		public static final int MIDDLE = Short.MAX_VALUE / 2;
-		
-		private Date date;
-		
-		public ServingPagerAdapter(FragmentManager fm, Date date) {
-			super(fm);
-			this.date = date;
-		}
-
-		public void setDate(Date date) {
-			this.date = date;
-		}
-		
-		@Override
-		public int getItemPosition(Object object) {
-		    return POSITION_NONE;
-		}
-		
-		@Override
-		public Fragment getItem(int position) {
-			Log.v("ServingPagerAdapter", "getItem: " + position);
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(date);
-			cal.add(Calendar.DATE, position - MIDDLE);
-			
-			ServingFragment frag = ServingFragment.newInstance(cal.getTimeInMillis(), mHalfServing);
-			return frag;
-		}
-		
-		@Override
-		public int getCount() {
-			return COUNT;
-		}
-		
-		@Override
-		public void setPrimaryItem(ViewGroup container, int position,
-				Object object) {
-			super.setPrimaryItem(container, position, object);
-			mCurrentFrag = (ServingFragment)object;
-			mCurrentFrag.setHalfServing(mHalfServing);
-		}
+	public void onAttach(ServingFragment fragment) {
+		mFragmentList.add(fragment);
 	}
-
+	
+	public void onDetach(ServingFragment fragment) {
+		mFragmentList.remove(fragment);
+	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
@@ -433,6 +395,51 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
+	}
+
+	private class ServingPagerAdapter extends FragmentStatePagerAdapter {
+
+		private static final int COUNT = Short.MAX_VALUE;
+		public static final int MIDDLE = Short.MAX_VALUE / 2;
+		
+		private Date date;
+		
+		public ServingPagerAdapter(FragmentManager fm, Date date) {
+			super(fm);
+			this.date = date;
+		}
+
+		public void setDate(Date date) {
+			this.date = date;
+		}
+		
+		@Override
+		public int getItemPosition(Object object) {
+		    return POSITION_NONE;
+		}
+		
+		@Override
+		public Fragment getItem(int position) {
+			Log.v("ServingPagerAdapter", "getItem: " + position);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+			cal.add(Calendar.DATE, position - MIDDLE);
+			
+			ServingFragment frag = ServingFragment.newInstance(cal.getTimeInMillis(), mHalfServing);
+			return frag;
+		}
+		
+		@Override
+		public int getCount() {
+			return COUNT;
+		}
+		
+		@Override
+		public void setPrimaryItem(ViewGroup container, int position,
+				Object object) {
+			super.setPrimaryItem(container, position, object);
+			((ServingFragment)object).setHalfServing(mHalfServing);
+		}
 	}
 
 }

@@ -65,6 +65,7 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
         // Ensure that the interface is implemented
         try {
             mListener = (OnServingChangedListener) activity;
+            mListener.onAttach(this);
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnServingChangedListener");
         }
@@ -159,6 +160,14 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
         Log.d("ServingFrag", "Stop");
 	}
 	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		if (mListener != null) {
+			mListener.onDetach(this);
+		}
+	}
+	
     @Override
     public void onSaveInstanceState(Bundle outState){
     	super.onSaveInstanceState(outState);
@@ -236,6 +245,8 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
     
     public interface OnServingChangedListener{
     	public boolean onCheckHalfServing();
+    	public void onAttach(ServingFragment fragment);
+    	public void onDetach(ServingFragment fragment);
     }
 
 	@Override
