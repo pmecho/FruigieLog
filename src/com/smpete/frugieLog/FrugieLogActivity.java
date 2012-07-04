@@ -327,20 +327,6 @@ public class FrugieLogActivity extends SherlockFragmentActivity implements OnSer
     
     // Callbacks from serving fragment
 	@Override
-	public void onVeggieChanged(double newServingValue, int dayOffset){
-		if (dayOffset > -1) {
-			mHistoryChart.updateVeggie(newServingValue, dayOffset);
-		}
-	}
-	
-	@Override
-	public void onFruitChanged(double newServingValue, int dayOffset) {
-		if (dayOffset > -1) {
-			mHistoryChart.updateFruit(newServingValue, dayOffset);
-		}
-	}
-    
-	@Override
 	public boolean onCheckHalfServing() {
 		return mHalfServing;
 	}

@@ -90,22 +90,6 @@ public class HistoryChart {
 		return mChartView;
 	}
 	
-	public void updateVeggie(double newServingValue, int dayOffset) {
-		updateSeries(mVeggieSeries, dayOffset, newServingValue);
-	}
-	
-	public void updateFruit(double newServingValue, int dayOffset) {
-		updateSeries(mFruitSeries, dayOffset, newServingValue);
-	}
-	
-	private void updateSeries(XYSeries series, double newX, double newY) {
-		if (newX <= mRenderer.getXAxisMax()) {
-			series.add(newX, newY);
-			mRenderer.setYAxisMax(getMaxY());
-    		mChartView.repaint();
-		}
-	}
-	
 	private double getMaxY() {
 		return Math.max(mFruitSeries.getMaxY(), mVeggieSeries.getMaxY()) + .5;
 	}

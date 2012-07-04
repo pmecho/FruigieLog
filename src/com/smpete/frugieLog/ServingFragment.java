@@ -38,7 +38,6 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
 	
 	private Date mCurDate;
 	private OnServingChangedListener mListener;
-	private int mOffsetFromCurrentDate;
 	
 	private TextView mFruitText;
 	private TextView mVeggieText;
@@ -46,8 +45,6 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
 	private ImageView mVeggieImage;
 	
 	private int mDateLoaderId;
-	private int mFruitDelta;
-	private int mVeggieDelta;
 	
 	
 	public static ServingFragment newInstance(long date, boolean halfServing){
@@ -89,17 +86,6 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
 		cal.set(Calendar.MONTH, temp.get(Calendar.MONTH));
 		cal.set(Calendar.DAY_OF_MONTH, temp.get(Calendar.DAY_OF_MONTH));
 		mDateLoaderId = temp.get(Calendar.YEAR) * 1000 + temp.get(Calendar.DAY_OF_YEAR);
-		
-		if (cal.after(currentCal)) {
-			mOffsetFromCurrentDate = -1;
-		} else {
-			int daysBetween = 0;
-			while (cal.before(currentCal)) {
-				cal.add(Calendar.DAY_OF_MONTH, 1);
-				daysBetween++;
-			}
-			mOffsetFromCurrentDate = daysBetween;
-		}
 	}
 	
 	@Override
@@ -168,25 +154,6 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
 	}
     
 	@Override
-	public void onPause(){
-		super.onPause();
-		
-		//TODO run in an AsyncTask?
-		// Save Frugie
-		if (mFruitDelta != 0 || mVeggieDelta != 0) {
-			Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, mFrugie.getId());
-			ContentValues values = new ContentValues();
-			values.put(FrugieColumns.FRUIT, mFrugie.getFruitServingTenths());
-			values.put(FrugieColumns.VEGGIE, mFrugie.getVeggieServingTenths());
-	    	
-	    	int i = getActivity().getContentResolver().update(uri, values, null, null);
-			mFruitDelta = 0;
-			mVeggieDelta = 0;
-	        Log.d("ServingFrag", "Pause, updated: " + i);
-		}
-	}
-	
-	@Override
 	public void onStop(){
 		super.onStop();
         Log.d("ServingFrag", "Stop");
@@ -242,42 +209,41 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
     public void modifyFruit(boolean increment){
     	if(increment){
     		mFrugie.incServing(mHalfServing ? PortionSize.HALF : PortionSize.FULL, true);
-    		mFruitDelta += mHalfServing ? 1 : 2;
     	}else{
     		mFrugie.decServing(mHalfServing ? PortionSize.HALF : PortionSize.FULL, true);
-    		mFruitDelta -= mHalfServing ? 1 : 2;
     	}
     	
     	updateStatsText();
-    	mListener.onFruitChanged((double)mFrugie.getFruitServingTenths()/10, mOffsetFromCurrentDate);
+    	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, mFrugie.getId());
+		ContentValues values = new ContentValues();
+		values.put(FrugieColumns.FRUIT, mFrugie.getFruitServingTenths());
+    	getActivity().getContentResolver().update(uri, values, null, null);
     }
     
     public void modifyVeggie(boolean increment){
     	if(increment){
 	    	mFrugie.incServing(mHalfServing ? PortionSize.HALF : PortionSize.FULL, false);
-	    	mVeggieDelta += mHalfServing ? 1 : 2;
     	}else{
     		mFrugie.decServing(mHalfServing ? PortionSize.HALF : PortionSize.FULL, false);
-    		mVeggieDelta -= mHalfServing ? 1 : 2;
     	}
     	
     	updateStatsText();
-    	mListener.onVeggieChanged((double)mFrugie.getVeggieServingTenths()/10, mOffsetFromCurrentDate);
+    	Uri uri = ContentUris.withAppendedId(FrugieColumns.CONTENT_URI, mFrugie.getId());
+		ContentValues values = new ContentValues();
+		values.put(FrugieColumns.VEGGIE, mFrugie.getVeggieServingTenths());
+    	getActivity().getContentResolver().update(uri, values, null, null);
     }
     
     public interface OnServingChangedListener{
-    	public void onVeggieChanged(double newServingValue, int dayOffset);
-    	public void onFruitChanged(double newServingValue, int dayOffset);
     	public boolean onCheckHalfServing();
     }
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.wtf("AHHH", "Creating loader for " + FRUGIE_DATE_FORMAT.format(mCurDate));
+		Log.w("AHHH", "Creating loader for " + FRUGIE_DATE_FORMAT.format(mCurDate));
 		String formattedDate =  FRUGIE_DATE_FORMAT.format(mCurDate);
 		return new CursorLoader(getActivity(), 
 				FrugieColumns.CONTENT_URI, 
-//				null,
 				new String[] {FrugieColumns._ID, FrugieColumns.FRUIT, FrugieColumns.VEGGIE}, 
 				FrugieColumns.DATE + " = ?", 
 				new String[] {formattedDate}, 
@@ -287,31 +253,33 @@ public class ServingFragment extends Fragment implements LoaderCallbacks<Cursor>
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.wtf("AHHH", "Load finished for " + FRUGIE_DATE_FORMAT.format(mCurDate));
-		Frugie frugie;
-		if (data.moveToFirst()) {
-			int idColumn = data.getColumnIndex(FrugieColumns._ID);
-    		int fruitColumn = data.getColumnIndex(FrugieColumns.FRUIT);
-    		int veggieColumn = data.getColumnIndex(FrugieColumns.VEGGIE);
-    		frugie = new Frugie(data.getLong(idColumn), 
-    				data.getShort(fruitColumn), 
-    				data.getShort(veggieColumn));
-		} else {
+		Log.w("AHHH", "Load finished for " + FRUGIE_DATE_FORMAT.format(mCurDate));
+		if (mFrugie == null) {
+			Log.w("AHHH", "Frugie is null");
+			Frugie frugie;
+			if (data.moveToFirst()) {
+				int idColumn = data.getColumnIndex(FrugieColumns._ID);
+	    		int fruitColumn = data.getColumnIndex(FrugieColumns.FRUIT);
+	    		int veggieColumn = data.getColumnIndex(FrugieColumns.VEGGIE);
+	    		frugie = new Frugie(data.getLong(idColumn), 
+	    				data.getShort(fruitColumn), 
+	    				data.getShort(veggieColumn));
+			} else {
+				
+				//TODO Run in an async?
+				ContentValues values = new ContentValues();
+	    		
+	    		// Set defaults
+	    		values.put(FrugieColumns.DATE, FRUGIE_DATE_FORMAT.format(mCurDate));
+	    		values.put(FrugieColumns.FRUIT, 0);
+	    		values.put(FrugieColumns.VEGGIE, 0);
+	
+	    		Uri uri = getActivity().getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
+	    		frugie = new Frugie(ContentUris.parseId(uri), (short)0, (short)0);
+			}
 			
-			//TODO Run in an async?
-			ContentValues values = new ContentValues();
-    		
-    		// Set defaults
-    		values.put(FrugieColumns.DATE, FRUGIE_DATE_FORMAT.format(mCurDate));
-    		values.put(FrugieColumns.FRUIT, 0);
-    		values.put(FrugieColumns.VEGGIE, 0);
-
-    		Uri uri = getActivity().getContentResolver().insert(FrugieColumns.CONTENT_URI, values);
-    		frugie = new Frugie(ContentUris.parseId(uri), (short)0, (short)0);
+			setFrugie(frugie);
 		}
-		
-		setFrugie(frugie);
-		
 	}
 
 	@Override
